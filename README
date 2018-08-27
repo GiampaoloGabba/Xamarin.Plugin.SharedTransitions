@@ -12,9 +12,15 @@ Transitions in apps provide visual continuity, connecting common elements from o
 <img src="images/transition_droid_new.gif" height="500">
 <br><br><br>
 
-## Usage
+## Setup
 
-Informations on installation and usage are coming soon...
+* Available on [Nuget](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/)
+* Install into your Shared project and Client projects.
+
+<br>
+
+## Usage
+Informations coming soon...
 
 <br>
 

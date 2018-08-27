@@ -26,8 +26,8 @@
     <PackageLicenseUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</RepositoryUrl>
-    <PackageReleaseNotes>RELEASE NOTES</PackageReleaseNotes>
-    <PackageIconUrl>ICON URL</PackageIconUrl>
+    <PackageReleaseNotes>See: https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/master/images/icon.png</PackageIconUrl>
     <PackageTags>shared transition, animation, xamarin transition, plugin transitions, xamarin animation, xamarin, ios, android, xamarin.forms, plugin, SharedTransitions</PackageTags>
     
     <Title>Shared Element Transitions Plugin for Xamarin Forms</Title>
@@ -76,10 +76,6 @@
     <Compile Include="Platforms\iOS\**\*.cs" />
   </ItemGroup>
 
-
-
-    <!--<Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />-->
-
-
+   <!--<Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />-->
 
 </Project>
