@@ -1,4 +1,4 @@
-## Xamarin.Plugin.SharedTransitions
+## <img src="images/icon.png" height="40" style="float:left;margin:-2px 5px 0 0"> Xamarin.Plugin.SharedTransitions
 Activate shared element transitions between pages in Xamarin.Forms (IOS/Android)
 
 
@@ -9,7 +9,7 @@ For example, an image that is displayed on both Page A and Page B, transitions f
 Transitions in apps provide visual continuity, connecting common elements from one page to the next.
 
 
-<img src="http://www.evolutionlab.it/github/transition_droid_new.gif" height="500">
+<img src="images/transition_droid_new.gif" height="500">
 <br><br><br>
 
 ## Usage
