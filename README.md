@@ -12,7 +12,7 @@ For example, an image that is displayed on both Page A and Page B, transitions f
 Transitions in apps provide visual continuity, connecting common elements from one page to the next.
 
 
-<img src="images/transition_droid_new.gif" height="500">
+<img src="images/transition_droid_new.gif" height="500">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/transition_ios_new.gif" height="500">
 
 ## Setup
 

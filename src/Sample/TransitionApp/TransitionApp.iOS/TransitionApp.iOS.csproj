@@ -75,9 +75,12 @@
     <ConsolePause>False</ConsolePause>
     <MtouchArch>ARM64</MtouchArch>
     <BuildIpa>True</BuildIpa>
-    <CodesignProvision>Automatic:AdHoc</CodesignProvision>
-    <CodesignKey>iPhone Distribution</CodesignKey>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <CodesignProvision>EvoLabTestAdhocDistribution</CodesignProvision>
+    <CodesignKey>iPhone Distribution: Giampaolo Gabba (ZS44YVC99R)</CodesignKey>
+    <CodesignEntitlements>
+    </CodesignEntitlements>
+    <CodesignExtraArgs />
+    <CodesignResourceRules />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>
