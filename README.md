@@ -19,15 +19,16 @@ Transitions in apps provide visual continuity, connecting common elements from o
 * [Available on Nuget](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/)  [![NuGet](https://img.shields.io/nuget/v/Xamarin.Plugin.SharedTransitions.svg?label=NuGet)](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/)
 * Install into your NetStandard project and Client projects.
 
-## Usage
-Informations coming soon...
-
 **Platform Support**
 
 |Platform|Version|
 | -------------------  | :------------------: |
 |Xamarin.iOS|iOS 9+|
 |Xamarin.Android|API 21+|
+
+## Usage
+Informations coming soon...
+
 
 ## Copyright and license
 
