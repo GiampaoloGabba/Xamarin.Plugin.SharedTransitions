@@ -1,0 +1,85 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.47">
+
+  <PropertyGroup>
+    <!--Work around so the conditions work below-->
+      <TargetFrameworks>netstandard1.0;netstandard2.0;MonoAndroid81;Xamarin.iOS10;</TargetFrameworks>
+
+    <AssemblyName>Plugin.SharedTransitions</AssemblyName>
+    <RootNamespace>Plugin.SharedTransitions</RootNamespace>
+    <PackageId>Xamarin.Plugin.SharedTransitions</PackageId>
+    
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+    <Version>1.0.0.0</Version>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+    
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <LangVersion>7.1</LangVersion>
+    
+    <PackageLicenseUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</RepositoryUrl>
+    <PackageReleaseNotes>RELEASE NOTES</PackageReleaseNotes>
+    <PackageIconUrl>ICON URL</PackageIconUrl>
+    <PackageTags>shared transition, animation, xamarin transition, plugin transitions, xamarin animation, xamarin, ios, android, xamarin.forms, plugin, SharedTransitions</PackageTags>
+    
+    <Title>Shared Element Transitions Plugin for Xamarin Forms</Title>
+    <Summary>
+        Animations connecting common elements from one page to the next/previous.
+    </Summary>
+    <Description>
+        A shared element transition determines how elements that are present in two pages transition between them.
+        For example, an image that is displayed on both Page A and Page B, transitions from A to B when B becomes visible.
+        Transitions in apps provide visual continuity, connecting common elements from one page to the next.
+    </Description>
+    
+    <Owners>Giampaolo Gabba</Owners>
+    <Authors>Giampaolo Gabba</Authors>
+    <Copyright>Copyright 2018</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DebugType>pdbonly</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--<PackageReference Include="MSBuild.Sdk.Extras" Version="1.6.47" PrivateAssets="All" />-->
+    <PackageReference Include="Xamarin.Forms" Version="3.1.0.697729" />
+    <Compile Include="**\Shared\*.cs" />
+      <!-- This is here so that the conditionally included files below are all visible in VS -->
+      <None Include="Platforms\**\*.cs" Exclude="obj\**\*.*;bin\**\*.*;bin;obj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">     
+    <Compile Include="Platforms\Android\**\*.cs" />
+    <AndroidResource Include="Resources\**\*.xml" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <Compile Include="Platforms\iOS\**\*.cs" />
+  </ItemGroup>
+
+
+
+    <!--<Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />-->
+
+
+
+</Project>

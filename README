@@ -1,0 +1,32 @@
+## Xamarin.Plugin.SharedTransitions
+Activate shared element transitions between pages in Xamarin.Forms (IOS/Android)
+
+
+#### What is a shared element transition?
+They are Animations connecting common elements from one page to the next/previous.<br>
+A shared element transition determines how elements that are present in two pages transition between them.
+For example, an image that is displayed on both Page A and Page B, transitions from A to B when B becomes visible.
+Transitions in apps provide visual continuity, connecting common elements from one page to the next.
+
+
+<img src="http://www.evolutionlab.it/github/transition_droid_new.gif" height="500">
+<br><br><br>
+
+## Usage
+
+Informations on installation and usage are coming soon...
+
+<br>
+
+**Platform Support**
+
+|Platform|Version|
+| -------------------  | :------------------: |
+|Xamarin.iOS|iOS 9+|
+|Xamarin.Android|API 21+|
+
+<br>
+
+## Copyright and license
+
+Code released under the [MIT license](https://opensource.org/licenses/MIT),  [see license file](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/blob/master/LICENSE).

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             x:Class="TransitionApp.Page1"
+             BackgroundColor="Red" 
+             Title="First Page">
+
+        <StackLayout Orientation="Horizontal" VerticalOptions="Start">
+            <StackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="ImageTapped"/>
+            </StackLayout.GestureRecognizers>
+
+            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="1" sharedTransitions:Transition.TagGroup="1" WidthRequest="100" />
+            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="2" sharedTransitions:Transition.TagGroup="1" WidthRequest="100" HeightRequest="100" Aspect="AspectFit"  />
+            <Button Text=" Button "  sharedTransitions:Transition.Tag="3" sharedTransitions:Transition.TagGroup="1" BackgroundColor="Aqua" HeightRequest="50" VerticalOptions="Center" Clicked="Button_OnClicked"/>
+        </StackLayout>
+
+</ContentPage>
