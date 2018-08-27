@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.OS;
 using Android.Runtime;
-using Android.Support.Transitions;
 using Android.Transitions;
 using Android.Support.V7.Widget;
 using Plugin.SharedTransitions;
@@ -62,12 +62,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
         public SharedTransitionNavigationPageRenderer(Context context) : base(context)
         {
             _fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager;
-            
         }
 
         protected override void SetupPageTransition(FragmentTransaction transaction, bool isPush)
         {
-            if (_popToRoot)
+            if (_popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop)
             {
                 base.SetupPageTransition(transaction, isPush);
             }
@@ -116,7 +115,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         
         public override void AddView(View child)
         {
-            if (!(child is Toolbar))
+            if (!(child is Toolbar) && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
                 var fragments = _fragmentManager.Fragments;
                 var fragmentToShow = fragments.Last();
@@ -161,7 +160,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //If we press the back button very fast when we have more than 2 fragments in the stack,
             //unexpected behaviours can happen during pop (this is due to SetReorderingAllowed and base renderer not using fragment backstack).
             //So we need to add a small delay for fast pop clicks starting the third fragment on stack.
-            if (_fragmentManager.Fragments.Count > 2)
+            if (_fragmentManager.Fragments.Count > 2 &&  Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
                 await Task.Delay(100);
 
             return await base.OnPopViewAsync(page, animated); ;
@@ -170,19 +169,20 @@ namespace Plugin.SharedTransitions.Platforms.Android
         //During PopToRoot we skip everything and make the default animation
         protected override async Task<bool> OnPopToRootAsync(Page page, bool animated)
         {
-            //In poproot we need to replace the last fragment with the first
-            var fragments = _fragmentManager.Fragments;
-            var t = _fragmentManager.BeginTransaction();
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            { 
+                var fragments = _fragmentManager.Fragments;
+                var t = _fragmentManager.BeginTransaction();
 
-            //we neeed this to recreate the first fragment ui
-            //Outs shared transactions use SetReorderingAllowed that cause mess when popping to root multiple situations
-            //The only way to be sure to display correctly the rootpage is to recreate his ui.
-            //Note: we dont use "remove" here so we can maintain the state of the root view
-            t.Detach(fragments.First());
-            t.Attach(fragments.First());
+                //we need this to recreate the first fragment ui
+                //Our shared transactions use SetReorderingAllowed that cause mess when popping to root multiple situations
+                //The only way to be sure to display correctly the rootpage is to recreate his ui.
+                //Note: we don't use "remove" here so we can maintain the state of the root view
+                t.Detach(fragments.First());
+                t.Attach(fragments.First());
 
-            t.CommitAllowingStateLoss();
-            
+                t.CommitAllowingStateLoss();
+            }
             _popToRoot = true;
             var result = await base.OnPopToRootAsync(page, animated);
             _popToRoot = false;
@@ -195,7 +195,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //_sharedTransitionDuration + 100 is a fix to prevent bad behaviours on pop (due to SetReorderingAllowed)
             //after the transition end, we need to wait a bit before telling the rendere that we are done
             //Not needed in PopToRoot
-            get => _popToRoot ? base.TransitionDuration : (int) _sharedTransitionDuration + 100;
+            get => _popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop ? base.TransitionDuration : (int) _sharedTransitionDuration + 100;
             set => _sharedTransitionDuration = value;
         }
 

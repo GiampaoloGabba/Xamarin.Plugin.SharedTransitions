@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Android.OS;
+using System.ComponentModel;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -33,7 +34,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         void UpdateTag()
         {
-            if (Element is View element)
+            if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
                 var tag = Transition.RegisterTagInStack(element, Control.Id, out var pageId);
                 
