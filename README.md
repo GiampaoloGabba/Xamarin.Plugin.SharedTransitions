@@ -146,9 +146,17 @@ public enum BackgroundAnimation
 * You can animate the same element in multiple, subsequent pages
 * On IOS you can pop the page using a PanGesture on the left side of the screen
 
+## More samples!
+
+Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) using BindableLayout and CollectionView. 
+
+<img src="images/artnews.gif" Height="500" />
+
+This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
+
 ## Coming soon
 * More examples in the sample app (currently missing the advanced navigation example)
-* More background animations (flip, scale, slide from left left, right, top, bottom)
+* More background animations (scale, etc)
 * Support for other navigation containers (I have to do some research for this)
 
 ## Copyright and license
