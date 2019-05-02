@@ -9,7 +9,7 @@ namespace TransitionApp
 	    public Page1()
 	    {
 	        InitializeComponent();
-	        SharedTransitionNavigationPage.SetBackgroundAnimation(this, BackgroundAnimation.Fade);
+	        SharedTransitionNavigationPage.SetBackgroundAnimation(this, BackgroundAnimation.SlideFromTop);
 	        SharedTransitionNavigationPage.SetSharedTransitionDuration(this, 500);
 	    }
 

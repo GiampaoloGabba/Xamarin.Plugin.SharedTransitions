@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoreAnimation;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -102,29 +104,89 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
             containerView.InsertSubview(toViewController.View, 1);
 
-            if (_navigationPage.BackgroundAnimation == BackgroundAnimation.None)
-            {
-                UIView.Animate(0, 0, UIViewAnimationOptions.TransitionNone, () =>
-                {
-                    toViewController.View.Alpha = 1;
-                }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
-            }
-            else
-            {
-                UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveLinear, () =>
-                {
-                    toViewController.View.Alpha = 1;
-                    fromViewController.View.Alpha = 0;
-                }, () =>
-                {
-                    //Fix 1 for swipe + pop to root
-                    fromViewController.View.Alpha = 1; 
-                    transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+            var screenWidth = UIScreen.MainScreen.Bounds.Size.Width;
 
-                    //Fix 2 for swipe + pop to root
-                    if (transitionContext.TransitionWasCancelled)
+            fromViewController.View.Alpha = 0;
+
+            switch (_navigationPage.BackgroundAnimation)
+            {
+                case BackgroundAnimation.None:
+                    UIView.Animate(0, 0, UIViewAnimationOptions.TransitionNone, () =>
+                    {
+                        toViewController.View.Alpha = 1;
+                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    break;
+                case BackgroundAnimation.Fade:
+                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveLinear, () =>
+                    {
+                        toViewController.View.Alpha = 1;
+                        fromViewController.View.Alpha = 0;
+                    }, () =>
+                    {
+                        // Fix 1 for swipe + pop to root
                         fromViewController.View.Alpha = 1;
-                });
+                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+
+                        // Fix 2 for swipe + pop to root
+                        if (transitionContext.TransitionWasCancelled)
+                            fromViewController.View.Alpha = 1;
+                    });
+                    break;
+                case BackgroundAnimation.Flip:
+                    var m34 = (nfloat)(-1 * 0.001);
+                    var initialTransform = CATransform3D.Identity;
+                    initialTransform.m34 = m34;
+                    initialTransform = initialTransform.Rotate((nfloat)(1 * Math.PI * 0.5), 0.0f, 1.0f, 0.0f);
+
+                    fromViewController.View.Alpha = 0;
+                    toViewController.View.Alpha = 0;
+                    toViewController.View.Layer.Transform = initialTransform;
+                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseInOut,
+                        () =>
+                        {
+                            toViewController.View.Layer.AnchorPoint = new CGPoint((nfloat)0.5, 0.5f);
+                            var newTransform = CATransform3D.Identity;
+                            newTransform.m34 = m34;
+                            toViewController.View.Layer.Transform = newTransform;
+                            toViewController.View.Alpha = 1;
+                        }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    break;
+                case BackgroundAnimation.SlideFromBottom:
+                    toViewController.View.Alpha = 1;
+                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y + screenWidth);
+                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    {
+                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X, fromViewController.View.Center.Y - screenWidth);
+                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y - screenWidth);
+                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    break;
+                case BackgroundAnimation.SlideFromLeft:
+                    toViewController.View.Alpha = 1;
+                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X - screenWidth, toViewController.View.Center.Y);
+                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    {
+                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X + screenWidth, fromViewController.View.Center.Y);
+                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X + screenWidth, toViewController.View.Center.Y);
+                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    break;
+                case BackgroundAnimation.SlideFromRight:
+                    toViewController.View.Alpha = 1;
+                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X + screenWidth, toViewController.View.Center.Y);
+                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    {
+                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X - screenWidth, fromViewController.View.Center.Y);
+                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X - screenWidth, toViewController.View.Center.Y);
+                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    break;
+                case BackgroundAnimation.SlideFromTop:
+                    toViewController.View.Alpha = 1;
+                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y - screenWidth);
+                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    {
+                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X, fromViewController.View.Center.Y + screenWidth);
+                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y + screenWidth);
+                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    break;
             }
         }
 
