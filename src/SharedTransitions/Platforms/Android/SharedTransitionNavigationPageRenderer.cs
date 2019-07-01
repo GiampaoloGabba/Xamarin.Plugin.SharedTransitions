@@ -105,14 +105,73 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //This is needed to make shared transitions works with hide & add fragments instead of .replace
                 transaction.SetAllowOptimization(true);
 
-                if (_backgroundAnimation == BackgroundAnimation.Fade || _popToRoot)
-                    transaction.SetCustomAnimations(Resource.Animation.fade_in, Resource.Animation.fade_out,
-                        Resource.Animation.fade_in, Resource.Animation.fade_out);
-                else
-                    transaction.SetTransition((int)FragmentTransit.None);
+                switch (_backgroundAnimation)
+                {
+                    case BackgroundAnimation.None:
+                        return;
+                    case BackgroundAnimation.Fade:
+                        transaction.SetCustomAnimations(Resource.Animation.fade_in, Resource.Animation.fade_out,
+                                                        Resource.Animation.fade_out, Resource.Animation.fade_in);
+                        break;
+                    case BackgroundAnimation.Flip:
+                        transaction.SetCustomAnimations(Resource.Animation.flip_in, Resource.Animation.flip_out,
+                                                        Resource.Animation.flip_out, Resource.Animation.flip_in);
+                        break;
+                    case BackgroundAnimation.SlideFromLeft:
+                        if (isPush)
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_left, Resource.Animation.exit_right,
+                                                            Resource.Animation.enter_right, Resource.Animation.exit_left);
+                        }
+                        else
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_right, Resource.Animation.exit_left,
+                                                            Resource.Animation.enter_left, Resource.Animation.exit_right);
+                        }
+                        break;
+                    case BackgroundAnimation.SlideFromRight:
+                        if (isPush)
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_right, Resource.Animation.exit_left,
+                                                            Resource.Animation.enter_left, Resource.Animation.exit_right);
+                        }
+                        else
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_left, Resource.Animation.exit_right,
+                                                            Resource.Animation.enter_right, Resource.Animation.exit_left);
+                        }
+                        break;
+                    case BackgroundAnimation.SlideFromTop:
+                        if (isPush)
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_top, Resource.Animation.exit_bottom,
+                                                            Resource.Animation.enter_bottom, Resource.Animation.exit_top);
+                        }
+                        else
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_bottom, Resource.Animation.exit_top,
+                                                            Resource.Animation.enter_top, Resource.Animation.exit_bottom);
+                        }
+                        break;
+                    case BackgroundAnimation.SlideFromBottom:
+                        if (isPush)
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_bottom, Resource.Animation.exit_top,
+                                                            Resource.Animation.enter_top, Resource.Animation.exit_bottom);
+                        }
+                        else
+                        {
+                            transaction.SetCustomAnimations(Resource.Animation.enter_top, Resource.Animation.exit_bottom,
+                                                            Resource.Animation.enter_bottom, Resource.Animation.exit_top);
+                        }
+                        break;
+                    default:
+                        transaction.SetTransition((int)FragmentTransit.None);
+                        return;
+                }
             }
         }
-        
+
         public override void AddView(View child)
         {
             if (!(child is Toolbar) && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
@@ -160,7 +219,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //If we press the back button very fast when we have more than 2 fragments in the stack,
             //unexpected behaviours can happen during pop (this is due to SetReorderingAllowed and base renderer not using fragment backstack).
             //So we need to add a small delay for fast pop clicks starting the third fragment on stack.
-            if (_fragmentManager.Fragments.Count > 2 &&  Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            if (_fragmentManager.Fragments.Count > 2 && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
                 await Task.Delay(100);
 
             return await base.OnPopViewAsync(page, animated); ;
@@ -170,7 +229,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         protected override async Task<bool> OnPopToRootAsync(Page page, bool animated)
         {
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-            { 
+            {
                 var fragments = _fragmentManager.Fragments;
                 var t = _fragmentManager.BeginTransaction();
 
@@ -195,7 +254,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //_sharedTransitionDuration + 100 is a fix to prevent bad behaviours on pop (due to SetReorderingAllowed)
             //after the transition end, we need to wait a bit before telling the rendere that we are done
             //Not needed in PopToRoot
-            get => _popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop ? base.TransitionDuration : (int) _sharedTransitionDuration + 100;
+            get => _popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop ? base.TransitionDuration : (int)_sharedTransitionDuration + 100;
             set => _sharedTransitionDuration = value;
         }
 
