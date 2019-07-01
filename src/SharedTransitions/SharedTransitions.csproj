@@ -1,18 +1,18 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.47">
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.29">
 
   <PropertyGroup>
     <!--Work around so the conditions work below-->
-      <TargetFrameworks>netstandard1.0;netstandard2.0;MonoAndroid81;Xamarin.iOS10;</TargetFrameworks>
+      <TargetFrameworks>netstandard2.0;MonoAndroid81;Xamarin.iOS10;</TargetFrameworks>
 
     <AssemblyName>Plugin.SharedTransitions</AssemblyName>
     <RootNamespace>Plugin.SharedTransitions</RootNamespace>
     <PackageId>Xamarin.Plugin.SharedTransitions</PackageId>
     
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <AssemblyFileVersion>1.0.1</AssemblyFileVersion>
-    <Version>1.0.1</Version>
-    <PackageVersion>1.0.1</PackageVersion>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <AssemblyFileVersion>1.0.0.1</AssemblyFileVersion>
+    <Version>1.0.0.1</Version>
+    <PackageVersion>1.0.0.1</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
