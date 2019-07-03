@@ -127,7 +127,7 @@ namespace Plugin.SharedTransitions
             {
                 var tag = GetUniqueTag(element);
                 var group = GetTagGroup(element);
-                if (!(element.Navigation?.NavigationStack.Count > 0) || tag <= 0) return 0;
+                if (!(element.Navigation?.NavigationStack.Count > 0) || tag < 0) return 0;
 
                 var currentPage = element.Navigation.NavigationStack.Last();
                 if (currentPage.Parent is SharedTransitionNavigationPage navPage)

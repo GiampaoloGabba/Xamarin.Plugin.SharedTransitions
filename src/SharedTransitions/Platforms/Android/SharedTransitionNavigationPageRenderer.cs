@@ -44,6 +44,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 if (_propertiesContainer == value)
                     return;
 
+                //container has a different value from the one we are passing.
+                //We need to unsubscribe event, set the new value then resubscribe for the new container
                 if (_propertiesContainer != null)
                     _propertiesContainer.PropertyChanged -= PropertiesContainerOnPropertyChanged;
 
@@ -91,7 +93,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //This is to avoid to search al the views in a listview (if any)
                 var mapStack = NavPage.TagMap.GetMap(sourcePage, isPush ? _selectedGroup : 0);
 
-                //Get the views who need the transitionName, based on the tags presnete in destination page
+                //Get the views who need the transitionName, based on the tags in destination page
                 foreach (var tagMap in mapStack)
                 {
                     var fromView = fragmentToHide.View.FindViewById(tagMap.ViewId);
@@ -252,7 +254,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         protected override int TransitionDuration
         {
             //_sharedTransitionDuration + 100 is a fix to prevent bad behaviours on pop (due to SetReorderingAllowed)
-            //after the transition end, we need to wait a bit before telling the rendere that we are done
+            //after the transition end, we need to wait a bit before telling the renderer that we are done
             //Not needed in PopToRoot
             get => _popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop ? base.TransitionDuration : (int)_sharedTransitionDuration + 100;
             set => _sharedTransitionDuration = value;

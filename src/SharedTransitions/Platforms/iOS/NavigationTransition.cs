@@ -53,7 +53,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 UIView fromViewSnapshot;
                 CGRect fromViewFrame = fromView.Frame;
 
-                if (fromView is UILabel || fromView is UIButton)
+                if (fromView is UIControl || fromView is UILabel )
                 {
                     //For buttons and labels just copy the view to preserve a good transition
                     //Using normal snapshot with labels and buttons may cause streched and deformed images
@@ -64,19 +64,35 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     //Get the snapshot based on the real image size, not his containing frame!
                     //This is needed to avoid deformations with image aspectfit
                     //where the container frame can a have different size from the contained image
-                    fromViewFrame = fromImageView.GetImageFrameWithAspectRatio();
+                    fromViewFrame = fromImageView.GetImageFrame();
                     fromViewSnapshot = fromView.ResizableSnapshotView(fromViewFrame, false, UIEdgeInsets.Zero);
                 }
                 else
                 {
-                    fromViewSnapshot = fromView.SnapshotView(false);
+                    //cercare di creare una nuova view (rettangolo) costruita dalle informazioni di base
+                    //della view principale di fromView, così animo quella
+                    //fromViewSnapshot = fromView.SnapshotView(false);
+
+                    fromViewSnapshot = new UIView
+                    {
+                        AutoresizingMask = UIViewAutoresizing.All,
+                        ContentMode      = UIViewContentMode.ScaleToFill,
+                        Alpha            = fromView.Alpha,
+                        BackgroundColor  = fromView.BackgroundColor
+                    };
+
+                    fromViewSnapshot.Layer.CornerRadius    = fromView.Layer.CornerRadius;
+                    fromViewSnapshot.Layer.MasksToBounds   = fromView.Layer.MasksToBounds;
+                    fromViewSnapshot.Layer.BorderWidth     = fromView.Layer.BorderWidth ;
+                    fromViewSnapshot.Layer.BorderColor     = fromView.Layer.BorderColor;
+                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor;
                 }
 
                 //minor perf gain
-                fromViewSnapshot.Opaque = true;
+                //fromViewSnapshot.Opaque = true;
                 containerView.AddSubview(fromViewSnapshot);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
-
+                
                 // Without this, the snapshots will include the following "recent" changes
                 // Needed only on push. So pop can use the interaction (pangesture)
                 if (_operation == UINavigationControllerOperation.Push)
@@ -85,14 +101,23 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 toView.Alpha = 0;
                 fromView.Alpha = 0;
 
-                //If uimage, preserve aspect ratio on destination frame
-                CGRect toFrame = toView is UIImageView toImageView
-                    ? toImageView.ConvertRectToView(toImageView.GetImageFrameWithAspectRatio(), containerView)
-                    : toView.ConvertRectToView(toView.Frame, containerView);
+                //If UIIMage, preserve aspect ratio on destination
+                CGRect toFrame;
+                if (toView is UIImageView toImageView)
+                {
+                    toFrame = toImageView.ConvertRectToView(toImageView.GetImageFrame(), containerView);
+                }
+                else
+                {
+                    toFrame = toView.ConvertRectToView(toView.Frame, containerView);
+                }
 
-                UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseInOut, () =>
+                UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.CurveEaseInOut, () =>
                 {
                     fromViewSnapshot.Frame = toFrame;
+                    fromViewSnapshot.Layer.CornerRadius = toView.Layer.CornerRadius;
+                    fromViewSnapshot.BackgroundColor = toView.BackgroundColor;
+                    fromViewSnapshot.Layer.BackgroundColor = toView.Layer.BackgroundColor;
                     fromViewSnapshot.Alpha = 1;
                 }, () =>
                 {
@@ -102,7 +127,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 });
             }
 
-            containerView.InsertSubview(toViewController.View, 1);
+            //containerView.InsertSubview(toViewController.View, 1);
 
             var screenWidth = UIScreen.MainScreen.Bounds.Size.Width;
 
@@ -116,6 +141,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         toViewController.View.Alpha = 1;
                     }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
                     break;
+
                 case BackgroundAnimation.Fade:
                     UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveLinear, () =>
                     {
@@ -132,6 +158,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             fromViewController.View.Alpha = 1;
                     });
                     break;
+
                 case BackgroundAnimation.Flip:
                     var m34 = (nfloat)(-1 * 0.001);
                     var initialTransform = CATransform3D.Identity;
@@ -149,8 +176,18 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             newTransform.m34 = m34;
                             toViewController.View.Layer.Transform = newTransform;
                             toViewController.View.Alpha = 1;
-                        }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                        }, () =>
+                        {
+                            // Fix 1 for swipe + pop to root
+                            fromViewController.View.Alpha = 1;
+                            transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+
+                            // Fix 2 for swipe + pop to root
+                            if (transitionContext.TransitionWasCancelled)
+                                fromViewController.View.Alpha = 1;
+                        });
                     break;
+
                 case BackgroundAnimation.SlideFromBottom:
                     toViewController.View.Alpha = 1;
                     toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y + screenWidth);
@@ -158,8 +195,18 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X, fromViewController.View.Center.Y - screenWidth);
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y - screenWidth);
-                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    }, () =>
+                    {
+                        // Fix 1 for swipe + pop to root
+                        fromViewController.View.Alpha = 1;
+                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+
+                        // Fix 2 for swipe + pop to root
+                        if (transitionContext.TransitionWasCancelled)
+                            fromViewController.View.Alpha = 1;
+                    });
                     break;
+
                 case BackgroundAnimation.SlideFromLeft:
                     toViewController.View.Alpha = 1;
                     toViewController.View.Center = new CGPoint(toViewController.View.Center.X - screenWidth, toViewController.View.Center.Y);
@@ -167,8 +214,18 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X + screenWidth, fromViewController.View.Center.Y);
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X + screenWidth, toViewController.View.Center.Y);
-                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    }, () =>
+                    {
+                        // Fix 1 for swipe + pop to root
+                        fromViewController.View.Alpha = 1;
+                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+
+                        // Fix 2 for swipe + pop to root
+                        if (transitionContext.TransitionWasCancelled)
+                            fromViewController.View.Alpha = 1;
+                    });
                     break;
+
                 case BackgroundAnimation.SlideFromRight:
                     toViewController.View.Alpha = 1;
                     toViewController.View.Center = new CGPoint(toViewController.View.Center.X + screenWidth, toViewController.View.Center.Y);
@@ -176,8 +233,18 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X - screenWidth, fromViewController.View.Center.Y);
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X - screenWidth, toViewController.View.Center.Y);
-                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    }, () =>
+                    {
+                        // Fix 1 for swipe + pop to root
+                        fromViewController.View.Alpha = 1;
+                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+
+                        // Fix 2 for swipe + pop to root
+                        if (transitionContext.TransitionWasCancelled)
+                            fromViewController.View.Alpha = 1;
+                    });
                     break;
+
                 case BackgroundAnimation.SlideFromTop:
                     toViewController.View.Alpha = 1;
                     toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y - screenWidth);
@@ -185,7 +252,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X, fromViewController.View.Center.Y + screenWidth);
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y + screenWidth);
-                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    }, () =>
+                    {
+                        // Fix 1 for swipe + pop to root
+                        fromViewController.View.Alpha = 1;
+                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+
+                        // Fix 2 for swipe + pop to root
+                        if (transitionContext.TransitionWasCancelled)
+                            fromViewController.View.Alpha = 1;
+                    });
                     break;
             }
         }

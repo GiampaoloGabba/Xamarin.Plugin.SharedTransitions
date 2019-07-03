@@ -13,7 +13,7 @@ namespace TransitionApp
 	        SharedTransitionNavigationPage.SetSharedTransitionDuration(this, 500);
 	    }
 
-	    private async void ImageTapped(object sender, TappedEventArgs e)
+	    private async void ImageTapped(object sender, EventArgs eventArgs)
 	    {
 	        SharedTransitionNavigationPage.SetSelectedTagGroup(this, 1);
 	        await Navigation.PushAsync(new Page2());

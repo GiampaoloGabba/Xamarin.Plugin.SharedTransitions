@@ -13,9 +13,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override void OnAttached()
         {
-            if (Control == null)
-                return;
-
             UpdateTag();
         }
 
@@ -35,7 +32,17 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         void UpdateTag()
         {
             if (Element is View element)
-                Control.Tag = Transition.RegisterTagInStack(element);
+            {
+                if (Control != null)
+                {
+                    Control.Tag = Transition.RegisterTagInStack(element);
+                } 
+                else if (Container != null)
+                {
+                    Container.Tag = Transition.RegisterTagInStack(element);
+                }
+            }
+
         }
     }
 }

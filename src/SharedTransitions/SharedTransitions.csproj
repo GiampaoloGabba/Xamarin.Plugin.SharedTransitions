@@ -11,8 +11,8 @@
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
     <AssemblyFileVersion>1.0.0.1</AssemblyFileVersion>
-    <Version>1.0.0.1</Version>
-    <PackageVersion>1.0.0.1</PackageVersion>
+    <Version>1.1.0</Version>
+    <PackageVersion>1.1.0</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -22,6 +22,8 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 
     <LangVersion>7.1</LangVersion>
+
+    <AndroidUseManagedDesignTimeResourceGenerator>False</AndroidUseManagedDesignTimeResourceGenerator>
     
     <PackageLicenseUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageProjectUrl>

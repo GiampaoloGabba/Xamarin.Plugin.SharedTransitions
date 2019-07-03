@@ -10,10 +10,14 @@
             <StackLayout.GestureRecognizers>
                 <TapGestureRecognizer Tapped="ImageTapped"/>
             </StackLayout.GestureRecognizers>
-
-            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="1" sharedTransitions:Transition.TagGroup="1" WidthRequest="100" />
-            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="2" sharedTransitions:Transition.TagGroup="1" WidthRequest="100" HeightRequest="100" Aspect="AspectFit"  />
-            <Button Text=" Button "  sharedTransitions:Transition.Tag="3" sharedTransitions:Transition.TagGroup="1" BackgroundColor="Aqua" HeightRequest="50" VerticalOptions="Center" Clicked="Button_OnClicked"/>
+            
+            
+            <Frame sharedTransitions:Transition.Tag="1" WidthRequest="50" CornerRadius="0" sharedTransitions:Transition.TagGroup="1" BackgroundColor="Yellow"  />
+            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="2" sharedTransitions:Transition.TagGroup="1"  HeightRequest="50" />
+            
+            
+            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="3" sharedTransitions:Transition.TagGroup="1" WidthRequest="100" HeightRequest="100" Aspect="AspectFit"  />
+            <Button Text=" Button "  sharedTransitions:Transition.Tag="4" sharedTransitions:Transition.TagGroup="1" BackgroundColor="Aqua" HeightRequest="50" VerticalOptions="Center"/>
         </StackLayout>
 
 </ContentPage>

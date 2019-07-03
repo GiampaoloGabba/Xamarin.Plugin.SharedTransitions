@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
+using AndroidViews = Android.Views;
 
 [assembly: ResolutionGroupName(Transition.ResolutionGroupName)]
 [assembly: ExportEffect(typeof(Plugin.SharedTransitions.Platforms.Android.TransitionEffect), Transition.EffectName)]
@@ -13,9 +14,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
     {
         protected override void OnAttached()
         {
-            if (Control == null)
-                return;
-
             UpdateTag();
         }
 
@@ -29,6 +27,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 args.PropertyName == Transition.TagGroupProperty.PropertyName)
                 UpdateTag();
 
+
             base.OnElementPropertyChanged(args);
         }
 
@@ -36,12 +35,25 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
-                var tag = Transition.RegisterTagInStack(element, Control.Id, out var pageId);
-                
-                //transitionName must be unique in every fragment
-                //this is needed when we have more than 2 pages to transition,
-                //because the navPage hides old fragments without removing it!
-                Control.TransitionName = $"{pageId}_transition_{tag}";
+                if (Control != null)
+                {
+                    if (Control.Id == -1)
+                        Control.Id = AndroidViews.View.GenerateViewId();
+
+                    var tag = Transition.RegisterTagInStack(element, Control.Id, out var pageId);
+                    Control.TransitionName = $"{pageId}_transition_{tag}";
+                } 
+                else if (Container != null)
+                {
+                    //layout (boxview, stacklayout, frame, ecc...
+                    var view = element.GetRenderer()?.View;
+                    if (view != null)
+                    {
+                        view.Id = AndroidViews.View.GenerateViewId();
+                        var tag = Transition.RegisterTagInStack(element, view.Id, out var pageId);
+                        view.TransitionName = $"{pageId}_transition_{tag}";
+                    }
+                }
             }
         }
     }

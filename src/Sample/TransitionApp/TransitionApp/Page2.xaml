@@ -6,16 +6,22 @@
              BackgroundColor="Blue" 
              Title="Second Page">
 
+<Grid>
+    <Frame sharedTransitions:Transition.Tag="1" CornerRadius="20"  BackgroundColor="Yellow" />
     <StackLayout>
         <StackLayout VerticalOptions="Start" HorizontalOptions="Center">
             <StackLayout.GestureRecognizers>
                 <TapGestureRecognizer Tapped="ImageTapped"/>
             </StackLayout.GestureRecognizers>
 
-            <Image Source="mydog.jpg" sharedTransitions:Transition.Tag="1" WidthRequest="100" HorizontalOptions="Center" VerticalOptions="Start"/>
-            <Image Source="mydog.jpg" sharedTransitions:Transition.Tag="2" HorizontalOptions="Center" VerticalOptions="Start" />
-            <Button Text=" Button " sharedTransitions:Transition.Tag="3" BackgroundColor="Aqua"  Clicked="Button_OnClicked"/>
+
+            <Image Source="mydog.jpg" sharedTransitions:Transition.Tag="2" HeightRequest="200" WidthRequest="100" Aspect="Fill" HorizontalOptions="Center" VerticalOptions="Start"/>
+            <Image Source="mydog.jpg" sharedTransitions:Transition.Tag="3" HorizontalOptions="Center" VerticalOptions="Start" />
+            <Button Text=" Button " sharedTransitions:Transition.Tag="4" BackgroundColor="Aqua"  Clicked="Button_OnClicked"/>
         </StackLayout>
     </StackLayout>
 
+</Grid>
+
+    
 </ContentPage>
