@@ -1,4 +1,5 @@
 ## 1.1.0
+* Update to .NETStandard 2
 * Fixed transitions between images with different aspect ratios
 * Enable transitions between layouts (frame, stacklayout, ecc..) 
  **Note: BoxView in iOS is not currently supported**
