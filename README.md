@@ -145,6 +145,7 @@ public enum BackgroundAnimation
 * You can animate multiple views at once, just remember that every tag in a page needs to be unique
 * You can animate the same element in multiple, subsequent pages
 * On IOS you can pop the page using a PanGesture on the left side of the screen
+* On IOS BoxView animation is not supported. You can animate other layouts like frame, stacklayout, ecc...
 
 ## More samples!
 
@@ -164,6 +165,7 @@ This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-Ne
 ## Latest release notes
 
 1.1.0
+* Update to .NETStandard 2
 * Fixed transitions between images with different aspect ratios
 * Enable transitions between layouts (frame, stacklayout, ecc..) **Note: BoxView in iOS is not currently supported**
 * Updated Xamarin.Forms version from 3.1 to 3.6 (#6) by **@jsuarezruiz**
