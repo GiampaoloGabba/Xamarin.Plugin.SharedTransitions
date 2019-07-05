@@ -155,9 +155,20 @@ Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) u
 This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
 
 ## Coming soon
-* More examples in the sample app (currently missing the advanced navigation example)
-* More background animations (scale, etc)
-* Support for other navigation containers (I have to do some research for this)
+
+- [x] More background animations (scale, etc)
+- [x] Support layouts (frame, stacklayout, ecc..
+- [ ] New sample app
+
+
+## Latest release notes
+
+1.1.0
+* Fixed transitions between images with different aspect ratios
+* Enable transitions between layouts (frame, stacklayout, ecc..) **Note: BoxView in iOS is not currently supported**
+* Updated Xamarin.Forms version from 3.1 to 3.6 (#6) by **@jsuarezruiz**
+* Added new BackgroundAnimations (Flip, SlideFromLeft, etc.) (#7) by **@jsuarezruiz**
+* Updated README with a new sample reference (#8) by **@jsuarezruiz**
 
 ## Copyright and license
 
