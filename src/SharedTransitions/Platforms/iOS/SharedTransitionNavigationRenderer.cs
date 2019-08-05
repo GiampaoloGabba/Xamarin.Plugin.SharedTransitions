@@ -42,7 +42,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 UpdateBackgroundTransition();
                 UpdateSharedTransitionDuration();
-                UpdateSelectedGroup();
             }
         }
 
@@ -64,29 +63,43 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 //This view is not yet visible in our app but the variable is already set
                 var viewsToAnimate = new List<(UIView ToView, UIView FromView)>();
 
-                //this is due the overridden management of pop and push
-                var destinationPage = operation == UINavigationControllerOperation.Push
-                    ? NavPage.CurrentPage
-                    : PropertiesContainer;
+                IReadOnlyList<TransitionDetail> transitionStackTo;
+                IReadOnlyList<TransitionDetail> transitionStackFrom;
 
-                //Get all the views with tags in the destination page
-                //With this, we are sure to dont start transitions with no mathing tags in destination
-                //When popping, take only the tags with the selected group (if any).
-                //This is to avoid to search al the views in a listview (if any)
-                var mapStack = NavPage.TransitionMap.GetMap(destinationPage, operation == UINavigationControllerOperation.Pop ? _selectedGroup : 0);
-                
-                foreach (var tagMap in mapStack)
+                if (operation == UINavigationControllerOperation.Push)
                 {
-                    var toView = toViewController.View.ViewWithTag(tagMap.Tag);
-                    if (toView != null)
-                    {
-                        //get the matching tag, taking in consideration the GroupTags for dynamic transitions (listview <--> details)
-                        //we store the destination view and the corrispondent tag for the source view, so we can match them during transition
-                        var correspondingTag = SharedTransitions.Transition.GetUniqueTag((int) toView.Tag, _selectedGroup, operation == UINavigationControllerOperation.Pop);
-                        var fromView = fromViewController.View.ViewWithTag(correspondingTag);
+                    //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
+                    //During the override we set the propertiescontainer to the page where the push started
+                    //So we reflect the TransitionStacks accoringly
+                    transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer);
+                    transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
+                }
+                else
+                {
+                    //During POP, everyting is fine and clear
+                    transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
+                    transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer);
+                }
 
-                        if (fromView != null)
-                            viewsToAnimate.Add((toView, fromView));
+                if (transitionStackFrom != null)
+                {
+                    //Get all the views with transitions in the destination page
+                    //With this, we are sure to dont start transitions with no mathing transitions in destination
+                    foreach (var transitionToMap in transitionStackTo)
+                    {
+                        var toView = toViewController.View.ViewWithTag(transitionToMap.NativeViewId);
+                        if (toView != null)
+                        {
+                            //get the matching transition, TODO: taking in consideration the GroupTags for dynamic transitions (listview <--> details)
+                            //we store the destination view and the corrispondent transition in the source view, so we can match them during transition
+                            var nativeViewId = transitionStackFrom.FirstOrDefault(x => x.TransitionName == transitionToMap.TransitionName)?.NativeViewId ?? 0;
+
+                            if (nativeViewId <= 0) continue;
+
+                            var fromView = fromViewController.View.ViewWithTag(nativeViewId);
+                            if (fromView != null)
+                                viewsToAnimate.Add((toView, fromView));
+                        }
                     }
                 }
 
@@ -191,10 +204,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 UpdateSharedTransitionDuration();
             }
-            else if (e.PropertyName == SharedTransitionNavigationPage.SelectedTagGroupProperty.PropertyName)
-            {
-                UpdateSelectedGroup();
-            }
         }
 
         void UpdateBackgroundTransition()
@@ -205,11 +214,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         void UpdateSharedTransitionDuration()
         {
             SharedTransitionDuration = (double) SharedTransitionNavigationPage.GetSharedTransitionDuration(PropertiesContainer) / 1000;
-        }
-
-        void UpdateSelectedGroup()
-        {
-            _selectedGroup = SharedTransitionNavigationPage.GetSelectedTagGroup(PropertiesContainer);
         }
     }
 }

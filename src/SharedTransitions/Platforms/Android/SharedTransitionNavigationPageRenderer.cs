@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -10,11 +12,12 @@ using Android.Support.V7.Widget;
 using Plugin.SharedTransitions;
 using Plugin.SharedTransitions.Platforms.Android;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppCompat;
-using View = Android.Views.View;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
-using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using View = Xamarin.Forms.PlatformConfiguration.Android.Views.View;
+using FragmentManager = Xamarin.Forms.PlatformConfiguration.Android.Support.V4.App.FragmentManager;
+using FragmentTransaction = Xamarin.Forms.PlatformConfiguration.Android.Support.V4.App.FragmentTransaction;
 
 [assembly: ExportRenderer(typeof(SharedTransitionNavigationPage), typeof(SharedTransitionNavigationPageRenderer))]
 
@@ -28,7 +31,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
     {
         readonly FragmentManager _fragmentManager;
         bool _popToRoot;
-        int _selectedGroup;
 
         BackgroundAnimation _backgroundAnimation;
         long _sharedTransitionDuration;
@@ -56,7 +58,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     _propertiesContainer.PropertyChanged += PropertiesContainerOnPropertyChanged;
                     UpdateBackgroundTransition();
                     UpdateSharedTransitionDuration();
-                    UpdateSelectedGroup();
                 }
             }
         }
@@ -75,32 +76,39 @@ namespace Plugin.SharedTransitions.Platforms.Android
             else
             {
                 //In Android the mapping logic is inverse compared to IOS
-                //When we are here, the destination page is not yet attached so we dont know if there are tags
+                //When we are here, the destination page is not yet attached so we dont know if there are transitions
                 //We need to setup transitions only for what we know here, starting from sourcepage
                 var fragmentToHide = _fragmentManager.Fragments.Last();
 
-                //this is due the overridden management of pop and push
-                var sourcePage = isPush
-                    ? PropertiesContainer
-                    : NavPage.CurrentPage;
+                //TODO colleciton transition
+                //IReadOnlyList<TransitionDetail> transitionStackTo;
+                IReadOnlyList<TransitionDetail> transitionStackFrom;
 
-                //this is needed to remap the tag
-                var destinationPage = isPush
-                    ? NavPage.CurrentPage
-                    : PropertiesContainer;
-
-                //When pushing, take only the tags with the selected group (if any).
-                //This is to avoid to search al the views in a listview (if any)
-                var mapStack = NavPage.TransitionMap.GetMap(sourcePage);
+                if (isPush)
+                {
+                    //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
+                    //During the override we set the propertiescontainer to the page where the push started
+                    //So we reflect the TransitionStacks accoringly
+                    transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer);
+                    //TODO colleciton transition
+                    //transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
+                }
+                else
+                {
+                    //During POP, everyting is fine and clear
+                    transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
+                    //TODO colleciton transition
+                    //transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer);
+                }
 
                 //Get the views who need the transitionName, based on the tags in destination page
-                foreach (var tagMap in mapStack)
+                foreach (var tagMap in transitionStackFrom)
                 {
                     var fromView = fragmentToHide.View.FindViewById(tagMap.NativeViewId);
                     if (fromView != null)
                     {
                         var correspondingTag = tagMap.TransitionName;
-                        transaction.AddSharedElement(fromView, $"{destinationPage.Id}_transition_{correspondingTag}");
+                        transaction.AddSharedElement(fromView, correspondingTag);
                     }
                 }
 
@@ -270,10 +278,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
             {
                 UpdateSharedTransitionDuration();
             }
-            else if (e.PropertyName == SharedTransitionNavigationPage.SelectedTagGroupProperty.PropertyName)
-            {
-                UpdateSelectedGroup();
-            }
         }
 
         void UpdateBackgroundTransition()
@@ -284,11 +288,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
         void UpdateSharedTransitionDuration()
         {
             TransitionDuration = (int)SharedTransitionNavigationPage.GetSharedTransitionDuration(PropertiesContainer);
-        }
-
-        void UpdateSelectedGroup()
-        {
-            _selectedGroup = SharedTransitionNavigationPage.GetSelectedTagGroup(PropertiesContainer);
         }
     }
 }
