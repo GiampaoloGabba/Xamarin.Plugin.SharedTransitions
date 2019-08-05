@@ -12,7 +12,7 @@ namespace Plugin.SharedTransitions
         /// Map for all the tags (and support properties) associated with this SharedTransitionNavigationPage.
         /// </summary>
         internal static readonly BindablePropertyKey TagMapPropertyKey =
-            BindableProperty.CreateReadOnly("TagMap", typeof(ITagMapper), typeof(SharedTransitionNavigationPage), default(ITagMapper));
+            BindableProperty.CreateReadOnly("TagMap", typeof(ITransitionMapper), typeof(SharedTransitionNavigationPage), default(ITransitionMapper));
 
         public static readonly BindableProperty TagMapProperty = TagMapPropertyKey.BindableProperty;
 
@@ -41,13 +41,13 @@ namespace Plugin.SharedTransitions
         /// <value>
         /// The tag map.
         /// </value>
-        public ITagMapper TagMap
+        public ITransitionMapper TransitionMap
         {
-            get => (ITagMapper)GetValue(TagMapProperty);
+            get => (ITransitionMapper)GetValue(TagMapProperty);
             internal set => SetValue(TagMapPropertyKey, value);
         }
 
-        public SharedTransitionNavigationPage(Page root) : base(root) => TagMap = new TagMapper();
+        public SharedTransitionNavigationPage(Page root) : base(root) => TransitionMap = new TransitionMapper();
 
         /// <summary>
         /// Gets the background animation.
@@ -111,7 +111,7 @@ namespace Plugin.SharedTransitions
 
         protected override void OnChildRemoved(Element child)
         {
-            TagMap.Remove((Page)child);
+            TransitionMap.Remove((Page)child);
         }
     }
 }

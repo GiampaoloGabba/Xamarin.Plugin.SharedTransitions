@@ -91,15 +91,15 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
                 //When pushing, take only the tags with the selected group (if any).
                 //This is to avoid to search al the views in a listview (if any)
-                var mapStack = NavPage.TagMap.GetMap(sourcePage, isPush ? _selectedGroup : 0);
+                var mapStack = NavPage.TransitionMap.GetMap(sourcePage);
 
                 //Get the views who need the transitionName, based on the tags in destination page
                 foreach (var tagMap in mapStack)
                 {
-                    var fromView = fragmentToHide.View.FindViewById(tagMap.ViewId);
+                    var fromView = fragmentToHide.View.FindViewById(tagMap.NativeViewId);
                     if (fromView != null)
                     {
-                        var correspondingTag = Transition.GetUniqueTag(tagMap.Tag, _selectedGroup, isPush);
+                        var correspondingTag = tagMap.TransitionName;
                         transaction.AddSharedElement(fromView, $"{destinationPage.Id}_transition_{correspondingTag}");
                     }
                 }

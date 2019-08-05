@@ -23,8 +23,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == Transition.TagProperty.PropertyName ||
-                args.PropertyName == Transition.TagGroupProperty.PropertyName)
+            if (args.PropertyName == Transition.TransitionNameProperty.PropertyName)
                 UpdateTag();
 
 
@@ -40,8 +39,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (Control.Id == -1)
                         Control.Id = AndroidViews.View.GenerateViewId();
 
-                    var tag = Transition.RegisterTagInStack(element, Control.Id, out var pageId);
-                    Control.TransitionName = $"{pageId}_transition_{tag}";
+                    var tag = Transition.RegisterTransition(element, Control.Id);
+                    Control.TransitionName = $"transition_{tag}";
                 } 
                 else if (Container != null)
                 {
@@ -50,8 +49,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (view != null)
                     {
                         view.Id = AndroidViews.View.GenerateViewId();
-                        var tag = Transition.RegisterTagInStack(element, view.Id, out var pageId);
-                        view.TransitionName = $"{pageId}_transition_{tag}";
+                        var tag = Transition.RegisterTransition(element, view.Id);
+                        view.TransitionName = $"transition_{tag}";
                     }
                 }
             }

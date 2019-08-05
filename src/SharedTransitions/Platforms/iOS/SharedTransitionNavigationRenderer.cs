@@ -73,7 +73,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 //With this, we are sure to dont start transitions with no mathing tags in destination
                 //When popping, take only the tags with the selected group (if any).
                 //This is to avoid to search al the views in a listview (if any)
-                var mapStack = NavPage.TagMap.GetMap(destinationPage, operation == UINavigationControllerOperation.Pop ? _selectedGroup : 0);
+                var mapStack = NavPage.TransitionMap.GetMap(destinationPage, operation == UINavigationControllerOperation.Pop ? _selectedGroup : 0);
                 
                 foreach (var tagMap in mapStack)
                 {

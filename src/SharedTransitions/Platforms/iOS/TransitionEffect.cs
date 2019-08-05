@@ -22,8 +22,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == Transition.TagProperty.PropertyName ||
-                args.PropertyName == Transition.TagGroupProperty.PropertyName)
+            if (args.PropertyName == Transition.TransitionNameProperty.PropertyName)
                 UpdateTag();
 
             base.OnElementPropertyChanged(args);
@@ -35,14 +34,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 if (Control != null)
                 {
-                    Control.Tag = Transition.RegisterTagInStack(element);
+                    Control.Tag = Transition.RegisterTransition(element);
                 } 
                 else if (Container != null)
                 {
-                    Container.Tag = Transition.RegisterTagInStack(element);
+                    Container.Tag = Transition.RegisterTransition(element);
                 }
             }
-
         }
     }
 }

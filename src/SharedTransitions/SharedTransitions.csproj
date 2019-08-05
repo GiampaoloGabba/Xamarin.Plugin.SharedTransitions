@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--Work around so the conditions work below-->
-      <TargetFrameworks>netstandard2.0;MonoAndroid81;Xamarin.iOS10;</TargetFrameworks>
+      <TargetFrameworks>netstandard2.0;MonoAndroid9;Xamarin.iOS10;</TargetFrameworks>
 
     <AssemblyName>Plugin.SharedTransitions</AssemblyName>
     <RootNamespace>Plugin.SharedTransitions</RootNamespace>
