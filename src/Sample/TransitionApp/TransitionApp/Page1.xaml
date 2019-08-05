@@ -12,12 +12,12 @@
             </StackLayout.GestureRecognizers>
             
             
-            <Frame sharedTransitions:Transition.Tag="1" WidthRequest="50" CornerRadius="0" sharedTransitions:Transition.TagGroup="1" BackgroundColor="Yellow"  />
-            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="2" sharedTransitions:Transition.TagGroup="1"  HeightRequest="50" />
+            <Frame sharedTransitions:Transition.TransitionName="test1" WidthRequest="50" CornerRadius="0" BackgroundColor="Yellow"  />
+            <Image Source="mydog.jpg"  sharedTransitions:Transition.TransitionName="test2"  HeightRequest="50" />
             
             
-            <Image Source="mydog.jpg"  sharedTransitions:Transition.Tag="3" sharedTransitions:Transition.TagGroup="1" WidthRequest="100" HeightRequest="100" Aspect="AspectFit"  />
-            <Button Text=" Button "  sharedTransitions:Transition.Tag="4" sharedTransitions:Transition.TagGroup="1" BackgroundColor="Aqua" HeightRequest="50" VerticalOptions="Center"/>
+            <Image Source="mydog.jpg" sharedTransitions:Transition.TransitionName="test3" WidthRequest="100" HeightRequest="100" Aspect="AspectFit"  />
+            <Button Text="Button"  sharedTransitions:Transition.TransitionName="test4" BackgroundColor="Aqua" HeightRequest="50" VerticalOptions="Center"/>
         </StackLayout>
 
 </ContentPage>

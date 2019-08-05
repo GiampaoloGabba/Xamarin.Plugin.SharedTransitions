@@ -102,12 +102,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 }
 
                 //Get the views who need the transitionName, based on the tags in destination page
-                foreach (var tagMap in transitionStackFrom)
+                foreach (var transitionFromMap in transitionStackFrom)
                 {
-                    var fromView = fragmentToHide.View.FindViewById(tagMap.NativeViewId);
+                    var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
                     if (fromView != null)
                     {
-                        var correspondingTag = tagMap.TransitionName;
+                        var correspondingTag = transitionFromMap.TransitionName;
                         transaction.AddSharedElement(fromView, correspondingTag);
                     }
                 }

@@ -15,8 +15,7 @@ namespace TransitionApp
 
 	    private async void ImageTapped(object sender, EventArgs eventArgs)
 	    {
-	        SharedTransitionNavigationPage.SetSelectedTagGroup(this, 1);
-	        await Navigation.PushAsync(new Page2());
+            await Navigation.PushAsync(new Page2());
 	    }
 
 	    private void Button_OnClicked(object sender, EventArgs e)

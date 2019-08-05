@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions
@@ -31,7 +30,7 @@ namespace Plugin.SharedTransitions
             "TransitionName", 
             typeof(string), 
             typeof(Transition), 
-            0, 
+            null, 
             propertyChanged: 
             OnPropertyChanged);
 
@@ -49,7 +48,7 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="bindable">Xamarin Forms Element</param>
         /// <param name="value">The shared transition name.</param>
-        public static void SetTransitionName(BindableObject bindable, int value)
+        public static void SetTransitionName(BindableObject bindable, string value)
         {
             bindable.SetValue(TransitionNameProperty, value);
         }
@@ -102,7 +101,7 @@ namespace Plugin.SharedTransitions
             var element = (View)bindable;
             var existing = element.Effects.FirstOrDefault(x => x is TransitionEffect);
 
-            if (existing == null && newValue != null && (int)newValue > 0)
+            if (existing == null && newValue != null && newValue.ToString() != "")
             {
                 element.Effects.Add(new TransitionEffect());
             }
