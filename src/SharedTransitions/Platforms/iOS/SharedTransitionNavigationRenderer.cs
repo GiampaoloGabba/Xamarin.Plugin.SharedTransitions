@@ -21,6 +21,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     {
         public double SharedTransitionDuration { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
+        string _selectedGroup;
 
         Page _propertiesContainer;
         public Page PropertiesContainer
@@ -41,6 +42,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 UpdateBackgroundTransition();
                 UpdateSharedTransitionDuration();
+                UpdateSelectedGroup();
             }
         }
 
@@ -68,16 +70,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 if (operation == UINavigationControllerOperation.Push)
                 {
                     //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
-                    //During the override we set the propertiescontainer to the page where the push started
+                    //During the override we set the PropertiesContainer to the page where the push started
                     //So we reflect the TransitionStacks accoringly
-                    transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer);
+                    transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer, _selectedGroup);
                     transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
                 }
                 else
                 {
                     //During POP, everyting is fine and clear
                     transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
-                    transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer);
+                    transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer, _selectedGroup);
                 }
 
                 if (transitionStackFrom != null)
@@ -203,6 +205,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 UpdateSharedTransitionDuration();
             }
+            else if (e.PropertyName == SharedTransitionNavigationPage.TransitionSelectedGroupProperty.PropertyName)
+            {
+                UpdateSelectedGroup();
+            }
         }
 
         void UpdateBackgroundTransition()
@@ -213,6 +219,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         void UpdateSharedTransitionDuration()
         {
             SharedTransitionDuration = (double) SharedTransitionNavigationPage.GetSharedTransitionDuration(PropertiesContainer) / 1000;
+        }
+
+        void UpdateSelectedGroup()
+        {
+            _selectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(PropertiesContainer);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace Plugin.SharedTransitions
     public interface ITransitionMapper
     {
         IReadOnlyList<TransitionMap> TransitionStack { get; }
-        IReadOnlyList<TransitionDetail> GetMap(Page page);
-        int Add(Page page, string transitionName, Guid formsViewId, int nativeViewId);
+        IReadOnlyList<TransitionDetail> GetMap(Page page, string selectedGroup = null);
+        int Add(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId);
         void Remove(Page page);
     }
 
@@ -30,6 +30,7 @@ namespace Plugin.SharedTransitions
     public class TransitionDetail
     {
         public string TransitionName { get; set; }
+        public string TransitionGroup { get; set; }
         public Guid FormsViewId { get; set; }
         public int NativeViewId { get; set; }
     }

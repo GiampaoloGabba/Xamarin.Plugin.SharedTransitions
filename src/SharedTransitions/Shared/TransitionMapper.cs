@@ -17,10 +17,10 @@ namespace Plugin.SharedTransitions
 
         public IReadOnlyList<TransitionMap> TransitionStack => _transitionStack.Value;
 
-        public IReadOnlyList<TransitionDetail> GetMap(Page page)
+        public IReadOnlyList<TransitionDetail> GetMap(Page page, string selectedGroup = null)
         {
             return TransitionStack.Where(x => x.PageId == page.Id)
-                           .Select(x => x.Transitions.ToList())
+                           .Select(x => x.Transitions.Where(tr=>tr.TransitionGroup == selectedGroup).ToList())
                            .FirstOrDefault() ?? new List<TransitionDetail>();
         }
 
@@ -29,9 +29,10 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="transitionName">The name of the shared transition.</param>
+        /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
         /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
         /// <param name="nativeViewId">The Native view unique identifier.</param>
-        public int Add(Page page, string transitionName, Guid formsViewId, int nativeViewId)
+        public int Add(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId)
         {
             var transitionMap = _transitionStack.Value.FirstOrDefault(x => x.PageId == page.Id);
 
@@ -44,7 +45,7 @@ namespace Plugin.SharedTransitions
                     new TransitionMap
                     {
                         PageId = page.Id,
-                        Transitions   = new List<TransitionDetail> {CreateTransition(transitionName, formsViewId, nativeViewId)}
+                        Transitions   = new List<TransitionDetail> {CreateTransition(transitionName, transitionGroup, formsViewId, nativeViewId)}
                     }
                 );
 
@@ -58,7 +59,7 @@ namespace Plugin.SharedTransitions
                 if (nativeViewId == 0)
                     nativeViewId = (transitionMap.Transitions.OrderBy(x => x.NativeViewId).LastOrDefault()?.NativeViewId ?? 0) + 1;
 
-                transitionMap.Transitions.Add(CreateTransition(transitionName, formsViewId, nativeViewId));
+                transitionMap.Transitions.Add(CreateTransition(transitionName, transitionGroup, formsViewId, nativeViewId));
             }
             else
             {
@@ -85,16 +86,18 @@ namespace Plugin.SharedTransitions
         /// Creates a transition with additional information
         /// </summary>
         /// <param name="transitionName">The name of the shared transition.</param>
+        /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
         /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
         /// <param name="nativeViewId">The Native view unique identifier.</param>
         /// <returns></returns>
-        TransitionDetail CreateTransition(string transitionName, Guid formsViewId, int nativeViewId)
+        TransitionDetail CreateTransition(string transitionName,string transitionGroup, Guid formsViewId, int nativeViewId)
         {
             return new TransitionDetail
             {
-                TransitionName = transitionName,
-                FormsViewId    = formsViewId,
-                NativeViewId   = nativeViewId
+                TransitionName  = transitionName,
+                TransitionGroup = transitionGroup,
+                FormsViewId     = formsViewId,
+                NativeViewId    = nativeViewId
             };
         }
     }

@@ -26,8 +26,19 @@ namespace Plugin.SharedTransitions
         /// <summary>
         /// Transition name to associate views animation between pages
         /// </summary>
-        public static readonly BindableProperty TransitionNameProperty = BindableProperty.CreateAttached(
-            "TransitionName", 
+        public static readonly BindableProperty NameProperty = BindableProperty.CreateAttached(
+            "Name", 
+            typeof(string), 
+            typeof(Transition), 
+            null, 
+            propertyChanged: 
+            OnPropertyChanged);
+
+        /// <summary>
+        /// Transition group for dynamic transitions
+        /// </summary>
+        public static readonly BindableProperty GroupProperty = BindableProperty.CreateAttached(
+            "Group", 
             typeof(string), 
             typeof(Transition), 
             null, 
@@ -38,9 +49,18 @@ namespace Plugin.SharedTransitions
         /// Gets the shared transition name for the element
         /// </summary>
         /// <param name="bindable">Xamarin Forms Element</param>
-        public static string GetTransitionName(BindableObject bindable)
+        public static string GetName(BindableObject bindable)
         {
-            return (string)bindable.GetValue(TransitionNameProperty);
+            return (string)bindable.GetValue(NameProperty);
+        }
+
+        /// <summary>
+        /// Gets the shared transition group for the element
+        /// </summary>
+        /// <param name="bindable">Xamarin Forms Element</param>
+        public static string GetGroup(BindableObject bindable)
+        {
+            return (string)bindable.GetValue(GroupProperty);
         }
 
         /// <summary>
@@ -48,9 +68,19 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="bindable">Xamarin Forms Element</param>
         /// <param name="value">The shared transition name.</param>
-        public static void SetTransitionName(BindableObject bindable, string value)
+        public static void SetName(BindableObject bindable, string value)
         {
-            bindable.SetValue(TransitionNameProperty, value);
+            bindable.SetValue(NameProperty, value);
+        }
+
+        /// <summary>
+        /// Sets the shared transition group for the element
+        /// </summary>
+        /// <param name="bindable">Xamarin Forms Element</param>
+        /// <param name="value">The shared transition group</param>
+        public static void SetGroup(BindableObject bindable, string value)
+        {
+            bindable.SetValue(GroupProperty, value);
         }
 
         /// <summary>
@@ -61,7 +91,7 @@ namespace Plugin.SharedTransitions
         /// <returns>The unique Id of the native View</returns>
         public static int RegisterTransition(BindableObject bindable)
         {
-            return RegisterTransition(bindable, 0);
+            return RegisterTransition(bindable, 0, out _);
         }
 
         /// <summary>
@@ -69,18 +99,21 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="bindable">Xamarin Forms Element</param>
         /// <param name="nativeViewId">The platform View identifier</param>
+        /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(BindableObject bindable, int nativeViewId)
+        public static int RegisterTransition(BindableObject bindable, int nativeViewId, out Page currentPage)
         {
+            currentPage = null;
             if (bindable is View element)
             {
-                var transitionName = GetTransitionName(element);
+                var transitionName  = GetName(element);
+                var transitionGroup = GetGroup(element);
                 if (!(element.Navigation?.NavigationStack.Count > 0) || string.IsNullOrEmpty(transitionName)) return 0;
 
-                var currentPage = element.Navigation.NavigationStack.Last();
+                currentPage = element.Navigation.NavigationStack.Last();
                 if (currentPage.Parent is SharedTransitionNavigationPage navPage)
                 {
-                    return navPage.TransitionMap.Add(currentPage, transitionName,element.Id, nativeViewId);
+                    return navPage.TransitionMap.Add(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
                 }
             }
 

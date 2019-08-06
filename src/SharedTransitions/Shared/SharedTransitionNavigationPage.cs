@@ -17,6 +17,12 @@ namespace Plugin.SharedTransitions
         public static readonly BindableProperty TransitionMapProperty = TransitionMapPropertyKey.BindableProperty;
 
         /// <summary>
+        /// The shared transition selected group for dynamic transitions
+        /// </summary>
+        public static readonly BindableProperty TransitionSelectedGroupProperty =
+            BindableProperty.CreateAttached(nameof(TransitionSelectedGroup), typeof(string), typeof(SharedTransitionNavigationPage), null);
+
+        /// <summary>
         /// The background animation associated with the current page in stack
         /// </summary>
         public static readonly BindableProperty BackgroundAnimationProperty =
@@ -42,6 +48,22 @@ namespace Plugin.SharedTransitions
 
         public SharedTransitionNavigationPage(Page root) : base(root) => TransitionMap = new TransitionMapper();
 
+        public string TransitionSelectedGroup
+        {
+            get => (string)GetValue(TransitionSelectedGroupProperty);
+            set => SetValue(TransitionSelectedGroupProperty, value);
+        }
+
+        /// <summary>
+        /// Gets the transition selected group
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <returns></returns>
+        public static string GetTransitionSelectedGroup(Page page)
+        {
+            return (string)page.GetValue(TransitionSelectedGroupProperty);
+        }
+
         /// <summary>
         /// Gets the background animation.
         /// </summary>
@@ -60,6 +82,16 @@ namespace Plugin.SharedTransitions
         public static long GetSharedTransitionDuration(Page page)
         {
             return (long)page.GetValue(SharedTransitionDurationProperty);
+        }
+
+        /// <summary>
+        /// Sets the transition selected group
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <returns></returns>
+        public static void SetTransitionSelectedGroup(Page page, string value)
+        {
+            page.SetValue(TransitionSelectedGroupProperty, value);
         }
 
         /// <summary>

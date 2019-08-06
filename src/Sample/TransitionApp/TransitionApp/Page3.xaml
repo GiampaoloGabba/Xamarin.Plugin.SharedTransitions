@@ -11,8 +11,8 @@
             <TapGestureRecognizer Tapped="ImageTapped"/>
         </StackLayout.GestureRecognizers>
 
-        <Button Text=" Button " sharedTransitions:Transition.TransitionName="test4" BackgroundColor="Aqua" />
-        <Image Source="mydog.jpg" sharedTransitions:Transition.TransitionName="test2" WidthRequest="150" HorizontalOptions="Center" VerticalOptions="Start"/>
-        <Image Source="mydog.jpg" sharedTransitions:Transition.TransitionName="test3" WidthRequest="150" HorizontalOptions="Center" VerticalOptions="Start" />
+        <Button Text=" Button " sharedTransitions:Transition.Name="test4" BackgroundColor="Aqua" />
+        <Image Source="mydog.jpg" sharedTransitions:Transition.Name="test2" WidthRequest="150" HorizontalOptions="Center" VerticalOptions="Start"/>
+        <Image Source="mydog.jpg" sharedTransitions:Transition.Name="test3" WidthRequest="150" HorizontalOptions="Center" VerticalOptions="Start" />
     </StackLayout>
 </ContentPage>

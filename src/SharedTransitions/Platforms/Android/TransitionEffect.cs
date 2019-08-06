@@ -24,7 +24,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == Transition.TransitionNameProperty.PropertyName)
+            if (args.PropertyName == Transition.NameProperty.PropertyName ||
+                args.PropertyName == Transition.GroupProperty.PropertyName)
                 UpdateTag();
 
 
@@ -35,15 +36,15 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
-                var currentPage = element.Navigation.NavigationStack.Last().Id;
-                var transitionName = Transition.GetTransitionName(element);
+                var transitionName = Transition.GetName(element);
                 if (Control != null)
                 {
                     if (Control.Id == -1)
                         Control.Id = AndroidViews.View.GenerateViewId();
 
-                    var tag = Transition.RegisterTransition(element, Control.Id);
-                    Control.TransitionName = currentPage + "_" + transitionName;
+                    //TransitionName unique for page to enable transitions between more than 2 pages
+                    Transition.RegisterTransition(element, Control.Id, out var currentPage);
+                    Control.TransitionName = currentPage.Id + "_" + transitionName;
                 } 
                 else if (Container != null)
                 {
@@ -51,10 +52,10 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     var view = element.GetRenderer()?.View;
                     if (view != null)
                     {
-                        view.Id = AndroidViews.View.GenerateViewId();
-                        Transition.RegisterTransition(element, view.Id);
-
-                        view.TransitionName = currentPage + "_" + transitionName; 
+                        //TransitionName unique for page to enable transitions between more than 2 pages
+                        AndroidViews.View.GenerateViewId();
+                        Transition.RegisterTransition(element, view.Id, out var currentPage);
+                        view.TransitionName = currentPage.Id + "_" + transitionName; 
                     }
                 }
             }

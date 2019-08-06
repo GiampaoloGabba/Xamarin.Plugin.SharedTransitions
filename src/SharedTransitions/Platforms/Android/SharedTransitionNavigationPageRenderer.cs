@@ -29,6 +29,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
     {
         readonly FragmentManager _fragmentManager;
         bool _popToRoot;
+        string _selectedGroup;
 
         BackgroundAnimation _backgroundAnimation;
         long _sharedTransitionDuration;
@@ -56,6 +57,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     _propertiesContainer.PropertyChanged += PropertiesContainerOnPropertyChanged;
                     UpdateBackgroundTransition();
                     UpdateSharedTransitionDuration();
+                    UpdateSelectedGroup();
                 }
             }
         }
@@ -78,26 +80,19 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //We need to setup transitions only for what we know here, starting from sourcepage
                 var fragmentToHide = _fragmentManager.Fragments.Last();
 
-                //TODO colleciton transition
-                IReadOnlyList<TransitionDetail> transitionStackTo;
-                IReadOnlyList<TransitionDetail> transitionStackFrom;
+                //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
+                //During the override we set the propertiescontainer to the page where the push started
+                //So we reflect the TransitionStacks accoringly
+                var sourcePage = isPush
+                    ? PropertiesContainer
+                    : NavPage.CurrentPage;
 
-                if (isPush)
-                {
-                    //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
-                    //During the override we set the propertiescontainer to the page where the push started
-                    //So we reflect the TransitionStacks accoringly
-                    transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer);
-                    //TODO colleciton transition
-                    transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
-                }
-                else
-                {
-                    //During POP, everyting is fine and clear
-                    transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
-                    //TODO colleciton transition
-                    transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer);
-                }
+                var destinationPage = isPush
+                    ? NavPage.CurrentPage
+                    : PropertiesContainer;
+
+                //return the tag map filtering by group (if specified) during push
+                var transitionStackFrom = NavPage.TransitionMap.GetMap(sourcePage, isPush ? _selectedGroup : null);
 
                 //Get the views who need the transitionName, based on the tags in destination page
                 foreach (var transitionFromMap in transitionStackFrom)
@@ -105,7 +100,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
                     if (fromView != null)
                     {
-                        var correspondingTag = NavPage.CurrentPage.Id + "_" + transitionFromMap.TransitionName.Replace(PropertiesContainer.Id + "_","");
+                        var correspondingTag = destinationPage.Id + "_" + transitionFromMap.TransitionName.Replace(sourcePage.Id + "_","");
                         //var correspondingTag = transitionFromMap.TransitionName;
                         transaction.AddSharedElement(fromView, correspondingTag);
                     }
@@ -287,6 +282,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
         void UpdateSharedTransitionDuration()
         {
             TransitionDuration = (int)SharedTransitionNavigationPage.GetSharedTransitionDuration(PropertiesContainer);
+        }
+
+        void UpdateSelectedGroup()
+        {
+            _selectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(PropertiesContainer);
         }
     }
 }
