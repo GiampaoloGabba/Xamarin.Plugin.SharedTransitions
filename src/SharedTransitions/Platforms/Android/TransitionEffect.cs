@@ -53,7 +53,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (view != null)
                     {
                         //TransitionName unique for page to enable transitions between more than 2 pages
-                        AndroidViews.View.GenerateViewId();
+                        view.Id = AndroidViews.View.GenerateViewId();
                         Transition.RegisterTransition(element, view.Id, out var currentPage);
                         view.TransitionName = currentPage.Id + "_" + transitionName; 
                     }
