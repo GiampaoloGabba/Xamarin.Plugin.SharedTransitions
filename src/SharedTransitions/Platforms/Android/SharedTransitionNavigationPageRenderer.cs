@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Transitions;
 using Android.Support.V7.Widget;
 using Plugin.SharedTransitions;
@@ -15,9 +12,10 @@ using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppCompat;
-using View = Xamarin.Forms.PlatformConfiguration.Android.Views.View;
-using FragmentManager = Xamarin.Forms.PlatformConfiguration.Android.Support.V4.App.FragmentManager;
-using FragmentTransaction = Xamarin.Forms.PlatformConfiguration.Android.Support.V4.App.FragmentTransaction;
+using Context = Android.Content.Context;
+using View = Android.Views.View;
+using FragmentManager = Android.Support.V4.App.FragmentManager;
+using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 
 [assembly: ExportRenderer(typeof(SharedTransitionNavigationPage), typeof(SharedTransitionNavigationPageRenderer))]
 
@@ -81,7 +79,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 var fragmentToHide = _fragmentManager.Fragments.Last();
 
                 //TODO colleciton transition
-                //IReadOnlyList<TransitionDetail> transitionStackTo;
+                IReadOnlyList<TransitionDetail> transitionStackTo;
                 IReadOnlyList<TransitionDetail> transitionStackFrom;
 
                 if (isPush)
@@ -91,14 +89,14 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     //So we reflect the TransitionStacks accoringly
                     transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer);
                     //TODO colleciton transition
-                    //transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
+                    transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
                 }
                 else
                 {
                     //During POP, everyting is fine and clear
                     transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
                     //TODO colleciton transition
-                    //transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer);
+                    transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer);
                 }
 
                 //Get the views who need the transitionName, based on the tags in destination page
@@ -107,7 +105,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
                     if (fromView != null)
                     {
-                        var correspondingTag = transitionFromMap.TransitionName;
+                        var correspondingTag = NavPage.CurrentPage.Id + "_" + transitionFromMap.TransitionName.Replace(PropertiesContainer.Id + "_","");
+                        //var correspondingTag = transitionFromMap.TransitionName;
                         transaction.AddSharedElement(fromView, correspondingTag);
                     }
                 }

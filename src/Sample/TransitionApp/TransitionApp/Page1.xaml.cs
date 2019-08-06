@@ -9,8 +9,8 @@ namespace TransitionApp
 	    public Page1()
 	    {
 	        InitializeComponent();
-	        SharedTransitionNavigationPage.SetBackgroundAnimation(this, BackgroundAnimation.SlideFromTop);
-	        SharedTransitionNavigationPage.SetSharedTransitionDuration(this, 500);
+	        //SharedTransitionNavigationPage.SetBackgroundAnimation(this, BackgroundAnimation.SlideFromTop);
+	        //SharedTransitionNavigationPage.SetSharedTransitionDuration(this, 500);
 	    }
 
 	    private async void ImageTapped(object sender, EventArgs eventArgs)

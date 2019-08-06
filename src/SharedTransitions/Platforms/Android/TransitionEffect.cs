@@ -1,5 +1,6 @@
 ﻿using Android.OS;
 using System.ComponentModel;
+using System.Linq;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -34,13 +35,15 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
+                var currentPage = element.Navigation.NavigationStack.Last().Id;
+                var transitionName = Transition.GetTransitionName(element);
                 if (Control != null)
                 {
                     if (Control.Id == -1)
                         Control.Id = AndroidViews.View.GenerateViewId();
 
                     var tag = Transition.RegisterTransition(element, Control.Id);
-                    Control.TransitionName = $"transition_{tag}";
+                    Control.TransitionName = currentPage + "_" + transitionName;
                 } 
                 else if (Container != null)
                 {
@@ -49,8 +52,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (view != null)
                     {
                         view.Id = AndroidViews.View.GenerateViewId();
-                        var tag = Transition.RegisterTransition(element, view.Id);
-                        view.TransitionName = $"transition_{tag}";
+                        Transition.RegisterTransition(element, view.Id);
+
+                        view.TransitionName = currentPage + "_" + transitionName; 
                     }
                 }
             }

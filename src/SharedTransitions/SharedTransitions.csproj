@@ -1,8 +1,8 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.29">
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.31">
 
   <PropertyGroup>
     <!--Work around so the conditions work below-->
-      <TargetFrameworks>netstandard2.0;MonoAndroid9;Xamarin.iOS10;</TargetFrameworks>
+      <TargetFrameworks>netstandard2.0;MonoAndroid81;Xamarin.iOS10;</TargetFrameworks>
 
     <AssemblyName>Plugin.SharedTransitions</AssemblyName>
     <RootNamespace>Plugin.SharedTransitions</RootNamespace>
@@ -16,12 +16,10 @@
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
-    <DefineConstants>$(DefineConstants);</DefineConstants>
+    <DefineConstants>DEBUG;</DefineConstants>
     
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-
-    <LangVersion>7.1</LangVersion>
 
     <AndroidUseManagedDesignTimeResourceGenerator>False</AndroidUseManagedDesignTimeResourceGenerator>
     

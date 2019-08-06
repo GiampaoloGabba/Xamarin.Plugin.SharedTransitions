@@ -21,7 +21,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     {
         public double SharedTransitionDuration { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
-        int _selectedGroup;
 
         Page _propertiesContainer;
         public Page PropertiesContainer
