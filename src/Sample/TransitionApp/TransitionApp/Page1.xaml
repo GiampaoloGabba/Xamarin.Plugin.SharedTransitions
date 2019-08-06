@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
              x:Class="TransitionApp.Page1"
-             BackgroundColor="Red" 
+             BackgroundColor="Red"
              Title="First Page">
 
         <StackLayout Orientation="Horizontal" VerticalOptions="Start">
