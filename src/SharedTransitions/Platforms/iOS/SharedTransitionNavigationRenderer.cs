@@ -88,16 +88,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     //With this, we are sure to dont start transitions with no mathing transitions in destination
                     foreach (var transitionToMap in transitionStackTo)
                     {
+                        //TODO: if the view is null delete this entry from the MapStack
                         var toView = toViewController.View.ViewWithTag(transitionToMap.NativeViewId);
                         if (toView != null)
                         {
-                            //get the matching transition, TODO: taking in consideration the GroupTags for dynamic transitions (listview <--> details)
-                            //we store the destination view and the corrispondent transition in the source view, so we can match them during transition
+                            //get the matching transition: we store the destination view and the corrispondent transition in the source view,
+                            //so we can match them during transition
                             var nativeViewId = transitionStackFrom.FirstOrDefault(x => x.TransitionName == transitionToMap.TransitionName)?.NativeViewId ?? 0;
 
                             if (nativeViewId <= 0) continue;
 
                             var fromView = fromViewController.View.ViewWithTag(nativeViewId);
+                            
+                            //TODO: if the view is null delete this entry from the MapStack
                             if (fromView != null)
                                 viewsToAnimate.Add((toView, fromView));
                         }
