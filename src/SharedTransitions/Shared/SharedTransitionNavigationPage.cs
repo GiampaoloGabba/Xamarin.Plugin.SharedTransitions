@@ -3,7 +3,7 @@
 namespace Plugin.SharedTransitions
 {
     /// <summary>
-    /// Navigation Page with support for shared transition
+    /// Navigation Page with support for shared transitions
     /// </summary>
     /// <seealso cref="Xamarin.Forms.NavigationPage" />
     public class SharedTransitionNavigationPage : NavigationPage
