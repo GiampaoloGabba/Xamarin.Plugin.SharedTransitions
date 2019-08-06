@@ -205,6 +205,11 @@ This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-Ne
 - [x] MVVM Support (frame, stacklayout, ecc..
 - [x] New sample app
 
+## To do
+- [ ] Enforce TransitionStack removal of invalid native view ids
+- [ ] Fix layouts bounds during transitions in ios where certain type of layout placement are used (only for layouts)
+- [ ] Enahnce iOS animations, investigate better solutions
+
 
 ## Latest release notes
 2.0.0
