@@ -6,7 +6,7 @@ Activate shared element transitions between pages in Xamarin.Forms (IOS/Android)
 
 
 #### What is a shared element transition?
-They are Animations connecting common elements from one page to the next/previous.<br>
+Shared element transitions are animations connecting common elements from one page to the next/previous.<br>
 A shared element transition determines how elements that are present in two pages transition between them.
 For example, an image that is displayed on both Page A and Page B, transitions from A to B when B becomes visible.
 Transitions in apps provide visual continuity, connecting common elements from one page to the next.
@@ -29,7 +29,7 @@ Transitions in apps provide visual continuity, connecting common elements from o
 ## Usage
 
 
-To activate transitions between pages, use the ```SharedTransitionNavigationPage``` instead the classic NavigationPage:
+To activate transitions between pages, use the ```SharedTransitionNavigationPage``` instead of the classic NavigationPage:
 ```csharp
 MainPage = new SharedTransitionNavigationPage(new Page1());
 ```
@@ -46,13 +46,13 @@ This is the most basic type of transition. We are going to animate one or more v
 Tag the views to transition in the **source page**, for example *Page1.xaml*: 
 
 ```xml
-<Image Source="mydog.jpg" sharedTransitions:Transition.Tag="1" WidthRequest="100" />
+<Image Source="mydog.jpg" sharedTransitions:Transition.Name="dogtransition" WidthRequest="100" />
 ```
 
 Tag the views to transition in the **destination page**, for example *Page2.xaml*: 
 
 ```xml
-<Image Source="mydog.jpg" sharedTransitions:Transition.Tag="1"  WidthRequest="300" />
+<Image Source="mydog.jpg" sharedTransitions:Transition.Name="dogtransition"  WidthRequest="300" />
 ```
 
 Now from Page1 you can push Page2 to start the transition:
@@ -67,9 +67,9 @@ When doing a Pop prom Page2 to Page1 a return transition will occour
 #### Advanced shared transitions between collection of views and their details page
 
 This type of shared transition is useful to animate a selected item from a collection of views (for example a listview or any custom control with bindable views) to his "details" page.
-To make this work we need to set the ```sharedTransitions:Transition.TagGroup``` property.
+To make this work we need to set the ```sharedTransitions:Transition.Group``` property.
 
-Listview sample in the **source page**, binding the TagGroup to a unique integer. The Tag property is used the same as the basic shared transition example.
+Listview sample in the **source page**, binding the Transition Group to a unique integer. The Transition Name property is used the same as the basic shared transition example.
 
 ```xml
 <ListView HasUnevenRows="True">  
@@ -81,8 +81,8 @@ Listview sample in the **source page**, binding the TagGroup to a unique integer
                     <Image  Source="{Binding imgsource}" 
                             HorizontalOptions="EndAndExpand"
                             HeightRequest="30" WidthRequest="50"
-                            sharedTransitions:Transition.Tag="1" 
-                            sharedTransitions:Transition.TagGroup="{Binding Id}" />
+                            sharedTransitions:Transition.Name="test" 
+                            sharedTransitions:Transition.Group="{Binding Id}" />
                 </StackLayout>  
             </ViewCell>  
         </DataTemplate>  
@@ -90,25 +90,35 @@ Listview sample in the **source page**, binding the TagGroup to a unique integer
 </ListView>  
 ```
 
-Tag the views to transition in the **destination page**, for example *Page3.xaml*. We dont have to specify the TagGroup in the destination page, the match between pages will occour with the Tag property.
+Tag the views to transition in the **destination page**, for example *Page3.xaml*. We dont have to specify the Transition Group in the destination page, the match between pages will occour with the Transition Name property.
 
 ```xml
-<Image x:Name="detailImage" sharedTransitions:Transition.Tag="1" WidthRequest="300" />
+<Image x:Name="detailImage" sharedTransitions:Transition.Name="test" WidthRequest="300" />
 ```
 
-When navigating from the source listview page to the destination, you need to inform the NavigationPage of what TagGroup has been selected:
+When navigating from the source listview page to the destination, you need to inform the NavigationPage of what Transition Group has been selected:
 
  ```csharp
  private async void MyItemTapped(object sender,  ItemTapEventArgs e)
 {
     var tappedItemData = e.Item as MyModel;
    //this is required in order to pass the views to animate
-    SharedTransitionNavigationPage.SetSelectedTagGroup(this, tappedItemData.Id);
+    SharedTransitionNavigationPage.SetSelectedTransitionGroup(this, tappedItemData.Id);
     await Navigation.PushAsync(new Page3(tappedItemData));
 }
 ```
 
-In the destination page, you have to set the Source for ```x:Name="detailImage"``` based on the ```tappedItemData``` passed during the Push
+if you are using MVVM, you can bind the SelectedTransitionGroup property directly in XAML with binding:
+```xml
+<ContentPage .....
+			 .....
+			 SharedTransitionNavigationPage.SelectedGroup={Binding Selectedgroup}
+```
+
+Then, in your VM valorize the SelectedGroup property before the push.
+
+
+In the destination page, you have to just set the Transition Name property to display the animation.
 
 #### SharedNavigationPage methods
 
@@ -116,7 +126,7 @@ For every setter specified here, we have the corrisponding getter
 
 ```csharp
 // Sets the selected tag group for this page
-public static void SetSelectedTagGroup(Page page, int value)
+public static void SetSelectedTransitionGroup(Page page, int value)
 
 // Sets the duration of the shared transition for this page (in ms).
 public static void SetSharedTransitionDuration(Page page, long value)
@@ -129,22 +139,56 @@ public static void SetBackgroundAnimation(Page page, BackgroundAnimation value)
 Background animations provided:
 
 ```csharp
-// Background Animation Type
-public enum BackgroundAnimation
-{
-    // Do not animate.
-    None,
-    // Show a fade animation.
-    Fade
+    /// Background Animation Type
+    /// </summary>
+    public enum BackgroundAnimation
+    {
+        /// <summary>
+        /// Do not animate.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Show a fade animation.
+        /// </summary>
+        Fade = 1,
+
+        /// <summary>
+        /// Show a flip animation.
+        /// </summary>
+        Flip = 2,
+
+        /// <summary>
+        /// Show a slide from left animation.
+        /// </summary>
+        SlideFromLeft = 3,
+
+        /// <summary>
+        /// Show a slide from right animation.
+        /// </summary>
+        SlideFromRight = 4,
+
+        /// <summary>
+        /// Show a slide from top animation.
+        /// </summary>
+        SlideFromTop = 5,
+
+        /// <summary>
+        /// Show a slide from bottom animation.
+        /// </summary>
+        SlideFromBottom = 6
+    }
 }
+
 ```
 
 ## Important notes
-* The ```sharedTransitions:Transition.Tag``` and ```sharedTransitions:Transition.TagGroup``` are integer numbers
-* The ```sharedTransitions:Transition.Tag``` in source and destination page needs to match in order to display the animated transition
-* You can animate multiple views at once, just remember that every tag in a page needs to be unique
+* The ```sharedTransitions:Transition.Name``` in source and destination page needs to match in order to display the animated transition
+* You can animate multiple views at once, just remember that every Transition Name in a page needs to be unique
 * You can animate the same element in multiple, subsequent pages
 * On IOS you can pop the page using a PanGesture on the left side of the screen
+* On IOS BoxView animation is not supported. You can animate other layouts like frame, stacklayout, ecc...
+* When animating layouts (frame, stacklayouts....) i suggest to dont use a background transition other than "Fade" (or "None"). Android doesnt play well with background animation + shared transitions of layouts
 
 ## More samples!
 
@@ -154,10 +198,29 @@ Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) u
 
 This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
 
-## Coming soon
-* More examples in the sample app (currently missing the advanced navigation example)
-* More background animations (scale, etc)
-* Support for other navigation containers (I have to do some research for this)
+## Roadmap
+
+- [x] More background animations (scale, etc)
+- [x] Support layouts (frame, stacklayout, ecc..
+- [x] MVVM Support (frame, stacklayout, ecc..
+- [x] New sample app
+
+
+## Latest release notes
+2.0.0
+* **Properties renamed to Transition.Name and Transition.Group <-- BREAKING**
+* Full MVVM support with TransitionSelectedGroup
+* New, improved Transition management under the hood (no more limitation to int number for transition names, faster view lookup for transitions)
+* New sample app with listview and MVVM example, as well as normal transitions
+
+
+1.1.0
+* Update to .NETStandard 2
+* Fixed transitions between images with different aspect ratios
+* Enable transitions between layouts (frame, stacklayout, ecc..) **Note: BoxView in iOS is not currently supported**
+* Updated Xamarin.Forms version from 3.1 to 3.6 (#6) by **@jsuarezruiz**
+* Added new BackgroundAnimations (Flip, SlideFromLeft, etc.) (#7) by **@jsuarezruiz**
+* Updated README with a new sample reference (#8) by **@jsuarezruiz**
 
 ## Copyright and license
 
