@@ -1,7 +1,6 @@
 ﻿using System;
 using CoreGraphics;
 using UIKit;
-using Xamarin.Forms.Platform.iOS;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
@@ -13,13 +12,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             nfloat imageAspect = imageView.Image.Size.Width / imageView.Image.Size.Height;
             nfloat boundslAspect = imageView.Frame.Size.Width / imageView.Frame.Size.Height;
 
-            if (imageAspect != boundslAspect && (imageView.ContentMode != UIViewContentMode.ScaleToFill && imageView.ContentMode != UIViewContentMode.ScaleAspectFill))
+            if (imageAspect != boundslAspect && imageView.ContentMode == UIViewContentMode.ScaleAspectFit)
             {
                 //calculate new dimensions based on aspect ratio
                 nfloat newWidth   = imageView.Frame.Width * imageAspect;
                 nfloat newHeight  = newWidth / imageAspect;
                 nfloat marginTop  = 0;
                 nfloat marginLeft = 0;
+
+
 
                 if (newWidth > imageView.Frame.Width || newHeight > imageView.Frame.Height)
                 {
@@ -39,7 +40,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     }
                 }
 
-                return new CGRect(imageView.Frame.X, imageView.Frame.Y + marginTop, newWidth + marginLeft, newHeight);
+                return new CGRect(imageView.Frame.X + marginLeft, imageView.Frame.Y + marginTop, newWidth, newHeight);
             }
 
             return new CGRect(imageView.Frame.X, imageView.Frame.Y, imageView.Frame.Width, imageView.Frame.Height);
