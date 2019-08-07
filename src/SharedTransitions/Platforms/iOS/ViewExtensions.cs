@@ -8,7 +8,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     {
         internal static CGRect GetImageFrame(this UIImageView imageView)
         {
- 
             nfloat imageAspect = imageView.Image.Size.Width / imageView.Image.Size.Height;
             nfloat boundslAspect = imageView.Frame.Size.Width / imageView.Frame.Size.Height;
 
@@ -19,8 +18,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 nfloat newHeight  = newWidth / imageAspect;
                 nfloat marginTop  = 0;
                 nfloat marginLeft = 0;
-
-
 
                 if (newWidth > imageView.Frame.Width || newHeight > imageView.Frame.Height)
                 {
@@ -39,12 +36,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         marginLeft = (imageView.Frame.Width - newWidth) / 2;
                     }
                 }
-
                 return new CGRect(imageView.Frame.X + marginLeft, imageView.Frame.Y + marginTop, newWidth, newHeight);
             }
-
             return new CGRect(imageView.Frame.X, imageView.Frame.Y, imageView.Frame.Width, imageView.Frame.Height);
-
         }
 
     }
