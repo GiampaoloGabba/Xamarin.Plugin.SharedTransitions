@@ -97,7 +97,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //Get the views who need the transitionName, based on the tags in destination page
                 foreach (var transitionFromMap in transitionStackFrom)
                 {
-                    //TODO: if the view is null delete this entry from the MapStack
                     var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
                     if (fromView != null)
                     {
@@ -223,9 +222,14 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //If we press the back button very fast when we have more than 2 fragments in the stack,
             //unexpected behaviours can happen during pop (this is due to SetReorderingAllowed and base renderer not using fragment backstack).
             //So we need to add a small delay for fast pop clicks starting from the third fragment on stack.
-            //TODO: do this only if both pages have transitions configured
-            if (_fragmentManager.Fragments.Count > 2 && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop &&
+                _fragmentManager.Fragments.Count > 2 &&
+                NavPage.TransitionMap.GetMap(PropertiesContainer).Count > 0 &&
+                NavPage.TransitionMap.GetMap(NavPage.CurrentPage).Count > 0)
+            {
                 await Task.Delay(100);
+            }
+                
 
             return await base.OnPopViewAsync(page, animated); ;
         }
@@ -242,7 +246,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //Our shared transactions use SetReorderingAllowed that cause mess when popping directly to root 
                 //The only way to be sure to display correctly the rootpage is to recreate his ui.
                 //Note: we don't use "remove" here so we can maintain the state of the root view
-                //TODO: do this only if we are in at least the third page in stack
+                
                 t.Detach(fragments.First());
                 t.Attach(fragments.First());
 
@@ -260,8 +264,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //_sharedTransitionDuration + 100 is a fix to prevent bad behaviours on pop (due to SetReorderingAllowed)
             //after the transition end, we need to wait a bit before telling the renderer that we are done
             //Not needed in PopToRoot
-            //TODO: even if this will not block the ui its better to introduce the add timer only if we have a transition in both pages
-            get => _popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop ? base.TransitionDuration : (int)_sharedTransitionDuration + 100;
+            get => (_popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop) &&
+                   NavPage.TransitionMap.GetMap(PropertiesContainer).Count > 0 && 
+                   NavPage.TransitionMap.GetMap(NavPage.CurrentPage).Count > 0
+                        ? base.TransitionDuration 
+                        : (int)_sharedTransitionDuration + 100;
             set => _sharedTransitionDuration = value;
         }
 

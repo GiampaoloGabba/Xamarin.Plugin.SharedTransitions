@@ -16,9 +16,10 @@ namespace TransitionApp
 	        SharedTransitionNavigationPage.SetSharedTransitionDuration(this, 500);
 	    }
 
-	    private void ImageTapped(object sender, EventArgs e)
-	    {
-	        Navigation.PushAsync(new Page3());
+	    private async void ImageTapped(object sender, EventArgs e)
+        {
+            await Navigation.PopToRootAsync();
+	        //Navigation.PushAsync(new Page3());
 	    }
 
 	    private void Button_OnClicked(object sender, EventArgs e)

@@ -88,7 +88,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     //With this, we are sure to dont start transitions with no mathing transitions in destination
                     foreach (var transitionToMap in transitionStackTo)
                     {
-                        //TODO: if the view is null delete this entry from the MapStack
                         var toView = toViewController.View.ViewWithTag(transitionToMap.NativeViewId);
                         if (toView != null)
                         {
@@ -99,8 +98,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             if (nativeViewId <= 0) continue;
 
                             var fromView = fromViewController.View.ViewWithTag(nativeViewId);
-                            
-                            //TODO: if the view is null delete this entry from the MapStack
                             if (fromView != null)
                                 viewsToAnimate.Add((toView, fromView));
                         }
