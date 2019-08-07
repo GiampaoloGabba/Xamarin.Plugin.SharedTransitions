@@ -38,12 +38,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             marginLeft = (imageView.Frame.Width - newWidth) / 2;
                         }
                     }
-
                     return new CGRect(imageView.Frame.X + marginLeft, imageView.Frame.Y + marginTop, newWidth,
                         newHeight);
                 }
             }
-
             return new CGRect(imageView.Frame.X, imageView.Frame.Y, imageView.Frame.Width, imageView.Frame.Height);
         }
 
