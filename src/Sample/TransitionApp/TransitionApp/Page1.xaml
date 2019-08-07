@@ -12,7 +12,9 @@
             </StackLayout.GestureRecognizers>
             
             
-            <Frame sharedTransitions:Transition.Name="test1" WidthRequest="50" CornerRadius="0" BackgroundColor="Yellow"  />
+            <BoxView sharedTransitions:Transition.Name="test1" WidthRequest="50" CornerRadius="0" BackgroundColor="Yellow" >
+                
+            </BoxView>
             <Image Source="mydog.jpg"  sharedTransitions:Transition.Name="test2" HeightRequest="50" />
             
             

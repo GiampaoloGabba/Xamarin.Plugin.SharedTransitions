@@ -5,6 +5,8 @@ using CoreAnimation;
 using CoreGraphics;
 using Foundation;
 using UIKit;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
@@ -67,12 +69,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     fromViewFrame = fromImageView.GetImageFrame();
                     fromViewSnapshot = fromView.ResizableSnapshotView(fromViewFrame, false, UIEdgeInsets.Zero);
                 }
+                else if (fromView is VisualElementRenderer<BoxView>)
+                {
+                    fromViewSnapshot = fromView.SnapshotView(false);
+                }
                 else
                 {
-                    //cercare di creare una nuova view (rettangolo) costruita dalle informazioni di base
-                    //della view principale di fromView, così animo quella
-                    //fromViewSnapshot = fromView.SnapshotView(false);
-
                     fromViewSnapshot = new UIView
                     {
                         AutoresizingMask = UIViewAutoresizing.All,
@@ -85,7 +87,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     fromViewSnapshot.Layer.MasksToBounds   = fromView.Layer.MasksToBounds;
                     fromViewSnapshot.Layer.BorderWidth     = fromView.Layer.BorderWidth ;
                     fromViewSnapshot.Layer.BorderColor     = fromView.Layer.BorderColor;
-                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor;
+                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor.CGColor;
                 }
 
                 //minor perf gain

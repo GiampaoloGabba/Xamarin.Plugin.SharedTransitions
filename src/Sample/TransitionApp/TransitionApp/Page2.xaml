@@ -7,7 +7,9 @@
              Title="Second Page">
 
 <Grid>
-    <Frame sharedTransitions:Transition.Name="test1" CornerRadius="20"  BackgroundColor="Yellow" />
+    <BoxView sharedTransitions:Transition.Name="test1" CornerRadius="20"  BackgroundColor="Yellow" >
+        
+    </BoxView>
     <StackLayout>
         <StackLayout VerticalOptions="Start" HorizontalOptions="Center">
             <StackLayout.GestureRecognizers>
