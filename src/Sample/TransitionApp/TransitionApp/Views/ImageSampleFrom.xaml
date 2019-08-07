@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             x:Class="TransitionApp.Views.ImageSampleFrom">
+
+    <Grid VerticalOptions="Center" ColumnSpacing="10" RowSpacing="20" Padding="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Row="0" Grid.Column="0" Source="christmas-dog.jpg" sharedTransitions:Transition.Name="ChristmasDog" WidthRequest="30" HeightRequest="250" Aspect="AspectFit" />
+        <Image Grid.Row="0" Grid.Column="1" Source="what-the-dog.jpg" sharedTransitions:Transition.Name="WhatTheDog" />
+        <Image Grid.Row="0" Grid.Column="2" Source="cute-dog.jpg" sharedTransitions:Transition.Name="CuteDog" />
+
+        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="Tap to navigate!" Command="{prism:NavigateTo 'ImageSampleTo'}" />
+
+    </Grid>
+
+
+</ContentPage>

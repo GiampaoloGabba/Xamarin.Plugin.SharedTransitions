@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             x:Class="TransitionApp.Views.ImageSampleTo">
+
+    
+        <StackLayout Spacing="20" Padding="10">
+            
+            <Image Source="what-the-dog.jpg" sharedTransitions:Transition.Name="WhatTheDog" />
+            <Image Source="christmas-dog.jpg" sharedTransitions:Transition.Name="ChristmasDog" WidthRequest="330" HeightRequest="100" Aspect="Fill" />
+            <Image Source="cute-dog.jpg" sharedTransitions:Transition.Name="CuteDog" />
+
+        </StackLayout>
+    
+
+</ContentPage>

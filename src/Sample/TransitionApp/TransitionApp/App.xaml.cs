@@ -1,13 +1,12 @@
-﻿using Prism;
+﻿using Plugin.SharedTransitions;
+using Prism;
 using Prism.Ioc;
-using TransitionApp.ViewModels;
-using TransitionApp.Views;
-using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace TransitionApp
 {
+    [AutoRegisterForNavigation]
     public partial class App
     {
         /* 
@@ -23,13 +22,13 @@ namespace TransitionApp
         {
             InitializeComponent();
 
-            await NavigationService.NavigateAsync("NavigationPage/MainPage");
+            var uihiuhih = await NavigationService.NavigateAsync($"{nameof(SharedTransitionNavigationPage)}/{nameof(MainPage)}");
+            var a = 2;
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterForNavigation<NavigationPage>();
-            containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
+            containerRegistry.RegisterForNavigation<SharedTransitionNavigationPage>();
         }
     }
 }
