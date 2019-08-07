@@ -101,16 +101,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\lazy-dog.jpg" />
+    <AndroidResource Include="Resources\drawable\lazy_dog.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\christmas-dog.jpg" />
+    <AndroidResource Include="Resources\drawable\christmas_dog.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\cute-dog.jpg" />
+    <AndroidResource Include="Resources\drawable\cute_dog.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\what-the-dog.jpg" />
+    <AndroidResource Include="Resources\drawable\what_the_dog.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

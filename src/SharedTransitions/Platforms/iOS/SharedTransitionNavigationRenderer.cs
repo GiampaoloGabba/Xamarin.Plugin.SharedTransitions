@@ -22,6 +22,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public double SharedTransitionDuration { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
         string _selectedGroup;
+        private UIScreenEdgePanGestureRecognizer _interactiveTransitionGestureRecognizer;
 
         Page _propertiesContainer;
         public Page PropertiesContainer
@@ -106,9 +107,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 //No view to animate = standard push & pop
                 if (viewsToAnimate.Any())
+                {
+                    //deactivate normal pop gesture and activate the custom one suited for the shared transitions
+                    if (operation == UINavigationControllerOperation.Push)
+                    {
+                        AddInteractiveTransitionRecognizer();
+                    }
                     return new NavigationTransition(viewsToAnimate, operation, this);
+                }
             }
 
+            //standard push & pop
+            //i dont use my custom edgeswipe because it does not play well with standard pop
+            //doing this work here, is good for push and doing the check on new the page
+            //when doing the custom, interactive, pop i need to double check the custom gesture
+            RemoveInteractiveTransitionRecognizer();
             return null;
         }
 
@@ -156,11 +169,34 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         {
             base.ViewDidLoad();
 
-            //Add PanGesture on left edge to POP page
-            var interactiveTransitionRecognizer = new UIScreenEdgePanGestureRecognizer();
-            interactiveTransitionRecognizer.AddTarget(() => InteractiveTransitionRecognizerAction(interactiveTransitionRecognizer));
-            interactiveTransitionRecognizer.Edges = UIRectEdge.Left;
-            View.AddGestureRecognizer(interactiveTransitionRecognizer);
+            InteractivePopGestureRecognizer.Delegate = this;
+        }
+
+        void AddInteractiveTransitionRecognizer()
+        {
+            InteractivePopGestureRecognizer.Enabled = false;
+            if (!View.GestureRecognizers.Contains(_interactiveTransitionGestureRecognizer))
+            {
+                //Add PanGesture on left edge to POP page
+                _interactiveTransitionGestureRecognizer = new UIScreenEdgePanGestureRecognizer {Edges = UIRectEdge.Left};
+                _interactiveTransitionGestureRecognizer.AddTarget(() => InteractiveTransitionRecognizerAction(_interactiveTransitionGestureRecognizer));
+                View.AddGestureRecognizer(_interactiveTransitionGestureRecognizer);
+            }
+            else
+            {
+                _interactiveTransitionGestureRecognizer.Enabled = true;
+            }
+        }
+
+        void RemoveInteractiveTransitionRecognizer()
+        {
+            if (_interactiveTransitionGestureRecognizer != null && 
+                View.GestureRecognizers.Contains(_interactiveTransitionGestureRecognizer))
+            {
+                _interactiveTransitionGestureRecognizer.Enabled = false;
+                InteractivePopGestureRecognizer.Enabled = true;
+            }
+            InteractivePopGestureRecognizer.Enabled = true;
         }
 
         void InteractiveTransitionRecognizerAction(UIScreenEdgePanGestureRecognizer sender)
@@ -186,9 +222,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 case UIGestureRecognizerState.Ended:
                     if (percent > 0.5 || sender.VelocityInView(sender.View).X > 300)
+                    {
                         _percentDrivenInteractiveTransition.FinishInteractiveTransition();
+
+                        //at the end of this transition, we need to check if we want a normal pop gesture or the custom one for the new page
+                        //as we said before, the custom pop gesture doesnt play well with "normal" pages.
+                        //So, at the end of the transition, we check if a page exists before the one we are opening and then check the mapstack
+                        //If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
+                        var pageCount = Element.Navigation.NavigationStack.Count;
+                        if (pageCount > 2 && NavPage.TransitionMap.GetMap(Element.Navigation.NavigationStack[pageCount - 3]).Count==0)
+                            RemoveInteractiveTransitionRecognizer();
+                    }
                     else
+                    {
                         _percentDrivenInteractiveTransition.CancelInteractiveTransition();
+                    }
 
                     _percentDrivenInteractiveTransition = null;
                     break;
