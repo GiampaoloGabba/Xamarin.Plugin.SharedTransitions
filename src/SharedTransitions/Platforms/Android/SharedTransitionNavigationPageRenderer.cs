@@ -91,9 +91,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     ? NavPage.CurrentPage
                     : PropertiesContainer;
 
-                
-                _selectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(isPush ? sourcePage : destinationPage);
-
                 //return the tag map filtering by group (if specified) during push
                 var transitionStackFrom = NavPage.TransitionMap.GetMap(sourcePage, isPush ? _selectedGroup : null);
 
