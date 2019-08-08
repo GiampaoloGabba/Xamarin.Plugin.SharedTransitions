@@ -104,11 +104,17 @@ namespace Plugin.SharedTransitions
             currentPage = null;
             if (bindable is View element)
             {
+                //Nedded for listviews!
+                //When we add effects to a ViewCell child, the INavigation is always empty.
+                //We need to traverse nacl the view tree to find the Navigation object
+                var navigation = TraverseBackToNavigation(element);
+                if (navigation == null) return 0;
+
                 var transitionName  = GetName(element);
                 var transitionGroup = GetGroup(element);
-                if (!(element.Navigation?.NavigationStack.Count > 0) || string.IsNullOrEmpty(transitionName)) return 0;
+                if (!(navigation.NavigationStack.Count > 0) || string.IsNullOrEmpty(transitionName)) return 0;
 
-                currentPage = element.Navigation.NavigationStack.Last();
+                currentPage = navigation.NavigationStack.Last();
                 if (currentPage.Parent is SharedTransitionNavigationPage navPage)
                 {
                     return navPage.TransitionMap.Add(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
@@ -141,5 +147,28 @@ namespace Plugin.SharedTransitions
                 element.Effects.Remove(existing);
             }
         }
+
+        static INavigation TraverseBackToNavigation(Element element)
+        {
+            INavigation navigation = null;
+            if (element is View view)
+            {
+                if (view.Navigation == null && view.Parent == null)
+                    return null;
+
+                navigation = view.Navigation?.NavigationStack?.Count > 0
+                    ? view.Navigation
+                    : TraverseBackToNavigation(element.Parent);
+
+            } 
+            //Viewcell is not a Xamarin.Forms View but has a parent to check
+            else if (element.Parent != null)
+            {
+                navigation = TraverseBackToNavigation(element.Parent);
+            }
+
+            return navigation;
+        }
+        
     }
 }

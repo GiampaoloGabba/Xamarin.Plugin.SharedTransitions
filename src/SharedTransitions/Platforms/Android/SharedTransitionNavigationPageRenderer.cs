@@ -282,6 +282,10 @@ namespace Plugin.SharedTransitions.Platforms.Android
             {
                 UpdateSharedTransitionDuration();
             }
+            else if (e.PropertyName == SharedTransitionNavigationPage.TransitionSelectedGroupProperty.PropertyName)
+            {
+                UpdateSelectedGroup();
+            }
         }
 
         void UpdateBackgroundTransition()
