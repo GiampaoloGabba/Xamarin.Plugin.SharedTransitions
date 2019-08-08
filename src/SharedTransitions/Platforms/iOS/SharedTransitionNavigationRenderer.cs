@@ -93,8 +93,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         if (toView != null)
                         {
                             //get the matching transition: we store the destination view and the corrispondent transition in the source view,
-                            //so we can match them during transition
-                            var nativeViewId = transitionStackFrom.FirstOrDefault(x => x.TransitionName == transitionToMap.TransitionName)?.NativeViewId ?? 0;
+                            //so we can match them during transition.
+                            //Using LastOrDefault because in listview i dont know why but ios creates two istances of the first view
+                            var nativeViewId = transitionStackFrom.LastOrDefault(x => x.TransitionName == transitionToMap.TransitionName)?.NativeViewId ?? 0;
 
                             if (nativeViewId <= 0) continue;
 
