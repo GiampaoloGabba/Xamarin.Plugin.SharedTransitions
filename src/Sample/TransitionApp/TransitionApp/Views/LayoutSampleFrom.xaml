@@ -4,11 +4,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
-             x:Class="TransitionApp.Views.ImageSampleFrom" Title="Image sample"
+             x:Class="TransitionApp.Views.LayoutSampleFrom" Title="Layout sample"
              sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value, Mode=OneWay}">
 
 <StackLayout Padding="10" Spacing="20">
-    <Grid ColumnSpacing="10" HorizontalOptions="FillAndExpand" VerticalOptions="Center">
+    <Grid ColumnSpacing="10" HorizontalOptions="FillAndExpand">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -16,13 +16,9 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions >
-            <RowDefinition Height="100" />
-        </Grid.RowDefinitions>
-
-        <Image Grid.Column="0" Source="what_the_dog.jpg" sharedTransitions:Transition.Name="WhatTheDog" />
-        <Image Grid.Column="1" Source="cute_dog.jpg" sharedTransitions:Transition.Name="CuteDog" />
-        <Image Grid.Column="2" Source="christmas_dog.jpg" sharedTransitions:Transition.Name="ChristmasDog" />
+        <Frame Grid.Column="0" Padding="0" HasShadow="False" BackgroundColor="GreenYellow" sharedTransitions:Transition.Name="Frame1" />
+        <StackLayout Grid.Column="1" BackgroundColor="Red" sharedTransitions:Transition.Name="Stack2" />
+        <BoxView Grid.Column="2" BackgroundColor="Blue" sharedTransitions:Transition.Name="Box3" />
 
     </Grid>
 
@@ -30,7 +26,7 @@
     <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" />
     <Slider x:Name="SliderDuration" Maximum="5000" Value="300" Margin="20,0" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
 
-    <Button Text="Tap to navigate!" Command="{prism:NavigateTo 'ImageSampleTo'}" />
+        <Button Text="Tap to navigate!" Command="{prism:NavigateTo 'LayoutSampleTo'}" />
 
 </StackLayout>
     

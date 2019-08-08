@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             x:Class="TransitionApp.Views.LayoutSampleTo" Title="Layout sample">
+
+    <ScrollView>
+        <StackLayout Spacing="20" Padding="10">
+            
+            <Frame Padding="0" HasShadow="False" BackgroundColor="GreenYellow" HeightRequest="100" WidthRequest="100" CornerRadius="50" HorizontalOptions="Center" sharedTransitions:Transition.Name="Frame1" />
+            <StackLayout BackgroundColor="Red" sharedTransitions:Transition.Name="Stack2" HeightRequest="100" />
+            <BoxView BackgroundColor="Blue" sharedTransitions:Transition.Name="Box3" HeightRequest="80" />
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

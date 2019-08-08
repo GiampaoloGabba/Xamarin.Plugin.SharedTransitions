@@ -206,16 +206,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\lazy-dog.jpg" />
+    <BundleResource Include="Resources\lazy_dog.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\christmas-dog.jpg" />
+    <BundleResource Include="Resources\christmas_dog.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\cute-dog.jpg" />
+    <BundleResource Include="Resources\cute_dog.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\what-the-dog.jpg" />
+    <BundleResource Include="Resources\what_the_dog.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
