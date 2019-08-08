@@ -24,8 +24,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == Transition.NameProperty.PropertyName ||
-                args.PropertyName == Transition.GroupProperty.PropertyName)
+            if (args.PropertyName == Transition.NameProperty.PropertyName)
                 UpdateTag();
 
 

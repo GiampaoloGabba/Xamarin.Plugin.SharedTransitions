@@ -22,8 +22,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == Transition.NameProperty.PropertyName ||
-                args.PropertyName == Transition.GroupProperty.PropertyName)
+            if (args.PropertyName == Transition.NameProperty.PropertyName)
                 UpdateTag();
 
             base.OnElementPropertyChanged(args);
