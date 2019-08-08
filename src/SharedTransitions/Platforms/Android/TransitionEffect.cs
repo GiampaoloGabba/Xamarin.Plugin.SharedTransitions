@@ -48,15 +48,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 } 
                 else if (Container != null)
                 {
-                    //layout (boxview, stacklayout, frame, ecc...
-                    var view = element.GetRenderer()?.View;
-                    if (view != null)
-                    {
-                        //TransitionName unique for page to enable transitions between more than 2 pages
-                        view.Id = AndroidViews.View.GenerateViewId();
-                        Transition.RegisterTransition(element, view.Id, out var currentPage);
-                        view.TransitionName = currentPage.Id + "_" + transitionName; 
-                    }
+                    if (Container.Id == -1)
+                        Container.Id = AndroidViews.View.GenerateViewId();
+
+                    Transition.RegisterTransition(element, Container.Id, out var currentPage);
+                    Container.TransitionName = currentPage.Id + "_" + transitionName;
                 }
             }
         }
