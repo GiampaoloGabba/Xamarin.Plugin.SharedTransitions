@@ -36,6 +36,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
             if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
                 var transitionName = Transition.GetName(element);
+                var transitionGroup = Transition.GetGroup(element);
+                //group management: TODO: rework this ugly thing...
+                if (transitionGroup != null)
+                {
+                    transitionName += "_" + transitionGroup;
+                }
                 if (Control != null)
                 {
                     if (Control.Id == -1)

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Prism.Commands;
-using Prism.Mvvm;
 using Prism.Navigation;
 using TransitionApp.Models;
 using TransitionApp.Views;
@@ -38,7 +38,11 @@ namespace TransitionApp.ViewModels
 
             NavigateDogCommand = new DelegateCommand<DogModel>(async (selectedDog) =>
             {
-                _selectedDogId = selectedDog.Id;
+               SelectedDogId = selectedDog.Id;
+               //the binding is too slow and is valorized after the navigation occours :(
+               //i dont know how to solve this. If i set the value directly in the page it works
+               //but with binding and mvvm we need a little timing
+               await Task.Delay(50);
                 var navParam = new NavigationParameters {{nameof(selectedDog), selectedDog}};
                 await navigationService.NavigateAsync($"{nameof(DynamicSampleTo)}",navParam);
             });

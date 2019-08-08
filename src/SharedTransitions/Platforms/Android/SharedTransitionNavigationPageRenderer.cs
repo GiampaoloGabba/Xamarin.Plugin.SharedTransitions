@@ -91,6 +91,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     ? NavPage.CurrentPage
                     : PropertiesContainer;
 
+                
+                _selectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(isPush ? sourcePage : destinationPage);
+
                 //return the tag map filtering by group (if specified) during push
                 var transitionStackFrom = NavPage.TransitionMap.GetMap(sourcePage, isPush ? _selectedGroup : null);
 
@@ -101,6 +104,10 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (fromView != null)
                     {
                         var correspondingTag = destinationPage.Id + "_" + transitionFromMap.TransitionName.Replace(sourcePage.Id + "_","");
+                        //group management for pop: TODO: rework this ugly thing...
+                        if (!string.IsNullOrEmpty(_selectedGroup) && _selectedGroup != "0" && !isPush)
+                            correspondingTag += "_" + _selectedGroup;
+
                         transaction.AddSharedElement(fromView, correspondingTag);
                     }
                 }

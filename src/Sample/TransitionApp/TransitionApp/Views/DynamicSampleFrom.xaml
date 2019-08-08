@@ -8,11 +8,10 @@
              xmlns:behaviors="http://prismlibrary.com"
              x:Class="TransitionApp.Views.DynamicSampleFrom" Title="Dynamic sample"
              sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value, Mode=OneWay}"
-             sharedTransitions:SharedTransitionNavigationPage.TransitionSelectedGroup="{Binding SelectedDogId, Mode= TwoWay}">
+             sharedTransitions:SharedTransitionNavigationPage.TransitionSelectedGroup="{Binding SelectedDogId }" >
 
     <StackLayout Padding="10" Spacing="20">
-        <Label Text="Tap the Dog!" HorizontalOptions="Center" />
-        <Label Text="{Binding SelectedDogId, Mode= TwoWay}" HorizontalOptions="Center" />
+        <Label Text="Tap the Dog!" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Large" />
         <ListView Footer="" ItemsSource="{Binding Dogs}" HasUnevenRows="True" SelectionMode="None">
             <ListView.Behaviors>
                 <behaviors:EventToCommandBehavior EventName="ItemTapped"
