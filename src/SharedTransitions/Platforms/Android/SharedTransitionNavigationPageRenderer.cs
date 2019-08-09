@@ -208,12 +208,13 @@ namespace Plugin.SharedTransitions.Platforms.Android
             if (Element.Navigation.NavigationStack.Count == 1)
                 PropertiesContainer = page;
 
+            //TODO: Insert properties and logic for adding smal delay in listview MMV grouping transition
+
             return await base.OnPushAsync(page, animated); ;
         }
 
         protected override async Task<bool> OnPopViewAsync(Page page, bool animated)
         {
-
             //We need to take the transition configuration from the destination page
             //At this point the pop is not started so we need to go back in the stack
             Page pageToShow = ((INavigationPageController)Element).Peek(1);

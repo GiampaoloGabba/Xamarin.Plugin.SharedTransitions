@@ -75,26 +75,17 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 }
                 else
                 {
-                    fromViewSnapshot = new UIView
-                    {
-                        AutoresizingMask = UIViewAutoresizing.All,
-                        ContentMode      = UIViewContentMode.ScaleToFill,
-                        Alpha            = fromView.Alpha,
-                        BackgroundColor  = fromView.BackgroundColor
-                    };
+                    await Task.Yield();
+                    fromViewSnapshot = fromView.SnapshotView(false);
 
-                    fromViewSnapshot.Layer.CornerRadius    = fromView.Layer.CornerRadius;
-                    fromViewSnapshot.Layer.MasksToBounds   = fromView.Layer.MasksToBounds;
-                    fromViewSnapshot.Layer.BorderWidth     = fromView.Layer.BorderWidth ;
-                    fromViewSnapshot.Layer.BorderColor     = fromView.Layer.BorderColor;
-                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor.CGColor;
+                    
                 }
 
                 //minor perf gain
                 //fromViewSnapshot.Opaque = true;
                 containerView.AddSubview(fromViewSnapshot);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
-                
+
                 // Without this, the snapshots will include the following "recent" changes
                 // Needed only on push. So pop can use the interaction (pangesture)
                 if (_operation == UINavigationControllerOperation.Push)

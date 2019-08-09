@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Navigation;
@@ -39,12 +40,19 @@ namespace TransitionApp.ViewModels
             NavigateDogCommand = new DelegateCommand<DogModel>(async (selectedDog) =>
             {
                SelectedDogId = selectedDog.Id;
-               //the binding is too slow and is valorized after the navigation occours :(
-               //i dont know how to solve this. If i set the value directly in the page it works
-               //but with binding and mvvm we need a little timing
-               await Task.Delay(50);
-                var navParam = new NavigationParameters {{nameof(selectedDog), selectedDog}};
-                await navigationService.NavigateAsync($"{nameof(DynamicSampleTo)}",navParam);
+               //The binding system is a bit too slow and the Group Property get valorized after the navigation occours :(
+               //I dont know how to solve this in an elegant way. If we set the value directly in the page it works
+               //but with binding and MVVM we need to play with Task.
+               //We can use Yield or a small delay like Task.Delay(10) or Task.Delay(5).
+               //On faster phones Task.Delay(1) work, but i wouldnt trust it in slower phones :)
+
+               //After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
+               //The push is slower no more than 5ms, is fluid and we are sure the Group property is valorized
+               //before access the page
+               
+               await Task.Yield();
+               var navParam = new NavigationParameters {{nameof(selectedDog), selectedDog}}; 
+               await navigationService.NavigateAsync($"{nameof(DynamicSampleTo)}",navParam);
             });
         }
 

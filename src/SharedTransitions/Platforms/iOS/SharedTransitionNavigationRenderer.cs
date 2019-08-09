@@ -163,6 +163,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 ? Element.Navigation.NavigationStack[pageCount - 2] 
                 : NavPage.CurrentPage;
 
+            //TODO: Insert properties and logic for adding smal delay in listview MMV grouping transition
+
             base.PushViewController(viewController, animated);
         }
 

@@ -22,8 +22,7 @@ namespace TransitionApp
         {
             InitializeComponent();
 
-            var uihiuhih = await NavigationService.NavigateAsync($"{nameof(SharedTransitionNavigationPage)}/{nameof(MainPage)}");
-            var a = 2;
+            await NavigationService.NavigateAsync($"{nameof(SharedTransitionNavigationPage)}/{nameof(MainPage)}");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
