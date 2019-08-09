@@ -94,7 +94,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 //fromViewSnapshot.Opaque = true;
                 containerView.AddSubview(fromViewSnapshot);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
-                
+
                 // Without this, the snapshots will include the following "recent" changes
                 // Needed only on push. So pop can use the interaction (pangesture)
                 if (_operation == UINavigationControllerOperation.Push)
