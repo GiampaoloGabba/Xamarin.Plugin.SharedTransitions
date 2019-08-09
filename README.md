@@ -202,13 +202,13 @@ This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-Ne
 
 - [x] More background animations (scale, etc)
 - [x] Support layouts (frame, stacklayout, ecc..
-- [x] MVVM Support (frame, stacklayout, ecc..
+- [x] Full MVVM Support
 - [x] New sample app
 
 ## To do
-- [ ] Enforce TransitionStack removal of invalid native view ids
 - [ ] Fix layouts bounds during transitions in ios where certain type of layout placement are used (only for layouts)
 - [ ] Enahnce iOS animations, investigate better solutions
+- [ ] Add a property to control SelectedGroup in viewmodels (see the viewmodel sample for details)
 
 
 ## Latest release notes
@@ -217,6 +217,7 @@ This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-Ne
 * Full MVVM support with TransitionSelectedGroup
 * New, improved Transition management under the hood (no more limitation to int number for transition names, faster view lookup for transitions)
 * New sample app with listview and MVVM example, as well as normal transitions
+* General bug fixing
 
 
 1.1.0
