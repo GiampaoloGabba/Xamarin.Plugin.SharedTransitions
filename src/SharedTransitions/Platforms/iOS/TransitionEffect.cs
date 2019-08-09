@@ -18,6 +18,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override void OnDetached()
         {
+            //WHAT? Nothing on detach?
+            //Well no, i clear the MapStack while popping a pge :P
+            //There are a number of reasons for doing this, with performance in primis
+            //We dont risk NRE or reference to detached object anyway, only the ids
+            //When we need a view we get them with ViewWithTag and check for null just after
         }
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
