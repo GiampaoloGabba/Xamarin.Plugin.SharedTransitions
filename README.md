@@ -3,7 +3,8 @@ Activate shared element transitions between pages in Xamarin.Forms (IOS/Android)
 
 [![NuGet](https://img.shields.io/nuget/v/Xamarin.Plugin.SharedTransitions.svg?label=NuGet)](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/)  [![License](https://img.shields.io/github/license/Evolutionlab/Xamarin.Plugin.SharedTransitions.svg)](https://opensource.org/licenses/MIT)
 
-
+#### Note:
+The current version is buggy and the code is overcomplicated... A new, improved, version 2 is coming with full support to MVVM, better animation handling, new sample app, cleaner code, ecc... Shared Transitions are super tricky in Xamarin Forms (expecially in ios) but the next version will work better!
 
 #### What is a shared element transition?
 They are Animations connecting common elements from one page to the next/previous.<br>
