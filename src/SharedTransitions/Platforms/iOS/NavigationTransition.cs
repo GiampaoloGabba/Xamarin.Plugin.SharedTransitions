@@ -94,7 +94,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 //fromViewSnapshot.Opaque = true;
                 containerView.AddSubview(fromViewSnapshot);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
-
+                
                 // Without this, the snapshots will include the following "recent" changes
                 // Needed only on push. So pop can use the interaction (pangesture)
                 if (_operation == UINavigationControllerOperation.Push)
@@ -114,16 +114,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     toFrame = toView.ConvertRectToView(toView.Frame, containerView);
                 }
 
-                UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.TransitionNone, () =>
+                UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.CurveEaseInOut, () =>
                 {
-                    fromViewSnapshot.Frame = toFrame;
-                    fromViewSnapshot.Layer.CornerRadius = toView.Layer.CornerRadius;
-                    fromViewSnapshot.BackgroundColor = toView.BackgroundColor;
+                    fromViewSnapshot.Frame                 = toFrame;
+                    fromViewSnapshot.Layer.CornerRadius    = toView.Layer.CornerRadius;
+                    fromViewSnapshot.BackgroundColor       = toView.BackgroundColor;
                     fromViewSnapshot.Layer.BackgroundColor = toView.Layer.BackgroundColor;
-                    fromViewSnapshot.Alpha = 1;
+                    fromViewSnapshot.Alpha                 = 1;
                 }, () =>
                 {
-                    toView.Alpha = 1;
+                    toView.Alpha   = 1;
                     fromView.Alpha = 1;
                     fromViewSnapshot.RemoveFromSuperview();
                 });
