@@ -75,10 +75,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 }
                 else
                 {
-                    await Task.Yield();
-                    fromViewSnapshot = fromView.SnapshotView(false);
+                    fromViewSnapshot = new UIView
+                    {
+                        AutoresizingMask = UIViewAutoresizing.All,
+                        ContentMode      = UIViewContentMode.ScaleToFill,
+                        Alpha            = fromView.Alpha,
+                        BackgroundColor  = fromView.BackgroundColor
+                    };
 
-                    
+                    fromViewSnapshot.Layer.CornerRadius    = fromView.Layer.CornerRadius;
+                    fromViewSnapshot.Layer.MasksToBounds   = fromView.Layer.MasksToBounds;
+                    fromViewSnapshot.Layer.BorderWidth     = fromView.Layer.BorderWidth ;
+                    fromViewSnapshot.Layer.BorderColor     = fromView.Layer.BorderColor;
+                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor.CGColor;
                 }
 
                 //minor perf gain
@@ -105,7 +114,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     toFrame = toView.ConvertRectToView(toView.Frame, containerView);
                 }
 
-                UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.CurveEaseInOut, () =>
+                UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.TransitionNone, () =>
                 {
                     fromViewSnapshot.Frame = toFrame;
                     fromViewSnapshot.Layer.CornerRadius = toView.Layer.CornerRadius;
