@@ -7,7 +7,7 @@
              prism:ViewModelLocator.AutowireViewModel="True" Padding="0"
              xmlns:behaviors="http://prismlibrary.com"
              x:Class="TransitionApp.Views.DynamicSampleFrom" Title="Dynamic sample"
-             sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value, Mode=OneWay}"
+             sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}"
              sharedTransitions:SharedTransitionNavigationPage.TransitionSelectedGroup="{Binding SelectedDogId }" >
 
     <StackLayout Padding="10" Spacing="20">

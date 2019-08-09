@@ -5,7 +5,6 @@
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
              x:Class="TransitionApp.Views.LayoutSampleTo" Title="Layout sample">
 
-    
         <StackLayout Spacing="20" Padding="10">
             
             <Frame Padding="0" HasShadow="False" BackgroundColor="GreenYellow" HeightRequest="100" WidthRequest="100" CornerRadius="50" HorizontalOptions="Start" sharedTransitions:Transition.Name="Frame1" />

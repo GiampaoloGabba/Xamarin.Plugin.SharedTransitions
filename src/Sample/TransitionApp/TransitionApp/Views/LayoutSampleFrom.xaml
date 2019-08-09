@@ -5,7 +5,7 @@
              xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
              x:Class="TransitionApp.Views.LayoutSampleFrom" Title="Layout sample"
-             sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value, Mode=OneWay}">
+             sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}">
 
 <StackLayout Padding="10" Spacing="20">
     <Grid ColumnSpacing="10" HorizontalOptions="FillAndExpand">
@@ -26,7 +26,7 @@
     <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" />
     <Slider x:Name="SliderDuration" Maximum="5000" Value="300" Margin="20,0" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
 
-        <Button Text="Tap to navigate!" Command="{prism:NavigateTo 'LayoutSampleTo'}" />
+     <Button Text="Tap to navigate!" Command="{prism:NavigateTo 'LayoutSampleTo'}" />
 
 </StackLayout>
     

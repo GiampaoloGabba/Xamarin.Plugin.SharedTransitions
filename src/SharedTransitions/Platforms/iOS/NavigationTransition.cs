@@ -15,6 +15,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     /// </summary>
     internal class NavigationTransition : UIViewControllerAnimatedTransitioning
     {
+        /*
+         * IMPORTANT NOTES:
+         * Read the dedicate comments in code for more info about those fixes.
+         *
+         * Frame management for layout and boxview!
+         * Use the to bounds, not the frame! 
+         *
+         * Task management in pop before make some changes to the snapshot:
+         * Necessary to get the transition to work properly
+         *
+         * Get the true image bounds with aspectwidth:
+         * In order to avoid deformations during transitions 
+         * when the frame has different size than the contained image
+         */
+
         readonly SharedTransitionNavigationRenderer _navigationPage;
         readonly List<(UIView ToView, UIView FromView)> _viewsToAnimate;
         readonly UINavigationControllerOperation _operation;
@@ -53,34 +68,48 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     break;
 
                 UIView fromViewSnapshot;
-                CGRect fromViewFrame = fromView.Frame;
+                CGRect fromViewFrame;
 
                 if (fromView is UIControl || fromView is UILabel )
                 {
                     //For buttons and labels just copy the view to preserve a good transition
                     //Using normal snapshot with labels and buttons may cause streched and deformed images
+                    fromViewFrame    = fromView.Frame;
                     fromViewSnapshot = (UIView)NSKeyedUnarchiver.UnarchiveObject(NSKeyedArchiver.ArchivedDataWithRootObject(fromView));
                 }
                 else if (fromView is UIImageView fromImageView)
                 {
-                    //Get the snapshot based on the real image size, not his containing frame!
-                    //This is needed to avoid deformations with image aspectfit
-                    //where the container frame can a have different size from the contained image
-                    fromViewFrame = fromImageView.GetImageFrame();
+                    fromViewFrame    = fromImageView.GetImageFrame();
                     fromViewSnapshot = fromView.ResizableSnapshotView(fromViewFrame, false, UIEdgeInsets.Zero);
                 }
                 else if (fromView is VisualElementRenderer<BoxView>)
                 {
+                    /*
+                     * IMPORTANT
+                     *
+                     * DAMNIT! this little things made me lost a LOT of time. Me n00b.
+                     * So.. dont use fromView.Frame here or layout will go crazy!
+                     */
+                    fromViewFrame    = fromView.Bounds;
                     fromViewSnapshot = fromView.SnapshotView(false);
                 }
                 else
                 {
+                    /*
+                     * IMPORTANT
+                     *
+                     * DAMNIT! this little things made me lost a LOT of time. Me n00b.
+                     * So.. dont use fromView.Frame here or layout will go crazy!
+                     */
+                    fromViewFrame = fromView.Bounds;
+
                     fromViewSnapshot = new UIView
                     {
-                        AutoresizingMask = UIViewAutoresizing.All,
-                        ContentMode      = UIViewContentMode.ScaleToFill,
+                        AutoresizingMask = fromView.AutoresizingMask,
+                        ContentMode      = fromView.ContentMode,
                         Alpha            = fromView.Alpha,
-                        BackgroundColor  = fromView.BackgroundColor
+                        BackgroundColor  = fromView.BackgroundColor,
+                        LayoutMargins = fromView.LayoutMargins
                     };
 
                     fromViewSnapshot.Layer.CornerRadius    = fromView.Layer.CornerRadius;
@@ -90,29 +119,27 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor.CGColor;
                 }
 
-                //minor perf gain
-                //fromViewSnapshot.Opaque = true;
                 containerView.AddSubview(fromViewSnapshot);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
+                
+                /*
+                 * IMPORTANT
+                 * We need to Yield the task in order to exclude the following changes
+                 * before the transition starts. Needed only on push, dont try this in pop
+                 * or the custom edge gesture will not work!
+                 */
 
-                // Without this, the snapshots will include the following "recent" changes
-                // Needed only on push. So pop can use the interaction (pangesture)
                 if (_operation == UINavigationControllerOperation.Push)
                     await Task.Yield();
 
                 toView.Alpha = 0;
                 fromView.Alpha = 0;
 
-                //If UIIMage, preserve aspect ratio on destination
                 CGRect toFrame;
                 if (toView is UIImageView toImageView)
-                {
                     toFrame = toImageView.ConvertRectToView(toImageView.GetImageFrame(), containerView);
-                }
                 else
-                {
-                    toFrame = toView.ConvertRectToView(toView.Frame, containerView);
-                }
+                    toFrame = toView.ConvertRectToView(toView.Bounds, containerView);
 
                 UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.CurveEaseInOut, () =>
                 {
@@ -129,10 +156,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 });
             }
 
-            //containerView.InsertSubview(toViewController.View, 1);
+            FinalizeTransition(transitionContext, fromViewController, toViewController);
+        }
 
+        void FinalizeTransition(IUIViewControllerContextTransitioning transitionContext, UIViewController fromViewController, UIViewController toViewController)
+        {
             var screenWidth = UIScreen.MainScreen.Bounds.Size.Width;
-
             fromViewController.View.Alpha = 0;
 
             switch (_navigationPage.BackgroundAnimation)

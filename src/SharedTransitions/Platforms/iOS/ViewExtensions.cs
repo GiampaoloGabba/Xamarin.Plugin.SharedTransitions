@@ -6,6 +6,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 {
     internal static class ViewExtensions
     {
+        /*
+         * IMPORTANT!
+         *
+         * Get the snapshot based on the real image size, not his containing frame!
+         * This is needed to avoid deformations with image aspectfit
+         * where the container frame can a have different size from the contained image
+         */
         internal static CGRect GetImageFrame(this UIImageView imageView)
         {
             if (imageView.ContentMode == UIViewContentMode.ScaleAspectFit)
