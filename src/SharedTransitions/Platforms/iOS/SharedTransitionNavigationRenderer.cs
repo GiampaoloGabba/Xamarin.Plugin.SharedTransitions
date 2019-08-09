@@ -13,6 +13,18 @@ using Xamarin.Forms.Platform.iOS;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
+    /*
+     * IMPORTANT NOTES:
+     * Read the dedicate comments in code for more info about those fixes.
+     *
+     * Pop a controller with transitions groups:
+     * Fix to allow the group to be set wit hbinding
+     *
+     * Custom edge gesture recognizer:
+     * I need to enable/disable the standard edge swipe when needed
+     * because the custom one works well with transition but not so much without
+     */
+
     /// <summary>
     /// Platform Renderer for the NavigationPage responsible to manage the Shared Transitions
     /// </summary>
@@ -33,6 +45,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 if (_propertiesContainer == value)
                     return;
 
+                //container has a different value from the one we are passing.
+                //We need to unsubscribe event, set the new value, then resubscribe for the new container
                 if (_propertiesContainer != null)
                     _propertiesContainer.PropertyChanged -= HandleChildPropertyChanged;
 
@@ -118,10 +132,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 }
             }
 
-            //standard push & pop
-            //i dont use my custom edgeswipe because it does not play well with standard pop
-            //doing this work here, is good for push and doing the check on new the page
-            //when doing the custom, interactive, pop i need to double check the custom gesture
+            /*
+             * IMPORTANT!
+             *
+             * standard push & pop
+             * i dont use my custom edgeswipe because it does not play well with standard pop
+             * doing this work here, is good for push and doing the check on new the page
+             * when doing the custom, interactive, pop i need to double check the custom gesture
+             */
+
             RemoveInteractiveTransitionRecognizer();
             return null;
         }
@@ -153,7 +172,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             return base.PopViewController(animated); ;
         }
         
-        public override void PushViewController(UIViewController viewController, bool animated)
+        public override async void PushViewController(UIViewController viewController, bool animated)
         {
             //We need to take the transition configuration from the page we are leaving page
             //At this point the current page in the navigation stack is already set with the page we are pusing
@@ -163,7 +182,22 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 ? Element.Navigation.NavigationStack[pageCount - 2] 
                 : NavPage.CurrentPage;
 
-            //TODO: Insert properties and logic for adding smal delay in listview MMV grouping transition
+            /*
+             * IMPORTANT!
+             *
+             * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
+             * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
+             * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
+             * buyt is not ideal cause i want this full compatible with binding and mvvm
+             * We can use Yield the task or a small delay like Task.Delay(10) or Task.Delay(5).
+             * On faster phones Task.Delay(1) work, but i wouldnt trust it in slower phones :)
+             *
+             * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
+             * This add no more than 5ms to the navigation i think is largely acceptable
+             */
+            var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, true);
+            if (mapStack.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
+                await Task.Yield();
 
             base.PushViewController(viewController, animated);
         }
@@ -228,10 +262,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         _percentDrivenInteractiveTransition.FinishInteractiveTransition();
 
-                        //at the end of this transition, we need to check if we want a normal pop gesture or the custom one for the new page
-                        //as we said before, the custom pop gesture doesnt play well with "normal" pages.
-                        //So, at the end of the transition, we check if a page exists before the one we are opening and then check the mapstack
-                        //If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
+                        /*
+                         * IMPORTANT!
+                         *
+                         * at the end of this transition, we need to check if we want a normal pop gesture or the custom one for the new page
+                         * as we said before, the custom pop gesture doesnt play well with "normal" pages.
+                         * So, at the end of the transition, we check if a page exists before the one we are opening and then check the mapstack
+                         * If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
+                         */
+
                         var pageCount = Element.Navigation.NavigationStack.Count;
                         if (pageCount > 2 && NavPage.TransitionMap.GetMap(Element.Navigation.NavigationStack[pageCount - 3]).Count==0)
                             RemoveInteractiveTransitionRecognizer();
@@ -240,7 +279,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         _percentDrivenInteractiveTransition.CancelInteractiveTransition();
                     }
-
                     _percentDrivenInteractiveTransition = null;
                     break;
             }

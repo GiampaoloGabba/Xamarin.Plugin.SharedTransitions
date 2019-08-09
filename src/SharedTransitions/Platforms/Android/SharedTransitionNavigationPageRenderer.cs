@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
@@ -21,6 +20,19 @@ using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 
 namespace Plugin.SharedTransitions.Platforms.Android
 {
+
+    /*
+     * IMPORTANT NOTES:
+     * Read the dedicate comments in code for more info about those fixes.
+     *
+     * Pop a controller with transitions groups:
+     * Fix to allow the group to be set wit hbinding
+     *
+     * Pop to root mess:
+     * When we make a PopToRoot, we need to "play" with fragments
+     * in order to get the right UI
+     */
+
     /// <summary>
     /// Platform Renderer for the NavigationPage responsible to manage the Shared Transitions
     /// </summary>
@@ -32,7 +44,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         string _selectedGroup;
 
         BackgroundAnimation _backgroundAnimation;
-        long _sharedTransitionDuration;
+        int _sharedTransitionDuration;
 
         SharedTransitionNavigationPage NavPage => Element as SharedTransitionNavigationPage;
 
@@ -46,7 +58,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     return;
 
                 //container has a different value from the one we are passing.
-                //We need to unsubscribe event, set the new value then resubscribe for the new container
+                //We need to unsubscribe event, set the new value, then resubscribe for the new container
                 if (_propertiesContainer != null)
                     _propertiesContainer.PropertyChanged -= PropertiesContainerOnPropertyChanged;
 
@@ -98,84 +110,20 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 foreach (var transitionFromMap in transitionStackFrom)
                 {
                     var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
-                    if (fromView != null)
-                    {
-                        var correspondingTag = destinationPage.Id + "_" + transitionFromMap.TransitionName.Replace(sourcePage.Id + "_","");
-                        //group management for pop: TODO: rework this ugly thing...
-                        if (!string.IsNullOrEmpty(_selectedGroup) && _selectedGroup != "0" && !isPush)
-                            correspondingTag += "_" + _selectedGroup;
+                    if (fromView == null) continue;
 
-                        transaction.AddSharedElement(fromView, correspondingTag);
-                    }
+                    //group management for pop:
+                    //TODO: Rethink this mess... it works but is superduper ugly 
+                    var correspondingTag = destinationPage.Id + "_" + transitionFromMap.TransitionName.Replace(sourcePage.Id + "_","");
+                    if (!string.IsNullOrEmpty(_selectedGroup) && _selectedGroup != "0" && !isPush)
+                        correspondingTag += "_" + _selectedGroup;
+
+                    transaction.AddSharedElement(fromView, correspondingTag);
                 }
 
                 //This is needed to make shared transitions works with hide & add fragments instead of .replace
                 transaction.SetAllowOptimization(true);
-
-                switch (_backgroundAnimation)
-                {
-                    case BackgroundAnimation.None:
-                        return;
-                    case BackgroundAnimation.Fade:
-                        transaction.SetCustomAnimations(Resource.Animation.fade_in, Resource.Animation.fade_out,
-                                                        Resource.Animation.fade_out, Resource.Animation.fade_in);
-                        break;
-                    case BackgroundAnimation.Flip:
-                        transaction.SetCustomAnimations(Resource.Animation.flip_in, Resource.Animation.flip_out,
-                                                        Resource.Animation.flip_out, Resource.Animation.flip_in);
-                        break;
-                    case BackgroundAnimation.SlideFromLeft:
-                        if (isPush)
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_left, Resource.Animation.exit_right,
-                                                            Resource.Animation.enter_right, Resource.Animation.exit_left);
-                        }
-                        else
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_right, Resource.Animation.exit_left,
-                                                            Resource.Animation.enter_left, Resource.Animation.exit_right);
-                        }
-                        break;
-                    case BackgroundAnimation.SlideFromRight:
-                        if (isPush)
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_right, Resource.Animation.exit_left,
-                                                            Resource.Animation.enter_left, Resource.Animation.exit_right);
-                        }
-                        else
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_left, Resource.Animation.exit_right,
-                                                            Resource.Animation.enter_right, Resource.Animation.exit_left);
-                        }
-                        break;
-                    case BackgroundAnimation.SlideFromTop:
-                        if (isPush)
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_top, Resource.Animation.exit_bottom,
-                                                            Resource.Animation.enter_bottom, Resource.Animation.exit_top);
-                        }
-                        else
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_bottom, Resource.Animation.exit_top,
-                                                            Resource.Animation.enter_top, Resource.Animation.exit_bottom);
-                        }
-                        break;
-                    case BackgroundAnimation.SlideFromBottom:
-                        if (isPush)
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_bottom, Resource.Animation.exit_top,
-                                                            Resource.Animation.enter_top, Resource.Animation.exit_bottom);
-                        }
-                        else
-                        {
-                            transaction.SetCustomAnimations(Resource.Animation.enter_top, Resource.Animation.exit_bottom,
-                                                            Resource.Animation.enter_bottom, Resource.Animation.exit_top);
-                        }
-                        break;
-                    default:
-                        transaction.SetTransition((int)FragmentTransit.None);
-                        return;
-                }
+                FinalizePageTransition(transaction, isPush);
             }
         }
 
@@ -186,8 +134,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 var fragments = _fragmentManager.Fragments;
                 var fragmentToShow = fragments.Last();
 
-                var navigationTransition = TransitionInflater.From(Context).InflateTransition(Resource.Transition.navigation_transition)
-                    .SetDuration(_sharedTransitionDuration);
+                var navigationTransition = TransitionInflater.From(Context)
+                                                             .InflateTransition(Resource.Transition.navigation_transition)
+                                                             .SetDuration(_sharedTransitionDuration);
 
                 fragmentToShow.SharedElementEnterTransition = navigationTransition;
 
@@ -208,35 +157,32 @@ namespace Plugin.SharedTransitions.Platforms.Android
             if (Element.Navigation.NavigationStack.Count == 1)
                 PropertiesContainer = page;
 
-            //TODO: Insert properties and logic for adding smal delay in listview MMV grouping transition
+            /*
+             * IMPORTANT!
+             *
+             * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
+             * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
+             * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
+             * buyt is not ideal cause i want this full compatible with binding and mvvm
+             * We can use Yield the task or a small delay like Task.Delay(10) or Task.Delay(5).
+             * On faster phones Task.Delay(1) work, but i wouldnt trust it in slower phones :)
+             *
+             * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
+             * This add no more than 5ms to the navigation i think is largely acceptable
+             */
+            var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, true);
+            if (mapStack.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
+                await Task.Yield();
 
-            return await base.OnPushAsync(page, animated); ;
+            return await base.OnPushAsync(page, animated);
         }
 
         protected override async Task<bool> OnPopViewAsync(Page page, bool animated)
         {
             //We need to take the transition configuration from the destination page
             //At this point the pop is not started so we need to go back in the stack
-            Page pageToShow = ((INavigationPageController)Element).Peek(1);
-            if (pageToShow == null)
-                return await Task.FromResult(false);
-
-            PropertiesContainer = pageToShow;
-
-            //This is ugly but is needed!
-            //If we press the back button very fast when we have more than 2 fragments in the stack,
-            //unexpected behaviours can happen during pop (this is due to SetReorderingAllowed and base renderer not using fragment backstack).
-            //So we need to add a small delay for fast pop clicks starting from the third fragment on stack.
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop &&
-                _fragmentManager.Fragments.Count > 2 &&
-                NavPage.TransitionMap.GetMap(PropertiesContainer).Count > 0 &&
-                NavPage.TransitionMap.GetMap(NavPage.CurrentPage).Count > 0)
-            {
-                await Task.Delay(100);
-            }
-                
-
-            return await base.OnPopViewAsync(page, animated); ;
+            PropertiesContainer = ((INavigationPageController)Element).Peek(1);
+            return await base.OnPopViewAsync(page, animated); 
         }
 
         //During PopToRoot we skip everything and make the default animation
@@ -247,10 +193,15 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 var fragments = _fragmentManager.Fragments;
                 var t = _fragmentManager.BeginTransaction();
 
-                //we need this to recreate the first fragment ui
-                //Our shared transactions use SetReorderingAllowed that cause mess when popping directly to root 
-                //The only way to be sure to display correctly the rootpage is to recreate his ui.
-                //Note: we don't use "remove" here so we can maintain the state of the root view
+                /*
+                 * IMPORTANT!
+                 *
+                 * we need Detach->Attach to recreate the first fragment ui
+                 * Our shared transactions use SetReorderingAllowed that cause mess when popping directly to root 
+                 * The only way to be sure to display correctly the rootpage is to recreate his ui.
+                 *
+                 * NOTE: we don't use "remove" here so we can maintain the state of the root view
+                 */
                 
                 t.Detach(fragments.First());
                 t.Attach(fragments.First());
@@ -266,15 +217,76 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override int TransitionDuration
         {
-            //_sharedTransitionDuration + 100 is a fix to prevent bad behaviours on pop (due to SetReorderingAllowed)
-            //after the transition end, we need to wait a bit before telling the renderer that we are done
-            //Not needed in PopToRoot
-            get => (_popToRoot || Build.VERSION.SdkInt < BuildVersionCodes.Lollipop) &&
-                   NavPage.TransitionMap.GetMap(PropertiesContainer).Count > 0 && 
-                   NavPage.TransitionMap.GetMap(NavPage.CurrentPage).Count > 0
-                        ? base.TransitionDuration 
-                        : (int)_sharedTransitionDuration + 100;
+            get => _sharedTransitionDuration;
             set => _sharedTransitionDuration = value;
+        }
+
+        void FinalizePageTransition(FragmentTransaction transaction, bool isPush)
+        {
+            switch (_backgroundAnimation)
+            {
+                case BackgroundAnimation.None:
+                    return;
+                case BackgroundAnimation.Fade:
+                    transaction.SetCustomAnimations(Resource.Animation.fade_in, Resource.Animation.fade_out,
+                        Resource.Animation.fade_out, Resource.Animation.fade_in);
+                    break;
+                case BackgroundAnimation.Flip:
+                    transaction.SetCustomAnimations(Resource.Animation.flip_in, Resource.Animation.flip_out,
+                        Resource.Animation.flip_out, Resource.Animation.flip_in);
+                    break;
+                case BackgroundAnimation.SlideFromLeft:
+                    if (isPush)
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_left, Resource.Animation.exit_right,
+                            Resource.Animation.enter_right, Resource.Animation.exit_left);
+                    }
+                    else
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_right, Resource.Animation.exit_left,
+                            Resource.Animation.enter_left, Resource.Animation.exit_right);
+                    }
+                    break;
+                case BackgroundAnimation.SlideFromRight:
+                    if (isPush)
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_right, Resource.Animation.exit_left,
+                            Resource.Animation.enter_left, Resource.Animation.exit_right);
+                    }
+                    else
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_left, Resource.Animation.exit_right,
+                            Resource.Animation.enter_right, Resource.Animation.exit_left);
+                    }
+                    break;
+                case BackgroundAnimation.SlideFromTop:
+                    if (isPush)
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_top, Resource.Animation.exit_bottom,
+                            Resource.Animation.enter_bottom, Resource.Animation.exit_top);
+                    }
+                    else
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_bottom, Resource.Animation.exit_top,
+                            Resource.Animation.enter_top, Resource.Animation.exit_bottom);
+                    }
+                    break;
+                case BackgroundAnimation.SlideFromBottom:
+                    if (isPush)
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_bottom, Resource.Animation.exit_top,
+                            Resource.Animation.enter_top, Resource.Animation.exit_bottom);
+                    }
+                    else
+                    {
+                        transaction.SetCustomAnimations(Resource.Animation.enter_top, Resource.Animation.exit_bottom,
+                            Resource.Animation.enter_bottom, Resource.Animation.exit_top);
+                    }
+                    break;
+                default:
+                    transaction.SetTransition((int) FragmentTransit.None);
+                    return;
+            }
         }
 
         void PropertiesContainerOnPropertyChanged(object sender, PropertyChangedEventArgs e)

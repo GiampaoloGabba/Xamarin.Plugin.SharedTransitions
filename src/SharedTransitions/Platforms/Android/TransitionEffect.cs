@@ -1,6 +1,5 @@
 ﻿using Android.OS;
 using System.ComponentModel;
-using System.Linq;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -27,7 +26,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
             if (args.PropertyName == Transition.NameProperty.PropertyName)
                 UpdateTag();
 
-
             base.OnElementPropertyChanged(args);
         }
 
@@ -37,17 +35,17 @@ namespace Plugin.SharedTransitions.Platforms.Android
             {
                 var transitionName = Transition.GetName(element);
                 var transitionGroup = Transition.GetGroup(element);
-                //group management: TODO: rework this ugly thing...
+                
+                //TODO: Rethink this mess... it works but is superduper ugly 
                 if (transitionGroup != null)
-                {
                     transitionName += "_" + transitionGroup;
-                }
+
                 if (Control != null)
                 {
                     if (Control.Id == -1)
                         Control.Id = AndroidViews.View.GenerateViewId();
 
-                    //TransitionName unique for page to enable transitions between more than 2 pages
+                    //TransitionName needs to be unique for page to enable transitions between more than 2 pages
                     Transition.RegisterTransition(element, Control.Id, out var currentPage);
                     if (currentPage != null) //<!-- can't find the navigation stack!
                         Control.TransitionName = currentPage.Id + "_" + transitionName;
@@ -58,7 +56,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                         Container.Id = AndroidViews.View.GenerateViewId();
 
                     Transition.RegisterTransition(element, Container.Id, out var currentPage);
-                    if (currentPage != null) //<!-- can't find the navigation stack!
+                    if (currentPage != null)
                         Container.TransitionName = currentPage.Id + "_" + transitionName;
                 }
             }

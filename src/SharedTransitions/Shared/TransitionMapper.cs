@@ -24,6 +24,13 @@ namespace Plugin.SharedTransitions
                            .FirstOrDefault() ?? new List<TransitionDetail>();
         }
 
+        public IReadOnlyList<TransitionDetail> GetMap(Page page, bool ignoreGroup)
+        {
+            return TransitionStack.Where(x => x.PageId == page.Id)
+                       .Select(x => x.Transitions.ToList())
+                       .FirstOrDefault() ?? new List<TransitionDetail>();
+        }
+
         /// <summary>
         /// Add transition information for the specified Page to the TransitionStack
         /// </summary>
