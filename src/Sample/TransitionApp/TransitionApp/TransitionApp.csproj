@@ -15,8 +15,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\DynamicSampleFrom2.xaml.cs">
+      <DependentUpon>DynamicSampleFrom2.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\DynamicSampleFrom.xaml.cs">
       <DependentUpon>DynamicSampleFrom.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DynamicSampleTo2.xaml.cs">
+      <DependentUpon>DynamicSampleTo2.xaml</DependentUpon>
     </Compile>
     <Compile Update="Views\DynamicSampleTo.xaml.cs">
       <DependentUpon>DynamicSampleTo.xaml</DependentUpon>

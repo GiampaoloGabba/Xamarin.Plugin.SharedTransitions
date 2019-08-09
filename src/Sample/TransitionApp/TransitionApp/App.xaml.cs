@@ -1,6 +1,8 @@
 ﻿using Plugin.SharedTransitions;
 using Prism;
 using Prism.Ioc;
+using TransitionApp.ViewModels;
+using TransitionApp.Views;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -28,6 +30,7 @@ namespace TransitionApp
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<SharedTransitionNavigationPage>();
+            containerRegistry.RegisterForNavigation<DynamicSampleTo2, DynamicSampleToViewModel>();
         }
     }
 }

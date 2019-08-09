@@ -116,10 +116,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     fromViewSnapshot.Layer.MasksToBounds   = fromView.Layer.MasksToBounds;
                     fromViewSnapshot.Layer.BorderWidth     = fromView.Layer.BorderWidth ;
                     fromViewSnapshot.Layer.BorderColor     = fromView.Layer.BorderColor;
-                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor.CGColor;
+                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor?.CGColor ?? Color.White.ToCGColor();
                 }
 
-                containerView.AddSubview(fromViewSnapshot);
+                containerView.InsertSubview(fromViewSnapshot, 1);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
                 
                 /*
