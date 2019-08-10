@@ -9,7 +9,7 @@ namespace Plugin.SharedTransitions
         {
             switch (mainPage)
             {
-                case NavigationPage navPage:
+                case SharedTransitionNavigationPage navPage:
                     return navPage.Navigation?.NavigationStack?.Last();
                 case MasterDetailPage masterPage:
                     return masterPage.Detail.GetCurrentPageInNavigationStack();

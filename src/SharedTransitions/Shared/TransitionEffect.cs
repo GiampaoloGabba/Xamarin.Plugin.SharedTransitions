@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
+using Java.IO;
 using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions
@@ -107,11 +109,22 @@ namespace Plugin.SharedTransitions
                 var transitionName  = GetName(element);
                 var transitionGroup = GetGroup(element);
 
-                if (currentPage.Parent is SharedTransitionNavigationPage navPage && !string.IsNullOrEmpty(transitionName))
+                if (currentPage.Parent is SharedTransitionNavigationPage navPage &&
+                    (!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
+                {
                     return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
+                }
+
+                if (!(currentPage.Parent is SharedTransitionNavigationPage))
+                {
+                    throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
+                }
+
+                Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
+                    
             }
 
-            return 0;
+            throw new System.InvalidOperationException("Shared transitions can only be attached to Xamarin.Forms Views");
         }
 
         /// <summary>
@@ -123,7 +136,10 @@ namespace Plugin.SharedTransitions
         static void OnNamePropertyChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable == null)
+            {
+                Debug.WriteLine($"BindableObject should not be null at this point (Attached Property changed)");
                 return;
+            }
 
             var element = (View)bindable;
             var existing = element.Effects.FirstOrDefault(x => x is TransitionEffect);
