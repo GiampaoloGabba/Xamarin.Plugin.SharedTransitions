@@ -128,7 +128,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 containerView.AddSubview(fromViewSnapshot);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
-                
+
                 /*
                  * IMPORTANT
                  * We need to Yield the task in order to exclude the following changes
@@ -137,10 +137,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                  */
 
                 if (_operation == UINavigationControllerOperation.Push)
+                {
+                    //without this flickering could occour
+                    fromViewSnapshot.Hidden = true;
                     await Task.Yield();
+                }
 
-                toView.Alpha   = 0;
-                fromView.Alpha = 0;
+                fromViewSnapshot.Hidden = false;
+                toView.Hidden           = true;
+                fromView.Hidden         = true;
 
                 CGRect toFrame;
                 if (toView is UIImageView toImageView)
@@ -150,15 +155,17 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.CurveEaseInOut, () =>
                 {
-                    fromViewSnapshot.Frame                 = toFrame;
+                    fromViewSnapshot.Frame           = toFrame;
+                    fromViewSnapshot.BackgroundColor = toView.BackgroundColor;
+                    fromViewSnapshot.Alpha           = 1;
+
                     fromViewSnapshot.Layer.CornerRadius    = toView.Layer.CornerRadius;
-                    fromViewSnapshot.BackgroundColor       = toView.BackgroundColor;
                     fromViewSnapshot.Layer.BackgroundColor = toView.Layer.BackgroundColor;
-                    fromViewSnapshot.Alpha = 1;
+                    
                 }, () =>
                 {
-                    toView.Alpha   = 1;
-                    fromView.Alpha = 1;
+                    toView.Hidden   = false;
+                    fromView.Hidden = false;
                     fromViewSnapshot.RemoveFromSuperview();
                 });
             }

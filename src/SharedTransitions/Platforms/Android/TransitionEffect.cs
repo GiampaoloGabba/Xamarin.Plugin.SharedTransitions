@@ -24,11 +24,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
         
         protected override void OnDetached()
         {
-            //WHAT? Nothing on detach?
-            //Well no, i clear the MapStack while popping a page :P
-            //There are a number of reasons for doing this, with performance in primis
-            //We dont risk NRE or reference to detached object anyway, only the ids
-            //When we need a view we get them with FindViewById and check for null just after
+            if (Element is View element)
+                Transition.RemoveTransition(element,_currentPage);
         }
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)

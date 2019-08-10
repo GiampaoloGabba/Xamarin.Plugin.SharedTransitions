@@ -20,7 +20,6 @@ using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 
 namespace Plugin.SharedTransitions.Platforms.Android
 {
-
     /*
      * IMPORTANT NOTES:
      * Read the dedicate comments in code for more info about those fixes.

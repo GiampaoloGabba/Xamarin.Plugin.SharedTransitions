@@ -110,7 +110,7 @@ namespace Plugin.SharedTransitions
 
         protected override void OnChildRemoved(Element child)
         {
-            TransitionMap.Remove((Page)child);
+            TransitionMap.RemoveFromPage((Page)child);
         }
     }
 }

@@ -74,10 +74,9 @@ namespace Plugin.SharedTransitions
                 //the transition already exists lets check if the mapping is correct
                 if (nativeViewId == 0)
                 {
-                    nativeViewId = transitionDetail.NativeViewId; //uops, the nativeId is 0 in the stack! No good
-                    Debug.WriteLine($"NativeviewId for transition {transitionName} should not be 0 at this point! Forms Guid is {formsViewId}");
+                    //common in ios
+                    nativeViewId = transitionDetail.NativeViewId; 
                 }
-                    
                 else if (transitionDetail.NativeViewId != nativeViewId)
                 {
                     transitionDetail.NativeViewId = nativeViewId; //the nativeId in the stack is different
@@ -85,7 +84,7 @@ namespace Plugin.SharedTransitions
                 }
 
                 if (transitionDetail.TransitionName  != transitionName ||
-                    transitionDetail.TransitionGroup != transitionGroup)
+                    transitionDetail.TransitionGroup != transitionGroup && transitionGroup != null)
                 {
                     transitionDetail.TransitionName  = transitionName;
                     transitionDetail.TransitionGroup = transitionGroup;
@@ -105,10 +104,21 @@ namespace Plugin.SharedTransitions
         }
 
         /// <summary>
+        /// Removes the specified transitionDetail from the TransitionStack
+        /// </summary>
+        /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
+        /// <param name="page">The page.</param>
+        public void Remove(Page page, Guid formsViewId)
+        {
+            var pageStack = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
+            pageStack?.Transitions.Remove(pageStack.Transitions.FirstOrDefault(x=>x.FormsViewId == formsViewId));
+        }
+
+        /// <summary>
         /// Removes the specified page from the TransitionStack
         /// </summary>
         /// <param name="page">The page.</param>
-        public void Remove(Page page)
+        public void RemoveFromPage(Page page)
         {
             _transitionStack.Value.Remove(_transitionStack.Value.FirstOrDefault(x => x.PageId == page.Id));
         }

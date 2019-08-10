@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
@@ -22,17 +23,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override void OnDetached()
         {
-            //WHAT? Nothing on detach?
-            //Well no, i clear the MapStack while popping a page :P
-            //There are a number of reasons for doing this, with performance in primis
-            //We dont risk NRE or reference to detached object anyway, only the ids
-            //When we need a view we get them with ViewWithTag and check for null just after
+            if (Element is View element)
+                Transition.RemoveTransition(element,_currentPage);
         }
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
             if (args.PropertyName == Transition.NameProperty.PropertyName ||
-                args.PropertyName == Transition.GroupProperty.PropertyName)
+                args.PropertyName == Transition.GroupProperty.PropertyName && Transition.GetGroup(Element)!=null)
                 UpdateTag();
 
             base.OnElementPropertyChanged(args);
@@ -44,11 +42,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 if (Control != null)
                 {
-                    Control.Tag = Transition.RegisterTransition(element, _currentPage);
+                    Control.Tag = Transition.RegisterTransition(element, (int)Control.Tag, _currentPage);
                 } 
                 else if (Container != null)
                 {
-                    Container.Tag = Transition.RegisterTransition(element, _currentPage);
+                    Container.Tag = Transition.RegisterTransition(element, (int)Container.Tag, _currentPage);
                 }
             }
         }

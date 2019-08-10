@@ -86,44 +86,44 @@ namespace Plugin.SharedTransitions
         /// Registers the transition element in the TransitionStack
         /// when the native View does not already have a unique Id
         /// </summary>
-        /// <param name="bindable">Xamarin Forms Element</param>
+        /// <param name="element">Xamarin Forms Element</param>
         /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(BindableObject bindable, Page currentPage)
+        public static int RegisterTransition(View element, Page currentPage)
         {
-            return RegisterTransition(bindable, 0, currentPage);
+            return RegisterTransition(element, 0, currentPage);
         }
 
         /// <summary>
         /// Registers the transition element in the TransitionStack
         /// </summary>
-        /// <param name="bindable">Xamarin Forms Element</param>
+        /// <param name="element">Xamarin Forms Element</param>
         /// <param name="nativeViewId">The platform View identifier</param>
         /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(BindableObject bindable, int nativeViewId, Page currentPage)
+        public static int RegisterTransition(View element, int nativeViewId, Page currentPage)
         {
-            if (bindable is View element)
+            var transitionName  = GetName(element);
+            var transitionGroup = GetGroup(element);
+
+            if (currentPage.Parent is SharedTransitionNavigationPage navPage &&
+                (!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
             {
-                var transitionName  = GetName(element);
-                var transitionGroup = GetGroup(element);
-
-                if (currentPage.Parent is SharedTransitionNavigationPage navPage &&
-                    (!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
-                {
-                    return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
-                }
-
-                if (!(currentPage.Parent is SharedTransitionNavigationPage))
-                {
-                    throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
-                }
-
-                Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
-                    
+                return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
             }
 
-            throw new System.InvalidOperationException("Shared transitions can only be attached to Xamarin.Forms Views");
+            if (!(currentPage.Parent is SharedTransitionNavigationPage))
+            {
+                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
+            }
+
+            Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
+            return 0;
+        }
+
+        public static void RemoveTransition(View view, Page currentPage)
+        {
+            ((SharedTransitionNavigationPage) currentPage.Parent).TransitionMap.Remove(currentPage,view.Id);
         }
 
         /// <summary>

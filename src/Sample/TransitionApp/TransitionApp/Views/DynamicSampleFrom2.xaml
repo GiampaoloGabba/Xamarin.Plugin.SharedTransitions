@@ -10,13 +10,11 @@
              sharedTransitions:SharedTransitionNavigationPage.BackgroundAnimation="Fade"
              sharedTransitions:SharedTransitionNavigationPage.TransitionDuration="300">
 
-<StackLayout>
-
     <CollectionView ItemsSource="{Binding Dogs}" SelectionMode="None" x:Name="DogList" ItemSizingStrategy="MeasureAllItems">
         <CollectionView.ItemTemplate>
             <DataTemplate>
                 <ContentView Padding="25,20,25,5">
-                    <Frame CornerRadius="10" Padding="0,0,0,10" BackgroundColor="DodgerBlue" HasShadow="False" BorderColor="#c0c0c0"
+                    <Frame CornerRadius="10" Padding="0,0,0,10" BackgroundColor="DodgerBlue" HasShadow="False"
                            sharedTransitions:Transition.Name="DogBackground"
                            sharedTransitions:Transition.Group="{Binding Id}">
                         
@@ -38,9 +36,6 @@
                 </ContentView>
             </DataTemplate>
         </CollectionView.ItemTemplate>
-        
     </CollectionView>
-</StackLayout>
-
 
 </ContentPage>
