@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
@@ -10,9 +11,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 {
     public class TransitionEffect : PlatformEffect
     {
-
+        private Page _currentPage;
         protected override void OnAttached()
         {
+            var navStack = Application.Current.MainPage.Navigation?.NavigationStack;
+            if (navStack == null || navStack.Count == 0)
+                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
+
+            _currentPage = navStack.Last();
             UpdateTag();
         }
 
@@ -39,11 +45,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 if (Control != null)
                 {
-                    Control.Tag = Transition.RegisterTransition(element);
+                    Control.Tag = Transition.RegisterTransition(element, _currentPage);
                 } 
                 else if (Container != null)
                 {
-                    Container.Tag = Transition.RegisterTransition(element);
+                    Container.Tag = Transition.RegisterTransition(element, _currentPage);
                 }
             }
         }

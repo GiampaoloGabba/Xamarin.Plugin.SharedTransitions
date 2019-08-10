@@ -1,5 +1,6 @@
 ﻿using Android.OS;
 using System.ComponentModel;
+using System.Linq;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -12,8 +13,14 @@ namespace Plugin.SharedTransitions.Platforms.Android
 {
     public class TransitionEffect : PlatformEffect
     {
+        private Page _currentPage;
         protected override void OnAttached()
         {
+            var navStack = Application.Current.MainPage.Navigation?.NavigationStack;
+            if (navStack == null || navStack.Count == 0)
+                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
+
+            _currentPage  = navStack.Last();
             UpdateTag();
         }
 
@@ -51,18 +58,16 @@ namespace Plugin.SharedTransitions.Platforms.Android
                         Control.Id = AndroidViews.View.GenerateViewId();
 
                     //TransitionName needs to be unique for page to enable transitions between more than 2 pages
-                    Transition.RegisterTransition(element, Control.Id, out var currentPage);
-                    if (currentPage != null) //<!-- can't find the navigation stack!
-                        Control.TransitionName = currentPage.Id + "_" + transitionName;
+                    Transition.RegisterTransition(element, Control.Id, _currentPage);
+                        Control.TransitionName = _currentPage.Id + "_" + transitionName;
                 } 
                 else if (Container != null)
                 {
                     if (Container.Id == -1)
                         Container.Id = AndroidViews.View.GenerateViewId();
 
-                    Transition.RegisterTransition(element, Container.Id, out var currentPage);
-                    if (currentPage != null)
-                        Container.TransitionName = currentPage.Id + "_" + transitionName;
+                    Transition.RegisterTransition(element, Container.Id, _currentPage);
+                    Container.TransitionName = _currentPage.Id + "_" + transitionName;
                 }
             }
         }

@@ -5,37 +5,42 @@
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" Padding="0"
-             xmlns:behaviors="http://prismlibrary.com"
              x:Class="TransitionApp.Views.DynamicSampleFrom2" Title="App Store Sample"
              sharedTransitions:SharedTransitionNavigationPage.TransitionSelectedGroup="{Binding SelectedDogId }"
              sharedTransitions:SharedTransitionNavigationPage.BackgroundAnimation="None"
              sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="300">
 
-    <ListView Footer="" ItemsSource="{Binding Dogs}" HasUnevenRows="True" SelectionMode="None" SeparatorVisibility="None" VerticalScrollBarVisibility="Never">
-        <ListView.Behaviors>
-            <behaviors:EventToCommandBehavior EventName="ItemTapped"
-                                              Command="{Binding NavigateDogCommand}" 
-                                              EventArgsParameterPath="Item" />
-        </ListView.Behaviors>
-        <ListView.ItemTemplate>
+
+    <CollectionView ItemsSource="{Binding Dogs}" Margin="25" SelectionMode="None" x:Name="DogList">
+        <CollectionView.ItemsLayout>
+            <GridItemsLayout Orientation="Vertical" VerticalItemSpacing="20" />
+        </CollectionView.ItemsLayout>
+        <CollectionView.ItemTemplate>
             <DataTemplate>
-                <ViewCell>
-                    <Frame CornerRadius="10" Margin="20,15" Padding="0" BackgroundColor="DodgerBlue" HasShadow="False" BorderColor="#c0c0c0"
-                                             sharedTransitions:Transition.Name="DogBackground"
-                                             sharedTransitions:Transition.Group="{Binding Id}">
-                        <StackLayout IsClippedToBounds="True">
-                            <Image Source="{Binding Image}" Aspect="AspectFill" 
-                                   sharedTransitions:Transition.Name="DogImage"
-                                   sharedTransitions:Transition.Group="{Binding Id}"/>
-                            <Label Text="{Binding Title}" VerticalOptions="Center" Margin="20,10,20,15" 
-                                   FontSize="Large" FontAttributes="Bold" TextColor="White"
-                                   sharedTransitions:Transition.Name="DogTitle"
-                                   sharedTransitions:Transition.Group="{Binding Id}"/>
-                        </StackLayout>
-                    </Frame>
-                </ViewCell>
+                <Frame CornerRadius="10" Margin="20,15" Padding="0" BackgroundColor="DodgerBlue" HasShadow="False" BorderColor="#c0c0c0"
+                       sharedTransitions:Transition.Name="DogBackground"
+                       sharedTransitions:Transition.Group="{Binding Id}">
+                    
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding BindingContext.NavigateDogCommand, Source={x:Reference DogList}, Path=BindingContext }"
+                                              CommandParameter="{Binding .}"/>
+                    </Frame.GestureRecognizers>
+
+                    <StackLayout IsClippedToBounds="True">
+                        <Image Source="{Binding Image}" Aspect="AspectFill" 
+                               sharedTransitions:Transition.Name="DogImage"
+                               sharedTransitions:Transition.Group="{Binding Id, Mode=TwoWay}"/>
+                        <Label Text="{Binding Title}" VerticalOptions="Center" Margin="20,10,20,15" 
+                               FontSize="Large" FontAttributes="Bold" TextColor="White"
+                               sharedTransitions:Transition.Name="DogTitle"
+                               sharedTransitions:Transition.Group="{Binding Id, Mode=TwoWay}"/>
+                    </StackLayout>
+                </Frame>
             </DataTemplate>
-        </ListView.ItemTemplate>
-    </ListView>
+        </CollectionView.ItemTemplate>
+        
+    </CollectionView>
+
+
 
 </ContentPage>

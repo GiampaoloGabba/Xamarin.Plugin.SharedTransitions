@@ -86,10 +86,11 @@ namespace Plugin.SharedTransitions
         /// when the native View does not already have a unique Id
         /// </summary>
         /// <param name="bindable">Xamarin Forms Element</param>
+        /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(BindableObject bindable)
+        public static int RegisterTransition(BindableObject bindable, Page currentPage)
         {
-            return RegisterTransition(bindable, 0, out _);
+            return RegisterTransition(bindable, 0, currentPage);
         }
 
         /// <summary>
@@ -99,26 +100,15 @@ namespace Plugin.SharedTransitions
         /// <param name="nativeViewId">The platform View identifier</param>
         /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(BindableObject bindable, int nativeViewId, out Page currentPage)
+        public static int RegisterTransition(BindableObject bindable, int nativeViewId, Page currentPage)
         {
-            currentPage = null;
             if (bindable is View element)
             {
-                //Nedded for listviews!
-                //When we add effects to a ViewCell child, the INavigation is always empty.
-                //We need to traverse nacl the view tree to find the Navigation object
-                var navigation = TraverseBackToNavigation(element);
-                if (navigation == null) return 0;
-
                 var transitionName  = GetName(element);
                 var transitionGroup = GetGroup(element);
-                if (!(navigation.NavigationStack.Count > 0) || string.IsNullOrEmpty(transitionName)) return 0;
 
-                currentPage = navigation.NavigationStack.Last();
-                if (currentPage.Parent is SharedTransitionNavigationPage navPage)
-                {
+                if (currentPage.Parent is SharedTransitionNavigationPage navPage && !string.IsNullOrEmpty(transitionName))
                     return navPage.TransitionMap.Add(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
-                }
             }
 
             return 0;
@@ -147,28 +137,5 @@ namespace Plugin.SharedTransitions
                 element.Effects.Remove(existing);
             }
         }
-
-        static INavigation TraverseBackToNavigation(Element element)
-        {
-            INavigation navigation = null;
-            if (element is View view)
-            {
-                if (view.Navigation == null && view.Parent == null)
-                    return null;
-
-                navigation = view.Navigation?.NavigationStack?.Count > 0
-                    ? view.Navigation
-                    : TraverseBackToNavigation(element.Parent);
-
-            } 
-            //Viewcell is not a Xamarin.Forms View but has a parent to check
-            else if (element.Parent != null)
-            {
-                navigation = TraverseBackToNavigation(element.Parent);
-            }
-
-            return navigation;
-        }
-        
     }
 }
