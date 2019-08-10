@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using CoreAnimation;
 using CoreGraphics;
-using Foundation;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
@@ -72,8 +71,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     Debug.WriteLine($"At this point we must have the 2 views to animate! One or both is missing");
                     break;
                 }
-                    
-
+                
                 UIView fromViewSnapshot;
                 CGRect fromViewFrame;
 
@@ -82,12 +80,22 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     //For buttons and labels just copy the view to preserve a good transition
                     //Using normal snapshot with labels and buttons may cause streched and deformed images
                     fromViewFrame    = fromView.Frame;
-                    fromViewSnapshot = (UIView)NSKeyedUnarchiver.UnarchiveObject(NSKeyedArchiver.ArchivedDataWithRootObject(fromView));
+                    fromViewSnapshot = fromView.CopyView();
                 }
                 else if (fromView is UIImageView fromImageView)
                 {
-                    fromViewFrame    = fromImageView.GetImageFrame();
-                    fromViewSnapshot = fromView.ResizableSnapshotView(fromViewFrame, false, UIEdgeInsets.Zero);
+                    if (fromImageView.ContentMode == UIViewContentMode.ScaleAspectFit)
+                    {
+                        //Take a simple snapshot, saving resources, only of the visible frame, 
+                        fromViewFrame    = fromImageView.GetImageFrame();
+                        fromViewSnapshot = fromView.ResizableSnapshotView(fromViewFrame, false, UIEdgeInsets.Zero);
+                    }
+                    else
+                    {
+                        //The only way to do good transitions with *Fit aspect is just to copy the view and animate the frame/image
+                        fromViewFrame    = fromView.Frame;
+                        fromViewSnapshot = fromView.CopyView();
+                    }
                 }
                 else if (fromView is VisualElementRenderer<BoxView>)
                 {
@@ -109,21 +117,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                      * So.. dont use fromView.Frame here or layout will go crazy!
                      */
                     fromViewFrame = fromView.Bounds;
-
-                    fromViewSnapshot = new UIView
-                    {
-                        AutoresizingMask = fromView.AutoresizingMask,
-                        ContentMode      = fromView.ContentMode,
-                        Alpha            = fromView.Alpha,
-                        BackgroundColor  = fromView.BackgroundColor,
-                        LayoutMargins = fromView.LayoutMargins
-                    };
-
-                    fromViewSnapshot.Layer.CornerRadius    = fromView.Layer.CornerRadius;
-                    fromViewSnapshot.Layer.MasksToBounds   = fromView.Layer.MasksToBounds;
-                    fromViewSnapshot.Layer.BorderWidth     = fromView.Layer.BorderWidth ;
-                    fromViewSnapshot.Layer.BorderColor     = fromView.Layer.BorderColor;
-                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor?.CGColor ?? Color.White.ToCGColor();
+                    fromViewSnapshot = fromView.CopyView(softCopy: true);
                 }
 
                 containerView.AddSubview(fromViewSnapshot);
@@ -153,15 +147,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 else
                     toFrame = toView.ConvertRectToView(toView.Bounds, containerView);
 
+                //Mask animation (for shape/corner radius)
+                var toMask = toView.Layer.GetMask(toView.Bounds);
+                if (toMask != null && fromViewSnapshot.Layer.Mask is CAShapeLayer fromMask)
+                {
+                    var maskLayerAnimation = CreateMaskTransition(transitionContext, fromMask, toMask);
+                    fromViewSnapshot.Layer.Mask.AddAnimation(maskLayerAnimation, "path");
+                }
+
                 UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.CurveEaseInOut, () =>
                 {
-                    fromViewSnapshot.Frame           = toFrame;
-                    fromViewSnapshot.BackgroundColor = toView.BackgroundColor;
-                    fromViewSnapshot.Alpha           = 1;
+                    //set the main properties to animate
+                    fromViewSnapshot.Frame = toFrame;
+                    fromViewSnapshot.Alpha = 1;
+                    fromViewSnapshot.Layer.CornerRadius = toView.Layer.CornerRadius;
 
-                    fromViewSnapshot.Layer.CornerRadius    = toView.Layer.CornerRadius;
-                    fromViewSnapshot.Layer.BackgroundColor = toView.Layer.BackgroundColor;
-                    
                 }, () =>
                 {
                     toView.Hidden   = false;
@@ -175,6 +175,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 fromViewController.View.Alpha = 0;
 
             FinalizeTransition(transitionContext, fromViewController, toViewController);
+        }
+
+        CABasicAnimation CreateMaskTransition(IUIViewControllerContextTransitioning transitionContext, CAShapeLayer fromMask, CAShapeLayer toMask)
+        {
+            var maskLayerAnimation = CABasicAnimation.FromKeyPath("path");
+            maskLayerAnimation.SetFrom(fromMask.Path);
+            maskLayerAnimation.SetTo(toMask.Path);
+            maskLayerAnimation.Duration       = TransitionDuration(transitionContext);
+            maskLayerAnimation.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
+            return maskLayerAnimation;
         }
 
         void FinalizeTransition(IUIViewControllerContextTransitioning transitionContext, UIViewController fromViewController, UIViewController toViewController)

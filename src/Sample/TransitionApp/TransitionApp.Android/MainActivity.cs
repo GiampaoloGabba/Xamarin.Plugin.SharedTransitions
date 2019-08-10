@@ -19,6 +19,7 @@ namespace TransitionApp.Droid
 
             Forms.SetFlags("CollectionView_Experimental");
             global::Xamarin.Forms.Forms.Init(this, bundle);
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init(true); 
             LoadApplication(new App(new AndroidInitializer()));
         }
     }

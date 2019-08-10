@@ -8,14 +8,24 @@
     <ContentPage.Resources>
         <ResourceDictionary>
 
-            <Style TargetType="Label">
-                <Setter Property="HorizontalOptions" Value="Center"/>
-            </Style>
-
             <Style TargetType="Button">
                 <Setter Property="HorizontalOptions" Value="Center"/>
                 <Setter Property="WidthRequest" Value="300"/>
             </Style>
+
+            <Style x:Key="SubTitle" TargetType="Label">
+                <Setter Property="Margin" Value="0,5"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+
+            <Style x:Key="Info" TargetType="Label">
+                <Setter Property="TextColor" Value="LightSlateGray"/>
+                <Setter Property="FontAttributes" Value="Italic"/>
+                <Setter Property="FontSize" Value="Small"/>
+                <Setter Property="Margin" Value="0,-8,0,8"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -25,15 +35,17 @@
                HorizontalTextAlignment="Center" TextColor="IndianRed"
                FontSize="30" FontAttributes="Bold" Margin="0,0,0,30" />
 
-        <Label Text="Simple transitions:" Margin="0,0,0,5" />
+        <Label Text="Simple transitions:" Style="{StaticResource SubTitle}" />
 
         <Button Text="Images"  Command="{prism:NavigateTo 'ImageSampleFrom'}" />
         <Button Text="Layouts" Command="{prism:NavigateTo 'LayoutSampleFrom'}" />
+        <Label Text="With PancakeView" Style="{StaticResource Info}" />
 
-        <Label Text="Dynamic transitions:" Margin="0,15,0,5" />
+        <Label Text="Dynamic transitions:" Style="{StaticResource SubTitle}" />
 
         <Button Text="Listview (simple)" Command="{prism:NavigateTo 'DynamicSampleFrom'}" />
         <Button Text="Collectionview (multiple items)"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
+        <Label Text="With FFImageLoading &amp; PancakeView" Style="{StaticResource Info}" />
     </StackLayout>
 
 </ContentPage>
