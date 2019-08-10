@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoreAnimation;
 using CoreGraphics;
@@ -37,7 +38,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, SharedTransitionNavigationRenderer navigationPage)
         {
             _navigationPage = navigationPage;
-            _viewsToAnimate = viewsToAnimate;
+            //Auto z-index, to avoid mess when animating multiple views, layouts ecc.
+            _viewsToAnimate = viewsToAnimate.OrderBy(x => x.FromView is UIControl || x.FromView is UILabel || x.FromView is UIImageView).ToList();
             _operation = operation;
         }
 
@@ -47,9 +49,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// <param name="transitionContext">The transition context.</param>
         public override async void AnimateTransition(IUIViewControllerContextTransitioning transitionContext)
         {
-            var containerView = transitionContext.ContainerView;
+            var containerView      = transitionContext.ContainerView;
             var fromViewController = transitionContext.GetViewControllerForKey(UITransitionContext.FromViewControllerKey);
-            var toViewController = transitionContext.GetViewControllerForKey(UITransitionContext.ToViewControllerKey);
+            var toViewController   = transitionContext.GetViewControllerForKey(UITransitionContext.ToViewControllerKey);
 
             // This needs to be added to the view hierarchy for the destination frame to be correct,
             // but we don't want it visible yet.
@@ -119,7 +121,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor?.CGColor ?? Color.White.ToCGColor();
                 }
 
-                containerView.InsertSubview(fromViewSnapshot, 1);
+                containerView.AddSubview(fromViewSnapshot);
                 fromViewSnapshot.Frame = fromView.ConvertRectToView(fromViewFrame, containerView);
                 
                 /*
@@ -132,7 +134,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 if (_operation == UINavigationControllerOperation.Push)
                     await Task.Yield();
 
-                toView.Alpha = 0;
+                toView.Alpha   = 0;
                 fromView.Alpha = 0;
 
                 CGRect toFrame;
@@ -147,7 +149,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     fromViewSnapshot.Layer.CornerRadius    = toView.Layer.CornerRadius;
                     fromViewSnapshot.BackgroundColor       = toView.BackgroundColor;
                     fromViewSnapshot.Layer.BackgroundColor = toView.Layer.BackgroundColor;
-                    fromViewSnapshot.Alpha                 = 1;
+                    fromViewSnapshot.Alpha = 1;
                 }, () =>
                 {
                     toView.Alpha   = 1;
@@ -156,21 +158,55 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 });
             }
 
+            //Avoid flickering during push and display a right pop
+            if (_operation == UINavigationControllerOperation.Pop)
+                fromViewController.View.Alpha = 0;
+
             FinalizeTransition(transitionContext, fromViewController, toViewController);
         }
 
         void FinalizeTransition(IUIViewControllerContextTransitioning transitionContext, UIViewController fromViewController, UIViewController toViewController)
         {
             var screenWidth = UIScreen.MainScreen.Bounds.Size.Width;
-            fromViewController.View.Alpha = 0;
+            var backgroundAnimation = _navigationPage.BackgroundAnimation;
 
-            switch (_navigationPage.BackgroundAnimation)
+            //fix animation for push & pop
+            //TODO rework this better i have no time now :P
+            if (_operation == UINavigationControllerOperation.Pop)
+            {
+                if (backgroundAnimation == BackgroundAnimation.SlideFromBottom)
+                {
+                    backgroundAnimation = BackgroundAnimation.SlideFromTop;
+                } 
+                else if (backgroundAnimation == BackgroundAnimation.SlideFromTop)
+                {
+                    backgroundAnimation = BackgroundAnimation.SlideFromBottom;
+                } 
+                else if (backgroundAnimation == BackgroundAnimation.SlideFromRight)
+                {
+                    backgroundAnimation = BackgroundAnimation.SlideFromLeft;
+                } 
+                else if (backgroundAnimation == BackgroundAnimation.SlideFromLeft)
+                {
+                    backgroundAnimation = BackgroundAnimation.SlideFromRight;
+                }
+            }
+
+            switch (backgroundAnimation)
             {
                 case BackgroundAnimation.None:
-                    UIView.Animate(0, 0, UIViewAnimationOptions.TransitionNone, () =>
+
+                    var delay = _operation == UINavigationControllerOperation.Push
+                        ? TransitionDuration(transitionContext)
+                        : 0;
+
+                    UIView.Animate(0, delay, UIViewAnimationOptions.TransitionNone, () =>
                     {
                         toViewController.View.Alpha = 1;
-                    }, () => { transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled); });
+                    }, () =>
+                    {
+                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
+                    });
                     break;
 
                 case BackgroundAnimation.Fade:
@@ -180,13 +216,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         fromViewController.View.Alpha = 0;
                     }, () =>
                     {
-                        // Fix 1 for swipe + pop to root
-                        fromViewController.View.Alpha = 1;
-                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
-
-                        // Fix 2 for swipe + pop to root
-                        if (transitionContext.TransitionWasCancelled)
-                            fromViewController.View.Alpha = 1;
+                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
                     });
                     break;
 
@@ -209,13 +239,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             toViewController.View.Alpha = 1;
                         }, () =>
                         {
-                            // Fix 1 for swipe + pop to root
-                            fromViewController.View.Alpha = 1;
-                            transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
-
-                            // Fix 2 for swipe + pop to root
-                            if (transitionContext.TransitionWasCancelled)
-                                fromViewController.View.Alpha = 1;
+                            FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
                         });
                     break;
 
@@ -228,13 +252,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y - screenWidth);
                     }, () =>
                     {
-                        // Fix 1 for swipe + pop to root
-                        fromViewController.View.Alpha = 1;
-                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
-
-                        // Fix 2 for swipe + pop to root
-                        if (transitionContext.TransitionWasCancelled)
-                            fromViewController.View.Alpha = 1;
+                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
                     });
                     break;
 
@@ -247,13 +265,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X + screenWidth, toViewController.View.Center.Y);
                     }, () =>
                     {
-                        // Fix 1 for swipe + pop to root
-                        fromViewController.View.Alpha = 1;
-                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
-
-                        // Fix 2 for swipe + pop to root
-                        if (transitionContext.TransitionWasCancelled)
-                            fromViewController.View.Alpha = 1;
+                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
                     });
                     break;
 
@@ -266,13 +278,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X - screenWidth, toViewController.View.Center.Y);
                     }, () =>
                     {
-                        // Fix 1 for swipe + pop to root
-                        fromViewController.View.Alpha = 1;
-                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
-
-                        // Fix 2 for swipe + pop to root
-                        if (transitionContext.TransitionWasCancelled)
-                            fromViewController.View.Alpha = 1;
+                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
                     });
                     break;
 
@@ -285,16 +291,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y + screenWidth);
                     }, () =>
                     {
-                        // Fix 1 for swipe + pop to root
-                        fromViewController.View.Alpha = 1;
-                        transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
-
-                        // Fix 2 for swipe + pop to root
-                        if (transitionContext.TransitionWasCancelled)
-                            fromViewController.View.Alpha = 1;
+                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
                     });
                     break;
             }
+        }
+
+        void FixCompletionForSwipeAndPopToRoot(IUIViewControllerContextTransitioning transitionContext, UIViewController fromViewController)
+        {
+            // Fix 1 for swipe + pop to root
+            fromViewController.View.Alpha = 1;
+            transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+
+            // Fix 2 for swipe + pop to root
+            if (transitionContext.TransitionWasCancelled)
+                fromViewController.View.Alpha = 1;
         }
 
         /// <summary>

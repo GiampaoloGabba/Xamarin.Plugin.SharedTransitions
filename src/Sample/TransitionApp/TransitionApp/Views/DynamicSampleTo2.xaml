@@ -8,14 +8,16 @@
              x:Class="TransitionApp.Views.DynamicSampleTo2" Title="App Store Sample">
 
 <ScrollView>
-    <Frame CornerRadius="0" Padding="0" BackgroundColor="Red"
+    <Frame CornerRadius="0" Padding="0" BackgroundColor="DodgerBlue"
                              sharedTransitions:Transition.Name="DogBackground">
 
         <StackLayout Spacing="20">
             <Image Source="{Binding SelectedDog.Image}" sharedTransitions:Transition.Name="DogImage" />
-            <Label Text="{Binding SelectedDog.Title}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Large"
+            <Label Text="{Binding SelectedDog.Title}" HorizontalOptions="Center"
+                   FontAttributes="Bold" FontSize="Large" TextColor="White"
                    sharedTransitions:Transition.Name="DogTitle"/>
-            <Label Text="{Binding SelectedDog.Description}" Margin="20,0,20,0" />
+            <Label Text="{Binding SelectedDog.Description}" Margin="20,0,20,0"
+                   FontSize="Medium" TextColor="White"/>
         </StackLayout>
     </Frame>
 </ScrollView>
