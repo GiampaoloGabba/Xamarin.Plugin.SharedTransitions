@@ -1,5 +1,6 @@
 ﻿using Android.OS;
 using System.ComponentModel;
+using Java.Util;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;

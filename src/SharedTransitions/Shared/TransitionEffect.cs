@@ -84,18 +84,6 @@ namespace Plugin.SharedTransitions
 
         /// <summary>
         /// Registers the transition element in the TransitionStack
-        /// when the native View does not already have a unique Id
-        /// </summary>
-        /// <param name="element">Xamarin Forms Element</param>
-        /// <param name="currentPage">The current page where the transition has been added</param>
-        /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(View element, Page currentPage)
-        {
-            return RegisterTransition(element, 0, currentPage);
-        }
-
-        /// <summary>
-        /// Registers the transition element in the TransitionStack
         /// </summary>
         /// <param name="element">Xamarin Forms Element</param>
         /// <param name="nativeViewId">The platform View identifier</param>

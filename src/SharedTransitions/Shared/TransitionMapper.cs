@@ -89,14 +89,25 @@ namespace Plugin.SharedTransitions
                     transitionDetail.TransitionName  = transitionName;
                     transitionDetail.TransitionGroup = transitionGroup;
 
-                    //if there is alreay this transition in the stack for this page
-                    //it means that the old forms viewid has been replaced (eg: listview refresh ItemSource)
+                    /*
+                     * IMPORTANT
+                     *
+                     * This is where i should clean the mapstack for dynamic transitions
+                     * where the items are being attached and detached by virtualization.
+                     * Unfortunately doing this here where i'm in the "reign" of attached properties and binding
+                     * will result in a corrupted mapstack (i suppose due the choppiness of bindings)
+                     *
+                     * The only way i found is to clear the mapstack in the native renderer when i find orphaned ids
+                     */
+
+                    /* OLD CODE:
+                     
                     var alreadyexisting = transitionMap.Transitions.Where(x =>
-                        x.TransitionName == transitionName && x.TransitionGroup == transitionGroup &&
-                        x.FormsViewId != formsViewId).ToList();
+                    x.TransitionName == transitionName && x.TransitionGroup == transitionGroup &&
+                    x.FormsViewId != formsViewId).ToList();
 
                     for (int i = alreadyexisting.Count - 1; i >= 0; i--)
-                        transitionMap.Transitions.RemoveAt(i);
+                        transitionMap.Transitions.RemoveAt(i);*/
                 }
             }
 
@@ -112,6 +123,17 @@ namespace Plugin.SharedTransitions
         {
             var pageStack = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
             pageStack?.Transitions.Remove(pageStack.Transitions.FirstOrDefault(x=>x.FormsViewId == formsViewId));
+        }
+
+        /// <summary>
+        /// Removes the specified transitionDetail from the TransitionStack
+        /// </summary>
+        /// <param name="nativeViewId">The Native view unique identifier.</param>
+        /// <param name="page">The page.</param>
+        public void Remove(Page page, int nativeViewId)
+        {
+            var pageStack = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
+            pageStack?.Transitions.Remove(pageStack.Transitions.FirstOrDefault(x=>x.NativeViewId == nativeViewId));
         }
 
         /// <summary>

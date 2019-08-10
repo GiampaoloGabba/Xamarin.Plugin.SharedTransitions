@@ -18,6 +18,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
      * IMPORTANT NOTES:
      * Read the dedicate comments in code for more info about those fixes.
      *
+     * Listview/collection view hidden item:
+     * Fix First item is created two times, then discarded and Detach not called
+     *
+     * MapStack cleaning:
+     * Clean here instead of the shared project
+     * for dynamic transitions with virtualization
+     *
      * Pop a controller with transitions groups:
      * Fix to allow the group to be set wit hbinding
      *
@@ -109,28 +116,41 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         {
                             //get the matching transition: we store the destination view and the corrispondent transition in the source view,
                             //so we can match them during transition.
-                            //Using LastOrDefault because in listview i dont know why but ios creates two istances of the first view
-                            var nativeViewId = transitionStackFrom.LastOrDefault(x => x.TransitionName == transitionToMap.TransitionName)?.NativeViewId ?? 0;
 
-                            if (nativeViewId <= 0)
+                            /*
+                             * IMPORTANT
+                             *
+                             * Using ListView/Collection cause the first item to be created two times, but then one of them is discarded
+                             * without calling the Detach method from our effect. So we need to find the right element!
+                             */
+                            
+                            foreach (var nativeView in transitionStackFrom.Where(x => x.TransitionName == transitionToMap.TransitionName))
                             {
-                                Debug.WriteLine("NativeViewId should not be 0 at this point");
-                                continue;
-                            }
-
-                            var fromView = fromViewController.View.ViewWithTag(nativeViewId);
-                            if (fromView != null)
-                            {
-                                viewsToAnimate.Add((toView, fromView));
-                            }
-                            else
-                            {
-                                Debug.WriteLine($"The source ViewId {nativeViewId} has no corrisponding Navive Views in tree");
+                                var fromView = fromViewController.View.ViewWithTag(nativeView.NativeViewId);
+                                if (fromView != null)
+                                {
+                                    viewsToAnimate.Add((toView, fromView));
+                                    break;
+                                }
                             }
                         }
                         else
                         {
-                            Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree");
+                            /*
+                             * IMPORTANT:
+                             *
+                             * FIX for collectionview element recycling... or similar controls/virtualizations.
+                             * I cant clean the mapstack in the shared project cause its managed by binding and attached properties
+                             * aaaand.... they are slow to execute and leave the mapstack corrupted!
+                             * This is the only way i found to have a reliable, clean mapstack.
+                             */
+
+                            NavPage.TransitionMap.Remove(
+                                operation == UINavigationControllerOperation.Push
+                                    ? NavPage.CurrentPage
+                                    : PropertiesContainer, transitionToMap.NativeViewId);
+
+                            Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree and has been removed");
                         }
                     }
                 }

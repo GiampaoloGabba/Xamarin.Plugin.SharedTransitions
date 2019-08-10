@@ -14,6 +14,7 @@ namespace Plugin.SharedTransitions
         IReadOnlyList<TransitionDetail> GetMap(Page page, bool ignoreGroup);
         int AddOrUpdate(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId);
         void Remove(Page page, Guid formsViewId);
+        void Remove(Page page, int nativeViewId);
         void RemoveFromPage(Page page);
     }
 
