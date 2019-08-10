@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Linq;
-using Java.IO;
 using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions

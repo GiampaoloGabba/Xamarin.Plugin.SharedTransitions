@@ -110,7 +110,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 foreach (var transitionFromMap in transitionStackFrom)
                 {
                     var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
-                    if (fromView == null) continue;
+                    if (fromView == null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"The source ViewId {transitionFromMap.NativeViewId} has no corrisponding Navive Views in tree");
+                        continue;
+                    }
 
                     //group management for pop:
                     //TODO: Rethink this mess... it works but is superduper ugly 
@@ -146,6 +150,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     //So we can read the properties for subsequent transitions from the page we are leaving
                     PropertiesContainer = Element.CurrentPage;
                 }
+            } else if (Build.VERSION.SdkInt < BuildVersionCodes.Lollipop)
+            {
+                System.Diagnostics.Debug.WriteLine($"Shared transitions are supported starting from Android Lollipop");
             }
             base.AddView(child);
         }

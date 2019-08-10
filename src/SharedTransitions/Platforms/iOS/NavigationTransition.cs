@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using CoreAnimation;
 using CoreGraphics;
 using Foundation;
@@ -67,7 +68,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 var fromView = viewToAnimate.FromView;
 
                 if (toView == null || fromView == null)
+                {
+                    Debug.WriteLine($"At this point we must have the 2 views to animate! One or both is missing");
                     break;
+                }
+                    
 
                 UIView fromViewSnapshot;
                 CGRect fromViewFrame;

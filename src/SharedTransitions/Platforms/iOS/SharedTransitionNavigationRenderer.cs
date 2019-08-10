@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Foundation;
@@ -111,11 +112,25 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             //Using LastOrDefault because in listview i dont know why but ios creates two istances of the first view
                             var nativeViewId = transitionStackFrom.LastOrDefault(x => x.TransitionName == transitionToMap.TransitionName)?.NativeViewId ?? 0;
 
-                            if (nativeViewId <= 0) continue;
+                            if (nativeViewId <= 0)
+                            {
+                                Debug.WriteLine("NativeViewId should not be 0 at this point");
+                                continue;
+                            }
 
                             var fromView = fromViewController.View.ViewWithTag(nativeViewId);
                             if (fromView != null)
+                            {
                                 viewsToAnimate.Add((toView, fromView));
+                            }
+                            else
+                            {
+                                Debug.WriteLine($"The source ViewId {nativeViewId} has no corrisponding Navive Views in tree");
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree");
                         }
                     }
                 }
@@ -205,7 +220,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-
             InteractivePopGestureRecognizer.Delegate = this;
         }
 
