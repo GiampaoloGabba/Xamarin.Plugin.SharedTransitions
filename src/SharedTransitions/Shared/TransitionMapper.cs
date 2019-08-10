@@ -96,7 +96,7 @@ namespace Plugin.SharedTransitions
                         x.TransitionName == transitionName && x.TransitionGroup == transitionGroup &&
                         x.FormsViewId != formsViewId).ToList();
 
-                    for (int i = alreadyexisting.Count - 1; i >= 0; i++)
+                    for (int i = alreadyexisting.Count - 1; i >= 0; i--)
                         transitionMap.Transitions.RemoveAt(i);
                 }
             }

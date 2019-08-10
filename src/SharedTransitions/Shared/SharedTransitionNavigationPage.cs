@@ -31,8 +31,8 @@ namespace Plugin.SharedTransitions
         /// <summary>
         /// The shared transition duration in ms associated with the current page in stack
         /// </summary>
-        public static readonly BindableProperty SharedTransitionDurationProperty =
-            BindableProperty.CreateAttached("SharedTransitionDuration", typeof(long), typeof(SharedTransitionNavigationPage), (long)300);
+        public static readonly BindableProperty TransitionDurationProperty =
+            BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionNavigationPage), (long)300);
 
         /// <summary>
         /// Gets the transition map.
@@ -73,9 +73,9 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns></returns>
-        public static long GetSharedTransitionDuration(Page page)
+        public static long GetTransitionDuration(Page page)
         {
-            return (long)page.GetValue(SharedTransitionDurationProperty);
+            return (long)page.GetValue(TransitionDurationProperty);
         }
 
         /// <summary>
@@ -103,9 +103,9 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="value">The value.</param>
-        public static void SetSharedTransitionDuration(Page page, long value)
+        public static void SetTransitionDuration(Page page, long value)
         {
-            page.SetValue(SharedTransitionDurationProperty, value);
+            page.SetValue(TransitionDurationProperty, value);
         }
 
         protected override void OnChildRemoved(Element child)

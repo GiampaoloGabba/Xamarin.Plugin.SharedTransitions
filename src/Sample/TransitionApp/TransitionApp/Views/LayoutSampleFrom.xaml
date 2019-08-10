@@ -5,7 +5,7 @@
              xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
              x:Class="TransitionApp.Views.LayoutSampleFrom" Title="Layout sample"
-             sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}">
+             sharedTransitions:SharedTransitionNavigationPage.TransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}">
 
 <StackLayout Padding="10" Spacing="20">
     <Grid ColumnSpacing="10" HorizontalOptions="FillAndExpand">

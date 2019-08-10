@@ -44,7 +44,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         string _selectedGroup;
 
         BackgroundAnimation _backgroundAnimation;
-        int _sharedTransitionDuration;
+        int _TransitionDuration;
 
         SharedTransitionNavigationPage NavPage => Element as SharedTransitionNavigationPage;
 
@@ -68,7 +68,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 {
                     _propertiesContainer.PropertyChanged += PropertiesContainerOnPropertyChanged;
                     UpdateBackgroundTransition();
-                    UpdateSharedTransitionDuration();
+                    UpdateTransitionDuration();
                     UpdateSelectedGroup();
                 }
             }
@@ -140,7 +140,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
                 var navigationTransition = TransitionInflater.From(Context)
                                                              .InflateTransition(Resource.Transition.navigation_transition)
-                                                             .SetDuration(_sharedTransitionDuration);
+                                                             .SetDuration(_TransitionDuration);
 
                 fragmentToShow.SharedElementEnterTransition = navigationTransition;
 
@@ -224,8 +224,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override int TransitionDuration
         {
-            get => _sharedTransitionDuration;
-            set => _sharedTransitionDuration = value;
+            get => _TransitionDuration;
+            set => _TransitionDuration = value;
         }
 
         void FinalizePageTransition(FragmentTransaction transaction, bool isPush)
@@ -302,9 +302,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
             {
                 UpdateBackgroundTransition();
             }
-            else if (e.PropertyName == SharedTransitionNavigationPage.SharedTransitionDurationProperty.PropertyName)
+            else if (e.PropertyName == SharedTransitionNavigationPage.TransitionDurationProperty.PropertyName)
             {
-                UpdateSharedTransitionDuration();
+                UpdateTransitionDuration();
             }
             else if (e.PropertyName == SharedTransitionNavigationPage.TransitionSelectedGroupProperty.PropertyName)
             {
@@ -317,9 +317,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
             _backgroundAnimation = SharedTransitionNavigationPage.GetBackgroundAnimation(PropertiesContainer);
         }
 
-        void UpdateSharedTransitionDuration()
+        void UpdateTransitionDuration()
         {
-            TransitionDuration = (int)SharedTransitionNavigationPage.GetSharedTransitionDuration(PropertiesContainer);
+            TransitionDuration = (int)SharedTransitionNavigationPage.GetTransitionDuration(PropertiesContainer);
         }
 
         void UpdateSelectedGroup()

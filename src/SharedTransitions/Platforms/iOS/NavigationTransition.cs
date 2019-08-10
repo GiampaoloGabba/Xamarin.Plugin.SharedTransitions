@@ -320,7 +320,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// <returns></returns>
         public override double TransitionDuration(IUIViewControllerContextTransitioning transitionContext)
         {
-            return _navigationPage.SharedTransitionDuration;
+            return _navigationPage.TransitionDuration;
         }
     }
 }

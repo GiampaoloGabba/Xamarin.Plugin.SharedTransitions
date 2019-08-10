@@ -32,7 +32,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     [Preserve(AllMembers = true)]
     public class SharedTransitionNavigationRenderer : NavigationRenderer, IUINavigationControllerDelegate, IUIGestureRecognizerDelegate
     {
-        public double SharedTransitionDuration { get; set; }
+        public double TransitionDuration { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
         string _selectedGroup;
         private UIScreenEdgePanGestureRecognizer _interactiveTransitionGestureRecognizer;
@@ -57,7 +57,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     _propertiesContainer.PropertyChanged += HandleChildPropertyChanged;
 
                 UpdateBackgroundTransition();
-                UpdateSharedTransitionDuration();
+                UpdateTransitionDuration();
                 UpdateSelectedGroup();
             }
         }
@@ -304,9 +304,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 UpdateBackgroundTransition();
             }
-            else if (e.PropertyName == SharedTransitionNavigationPage.SharedTransitionDurationProperty.PropertyName)
+            else if (e.PropertyName == SharedTransitionNavigationPage.TransitionDurationProperty.PropertyName)
             {
-                UpdateSharedTransitionDuration();
+                UpdateTransitionDuration();
             }
             else if (e.PropertyName == SharedTransitionNavigationPage.TransitionSelectedGroupProperty.PropertyName)
             {
@@ -319,9 +319,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             BackgroundAnimation = SharedTransitionNavigationPage.GetBackgroundAnimation(PropertiesContainer);
         }
 
-        void UpdateSharedTransitionDuration()
+        void UpdateTransitionDuration()
         {
-            SharedTransitionDuration = (double) SharedTransitionNavigationPage.GetSharedTransitionDuration(PropertiesContainer) / 1000;
+            TransitionDuration = (double) SharedTransitionNavigationPage.GetTransitionDuration(PropertiesContainer) / 1000;
         }
 
         void UpdateSelectedGroup()
