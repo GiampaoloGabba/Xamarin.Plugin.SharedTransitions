@@ -94,10 +94,10 @@ namespace Plugin.SharedTransitions
                     //it means that the old forms viewid has been replaced (eg: listview refresh ItemSource)
                     var alreadyexisting = transitionMap.Transitions.Where(x =>
                         x.TransitionName == transitionName && x.TransitionGroup == transitionGroup &&
-                        x.FormsViewId != formsViewId);
+                        x.FormsViewId != formsViewId).ToList();
 
-                    foreach (var existingTr in alreadyexisting)
-                        transitionMap.Transitions.Remove(existingTr);
+                    for (int i = alreadyexisting.Count - 1; i >= 0; i++)
+                        transitionMap.Transitions.RemoveAt(i);
                 }
             }
 

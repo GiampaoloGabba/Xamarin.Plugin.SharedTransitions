@@ -11,7 +11,7 @@
              sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="300">
 
 
-    <CollectionView ItemsSource="{Binding Dogs}" Margin="25" SelectionMode="None" x:Name="DogList">
+    <CollectionView ItemsSource="{Binding Dogs}" Margin="25,0" SelectionMode="None" x:Name="DogList">
         <CollectionView.ItemsLayout>
             <GridItemsLayout Orientation="Vertical" VerticalItemSpacing="20" />
         </CollectionView.ItemsLayout>
