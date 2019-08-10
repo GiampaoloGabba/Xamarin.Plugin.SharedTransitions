@@ -33,7 +33,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == Transition.NameProperty.PropertyName)
+            if (args.PropertyName == Transition.NameProperty.PropertyName ||
+                args.PropertyName == Transition.GroupProperty.PropertyName)
                 UpdateTag();
 
             base.OnElementPropertyChanged(args);
@@ -55,17 +56,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (Control.Id == -1)
                         Control.Id = AndroidViews.View.GenerateViewId();
 
-                    var  aaa = Control.RootView;
-
                     //TransitionName needs to be unique for page to enable transitions between more than 2 pages
                     Transition.RegisterTransition(element, Control.Id, _currentPage);
                         Control.TransitionName = _currentPage.Id + "_" + transitionName;
                 } 
                 else if (Container != null)
                 {
-
-                    var aaa = Container.RootView;
-
                     if (Container.Id == -1)
                         Container.Id = AndroidViews.View.GenerateViewId();
 

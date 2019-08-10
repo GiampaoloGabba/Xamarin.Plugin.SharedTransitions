@@ -12,7 +12,7 @@ namespace Plugin.SharedTransitions
         IReadOnlyList<TransitionMap> TransitionStack { get; }
         IReadOnlyList<TransitionDetail> GetMap(Page page, string selectedGroup = null);
         IReadOnlyList<TransitionDetail> GetMap(Page page, bool ignoreGroup);
-        int Add(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId);
+        int AddOrUpdate(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId);
         void Remove(Page page);
     }
 

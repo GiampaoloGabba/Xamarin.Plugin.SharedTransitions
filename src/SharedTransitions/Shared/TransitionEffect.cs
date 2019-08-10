@@ -108,7 +108,7 @@ namespace Plugin.SharedTransitions
                 var transitionGroup = GetGroup(element);
 
                 if (currentPage.Parent is SharedTransitionNavigationPage navPage && !string.IsNullOrEmpty(transitionName))
-                    return navPage.TransitionMap.Add(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
+                    return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
             }
 
             return 0;
