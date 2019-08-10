@@ -32,7 +32,7 @@ namespace Plugin.SharedTransitions
             typeof(string), 
             typeof(Transition), 
             null, 
-            propertyChanged: OnNamePropertyChanged);
+            propertyChanged: OnPropertyChanged);
 
         /// <summary>
         /// Transition group for dynamic transitions
@@ -42,7 +42,7 @@ namespace Plugin.SharedTransitions
             typeof(string), 
             typeof(Transition), 
             null,
-            propertyChanged: OnNamePropertyChanged);
+            propertyChanged: OnPropertyChanged);
 
         /// <summary>
         /// Gets the shared transition name for the element
@@ -132,7 +132,7 @@ namespace Plugin.SharedTransitions
         /// <param name="bindable">Xamarin Forms Element</param>
         /// <param name="oldValue">The old value</param>
         /// <param name="newValue">The new value</param>
-        static void OnNamePropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        static void OnPropertyChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable == null)
             {
