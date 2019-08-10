@@ -5,7 +5,7 @@
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" Padding="0"
-             x:Class="TransitionApp.Views.DynamicSampleTo2" Title="App Store Sample">
+             x:Class="TransitionApp.Views.DynamicSampleTo2" Title="Collectionview Sample">
 
 <ScrollView>
     <Frame CornerRadius="0" Padding="0" BackgroundColor="DodgerBlue"

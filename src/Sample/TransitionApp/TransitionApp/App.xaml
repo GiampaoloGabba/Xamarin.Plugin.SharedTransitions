@@ -5,7 +5,12 @@
              x:Class="TransitionApp.App">
 	<Application.Resources>
 
-		<!-- Application resource dictionary -->
+        <ResourceDictionary>
+              <Style TargetType="NavigationPage" ApplyToDerivedTypes="True">
+                <Setter Property="BarBackgroundColor" Value="DodgerBlue"/>
+                <Setter Property="BarTextColor" Value="White"/>
+              </Style>
+        </ResourceDictionary>
 
 	</Application.Resources>
 </prism:PrismApplication>

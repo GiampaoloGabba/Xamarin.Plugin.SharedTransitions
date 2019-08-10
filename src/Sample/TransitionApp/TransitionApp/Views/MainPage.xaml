@@ -5,13 +5,35 @@
              xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
              Title="Main Menu">
 
-    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Spacing="20">
-        <Label Text="Welcome to the Shared Transition Sample App!" Margin="0,0,0,10" />
+    <ContentPage.Resources>
+        <ResourceDictionary>
 
-        <Button Text="Simple transition with images"  Command="{prism:NavigateTo 'ImageSampleFrom'}" />
-        <Button Text="Simple transition with layouts" Command="{prism:NavigateTo 'LayoutSampleFrom'}" />
-        <Button Text="Dynamic transition (listview)"  Command="{prism:NavigateTo 'DynamicSampleFrom'}" />
-        <Button Text="Collectionview complex"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
+            <Style TargetType="Label">
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="HorizontalOptions" Value="Center"/>
+                <Setter Property="WidthRequest" Value="300"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+        
+        <Label Text="Welcome to the Shared Transition Sample App!"
+               HorizontalTextAlignment="Center" TextColor="IndianRed"
+               FontSize="30" FontAttributes="Bold" Margin="0,0,0,30" />
+
+        <Label Text="Simple transitions:" Margin="0,0,0,5" />
+
+        <Button Text="Images"  Command="{prism:NavigateTo 'ImageSampleFrom'}" />
+        <Button Text="Layouts" Command="{prism:NavigateTo 'LayoutSampleFrom'}" />
+
+        <Label Text="Dynamic transitions:" Margin="0,15,0,5" />
+
+        <Button Text="Listview (simple)" Command="{prism:NavigateTo 'DynamicSampleFrom'}" />
+        <Button Text="Collectionview (multiple items)"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
     </StackLayout>
 
 </ContentPage>

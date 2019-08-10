@@ -5,7 +5,7 @@
              xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" Padding="0"
-             x:Class="TransitionApp.Views.DynamicSampleTo" Title="Dynamic sample">
+             x:Class="TransitionApp.Views.DynamicSampleTo" Title="Listview sample">
 
     <ScrollView>
         <StackLayout Spacing="20" Padding="10">

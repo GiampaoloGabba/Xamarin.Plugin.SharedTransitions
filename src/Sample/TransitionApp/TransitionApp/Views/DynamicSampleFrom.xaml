@@ -7,7 +7,7 @@
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" Padding="0"
              xmlns:behaviors="http://prismlibrary.com"
-             x:Class="TransitionApp.Views.DynamicSampleFrom" Title="Dynamic sample"
+             x:Class="TransitionApp.Views.DynamicSampleFrom" Title="Listview sample"
              sharedTransitions:SharedTransitionNavigationPage.TransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}"
              sharedTransitions:SharedTransitionNavigationPage.TransitionSelectedGroup="{Binding SelectedDogId }" >
 
