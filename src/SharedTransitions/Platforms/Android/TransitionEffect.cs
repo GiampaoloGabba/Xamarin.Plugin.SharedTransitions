@@ -1,6 +1,5 @@
 ﻿using Android.OS;
 using System.ComponentModel;
-using System.Linq;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -16,14 +15,13 @@ namespace Plugin.SharedTransitions.Platforms.Android
         private Page _currentPage;
         protected override void OnAttached()
         {
-            var navStack = Application.Current.MainPage.Navigation?.NavigationStack;
-            if (navStack == null || navStack.Count == 0)
+            _currentPage = Application.Current.MainPage.GetCurrentPageInNavigationStack();
+            if (_currentPage == null)
                 throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
 
-            _currentPage  = navStack.Last();
             UpdateTag();
         }
-
+        
         protected override void OnDetached()
         {
             //WHAT? Nothing on detach?
@@ -57,12 +55,17 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (Control.Id == -1)
                         Control.Id = AndroidViews.View.GenerateViewId();
 
+                    var  aaa = Control.RootView;
+
                     //TransitionName needs to be unique for page to enable transitions between more than 2 pages
                     Transition.RegisterTransition(element, Control.Id, _currentPage);
                         Control.TransitionName = _currentPage.Id + "_" + transitionName;
                 } 
                 else if (Container != null)
                 {
+
+                    var aaa = Container.RootView;
+
                     if (Container.Id == -1)
                         Container.Id = AndroidViews.View.GenerateViewId();
 

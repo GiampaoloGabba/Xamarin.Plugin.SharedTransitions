@@ -7,7 +7,7 @@
              prism:ViewModelLocator.AutowireViewModel="True" Padding="0"
              x:Class="TransitionApp.Views.DynamicSampleFrom2" Title="App Store Sample"
              sharedTransitions:SharedTransitionNavigationPage.TransitionSelectedGroup="{Binding SelectedDogId }"
-             sharedTransitions:SharedTransitionNavigationPage.BackgroundAnimation="None"
+             sharedTransitions:SharedTransitionNavigationPage.BackgroundAnimation="Fade"
              sharedTransitions:SharedTransitionNavigationPage.SharedTransitionDuration="300">
 
 
@@ -29,11 +29,11 @@
                     <StackLayout IsClippedToBounds="True">
                         <Image Source="{Binding Image}" Aspect="AspectFill" 
                                sharedTransitions:Transition.Name="DogImage"
-                               sharedTransitions:Transition.Group="{Binding Id, Mode=TwoWay}"/>
+                               sharedTransitions:Transition.Group="{Binding Id}"/>
                         <Label Text="{Binding Title}" VerticalOptions="Center" Margin="20,10,20,15" 
                                FontSize="Large" FontAttributes="Bold" TextColor="White"
                                sharedTransitions:Transition.Name="DogTitle"
-                               sharedTransitions:Transition.Group="{Binding Id, Mode=TwoWay}"/>
+                               sharedTransitions:Transition.Group="{Binding Id}"/>
                     </StackLayout>
                 </Frame>
             </DataTemplate>

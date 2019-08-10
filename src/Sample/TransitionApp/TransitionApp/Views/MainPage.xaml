@@ -11,7 +11,7 @@
         <Button Text="Simple transition with images"  Command="{prism:NavigateTo 'ImageSampleFrom'}" />
         <Button Text="Simple transition with layouts" Command="{prism:NavigateTo 'LayoutSampleFrom'}" />
         <Button Text="Dynamic transition (listview)"  Command="{prism:NavigateTo 'DynamicSampleFrom'}" />
-        <Button Text="Dynamic transition pretty"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
+        <Button Text="Collectionview complex"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
     </StackLayout>
 
 </ContentPage>
