@@ -29,6 +29,9 @@
     <Compile Update="Views\DynamicSampleTo.xaml.cs">
       <DependentUpon>DynamicSampleTo.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\GuestStar.xaml.cs">
+      <DependentUpon>GuestStar.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\LayoutSampleFrom.xaml.cs">
       <DependentUpon>LayoutSampleFrom.xaml</DependentUpon>
     </Compile>

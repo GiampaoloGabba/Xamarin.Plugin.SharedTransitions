@@ -163,7 +163,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         AddInteractiveTransitionRecognizer();
                     }
-                    return new NavigationTransition(viewsToAnimate, operation, this);
+                    return new NavigationTransition(viewsToAnimate, operation, this, _interactiveTransitionGestureRecognizer);
                 }
             }
 

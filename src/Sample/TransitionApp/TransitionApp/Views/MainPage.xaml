@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TransitionApp.Views.MainPage"
              xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
              Title="Main Menu">
 
     <ContentPage.Resources>
@@ -29,23 +31,34 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
-        
-        <Label Text="Welcome to the Shared Transition Sample App!"
-               HorizontalTextAlignment="Center" TextColor="IndianRed"
-               FontSize="30" FontAttributes="Bold" Margin="0,0,0,30" />
+    <ScrollView>
+        <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+            
+            <Label Text="Welcome to the Shared Transition Sample App!"
+                   HorizontalTextAlignment="Center" TextColor="IndianRed"
+                   FontSize="30" FontAttributes="Bold" />
 
-        <Label Text="Simple transitions:" Style="{StaticResource SubTitle}" />
+            <yummy:PancakeView BackgroundColor="DodgerBlue" CornerRadius="15" Padding="5,10" Elevation="4" Margin="20,15"
+                               sharedTransitions:Transition.Name="camilla">
+                <yummy:PancakeView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{prism:NavigateTo 'GuestStar'}" />
+                </yummy:PancakeView.GestureRecognizers>
 
-        <Button Text="Images"  Command="{prism:NavigateTo 'ImageSampleFrom'}" />
-        <Button Text="Layouts" Command="{prism:NavigateTo 'LayoutSampleFrom'}" />
-        <Label Text="With PancakeView" Style="{StaticResource Info}" />
+                <Label Text="Guest Star: #CamillaFasionDog :)" HorizontalOptions="Center" TextColor="White"
+                       sharedTransitions:Transition.Name="fashionDog"/>
+            </yummy:PancakeView>
 
-        <Label Text="Dynamic transitions:" Style="{StaticResource SubTitle}" />
+            <Label Text="Simple transitions:" Style="{StaticResource SubTitle}" />
 
-        <Button Text="Listview (simple)" Command="{prism:NavigateTo 'DynamicSampleFrom'}" />
-        <Button Text="Collectionview (multiple items)"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
-        <Label Text="With FFImageLoading &amp; PancakeView" Style="{StaticResource Info}" />
-    </StackLayout>
+            <Button Text="Images"  Command="{prism:NavigateTo 'ImageSampleFrom'}" />
+            <Button Text="Layouts" Command="{prism:NavigateTo 'LayoutSampleFrom'}" />
+            <Label Text="With PancakeView" Style="{StaticResource Info}" />
 
+            <Label Text="Dynamic transitions:" Style="{StaticResource SubTitle}" />
+
+            <Button Text="Listview (simple)" Command="{prism:NavigateTo 'DynamicSampleFrom'}" />
+            <Button Text="Collectionview (multiple items)"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
+            <Label Text="With FFImageLoading &amp; PancakeView" Style="{StaticResource Info}" />
+        </StackLayout>
+    </ScrollView>
 </ContentPage>

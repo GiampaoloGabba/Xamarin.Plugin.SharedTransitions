@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+             x:Class="TransitionApp.Views.GuestStar" Title="Camilla says HI!">
+
+
+            <yummy:PancakeView BackgroundColor="DodgerBlue"
+                               sharedTransitions:Transition.Name="camilla">
+                <StackLayout Spacing="20">
+
+                    <Image Source="what_the_dog.jpg" Opacity="0" x:Name="Camilla" />
+
+                    <Label Text="Guest Star: #CamillaFasionDog :)" HorizontalOptions="Center" TextColor="White"
+                           sharedTransitions:Transition.Name="fashionDog"/>
+
+                </StackLayout>
+            </yummy:PancakeView>
+            
+
+
+</ContentPage>
