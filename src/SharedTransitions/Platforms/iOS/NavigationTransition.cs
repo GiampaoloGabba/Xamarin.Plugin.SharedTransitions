@@ -158,7 +158,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     var maskLayerAnimation = CreateMaskTransition(transitionContext, fromMask, toMask);
                     fromMask.AddAnimation(maskLayerAnimation, "path");
 
-                    //Interactive gesture using CADisplayLink
+                    //Handling the mask transition with the Interactive gesture for pop
                     if (_edgeGestureRecognizer.State == UIGestureRecognizerState.Began)
                     {
                         fromMask.Speed = 0;
@@ -209,6 +209,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     else
                         fromMask.Speed = -1;
 
+                    //this do the magic... forget this and it's a mess :)
                     fromMask.BeginTime = CAAnimation.CurrentMediaTime();
                     break;
             }
