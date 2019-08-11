@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using CoreAnimation;
 using CoreGraphics;
-using Foundation;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
@@ -35,16 +34,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         readonly SharedTransitionNavigationRenderer _navigationPage;
         readonly List<(UIView ToView, UIView FromView)> _viewsToAnimate;
         readonly UINavigationControllerOperation _operation;
-        readonly UIScreenEdgePanGestureRecognizer _interactiveTransitionGestureRecognizer;
-        CADisplayLink displayLink;
+        readonly UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
 
-        public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, SharedTransitionNavigationRenderer navigationPage, UIScreenEdgePanGestureRecognizer interactiveTransitionGestureRecognizer)
+        public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, SharedTransitionNavigationRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
         {
             _navigationPage = navigationPage;
+            _operation = operation;
+            _edgeGestureRecognizer = edgeGestureRecognizer;
+
             //Auto z-index, to avoid mess when animating multiple views, layouts ecc.
             _viewsToAnimate = viewsToAnimate.OrderBy(x => x.FromView is UIControl || x.FromView is UILabel || x.FromView is UIImageView).ToList();
-            _operation = operation;
-            _interactiveTransitionGestureRecognizer = interactiveTransitionGestureRecognizer;
         }
 
         /// <summary>
@@ -152,38 +151,18 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     toFrame = toView.ConvertRectToView(toView.Bounds, containerView);
 
                 //Mask animation (for shape/corner radius)
+                UIGestureRecognizer.Token token = null;
                 var toMask = toView.Layer.GetMask(toView.Bounds);
                 if (toMask != null && fromViewSnapshot.Layer.Mask is CAShapeLayer fromMask)
                 {
+                    var maskLayerAnimation = CreateMaskTransition(transitionContext, fromMask, toMask);
+                    fromMask.AddAnimation(maskLayerAnimation, "path");
+
                     //Interactive gesture using CADisplayLink
-                    if (_interactiveTransitionGestureRecognizer.State == UIGestureRecognizerState.Began ||
-                        _interactiveTransitionGestureRecognizer.State == UIGestureRecognizerState.Changed)
+                    if (_edgeGestureRecognizer.State == UIGestureRecognizerState.Began)
                     {
-
-                        var maskLayerAnimation = CreateMaskTransition(transitionContext, fromMask, toMask);
-                        fromMask.AddAnimation(maskLayerAnimation, "path");
                         fromMask.Speed = 0;
-
-                        displayLink = CADisplayLink.Create (()=>
-                        {
-                            var percent = Math.Abs(_interactiveTransitionGestureRecognizer.TranslationInView(containerView).X / containerView.Frame.Width);
-                            var offset = TransitionDuration(transitionContext) * percent;
-                            fromMask.TimeOffset = offset;
-
-                            //TODO: Improve here
-                            if (percent > 0.95)
-                            {
-                                displayLink?.Invalidate ();
-                                displayLink = null;
-                            }
-                        });
-                        displayLink.AddToRunLoop (NSRunLoop.Main, NSRunLoopMode.Common);
-                        displayLink.PreferredFramesPerSecond = 60;
-                    }
-                    else
-                    {
-                        var maskLayerAnimation = CreateMaskTransition(transitionContext, fromMask, toMask);
-                        fromMask.AddAnimation(maskLayerAnimation, "path");
+                        token = _edgeGestureRecognizer.AddTarget(() => InteractiveTransitionRecognizerAction(_edgeGestureRecognizer, transitionContext, fromMask));
                     }
                 }
 
@@ -198,8 +177,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     toView.Hidden   = false;
                     fromView.Hidden = false;
                     fromViewSnapshot.RemoveFromSuperview();
-                    displayLink?.Invalidate();
-                    displayLink = null;
+
+                    if (token != null)
+                        _edgeGestureRecognizer.RemoveTarget(token);
                 });
             }
 
@@ -208,6 +188,30 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 fromViewController.View.Alpha = 0;
 
             FinalizeTransition(transitionContext, fromViewController, toViewController);
+        }
+
+        private void InteractiveTransitionRecognizerAction(UIScreenEdgePanGestureRecognizer sender, IUIViewControllerContextTransitioning transitionContext, CAShapeLayer fromMask)
+        {
+            var percent = sender.TranslationInView(sender.View).X / sender.View.Frame.Width;
+            var offset  = TransitionDuration(transitionContext) * percent;
+
+            switch (sender.State)
+            {
+                case UIGestureRecognizerState.Changed:
+                    
+                    fromMask.TimeOffset = offset;
+                    break;
+
+                case UIGestureRecognizerState.Ended:
+
+                    if (percent > 0.5 || sender.VelocityInView(sender.View).X > 300)
+                        fromMask.Speed = 1;
+                    else
+                        fromMask.Speed = -1;
+
+                    fromMask.BeginTime = CAAnimation.CurrentMediaTime();
+                    break;
+            }
         }
 
         CABasicAnimation CreateMaskTransition(IUIViewControllerContextTransitioning transitionContext, CAShapeLayer fromMask, CAShapeLayer toMask)

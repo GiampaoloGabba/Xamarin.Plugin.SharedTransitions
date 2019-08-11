@@ -42,7 +42,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public double TransitionDuration { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
         string _selectedGroup;
-        private UIScreenEdgePanGestureRecognizer _interactiveTransitionGestureRecognizer;
+        private UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
 
         Page _propertiesContainer;
         public Page PropertiesContainer
@@ -163,7 +163,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         AddInteractiveTransitionRecognizer();
                     }
-                    return new NavigationTransition(viewsToAnimate, operation, this, _interactiveTransitionGestureRecognizer);
+                    return new NavigationTransition(viewsToAnimate, operation, this, _edgeGestureRecognizer);
                 }
             }
 
@@ -246,25 +246,25 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         void AddInteractiveTransitionRecognizer()
         {
             InteractivePopGestureRecognizer.Enabled = false;
-            if (!View.GestureRecognizers.Contains(_interactiveTransitionGestureRecognizer))
+            if (!View.GestureRecognizers.Contains(_edgeGestureRecognizer))
             {
                 //Add PanGesture on left edge to POP page
-                _interactiveTransitionGestureRecognizer = new UIScreenEdgePanGestureRecognizer {Edges = UIRectEdge.Left};
-                _interactiveTransitionGestureRecognizer.AddTarget(() => InteractiveTransitionRecognizerAction(_interactiveTransitionGestureRecognizer));
-                View.AddGestureRecognizer(_interactiveTransitionGestureRecognizer);
+                _edgeGestureRecognizer = new UIScreenEdgePanGestureRecognizer {Edges = UIRectEdge.Left};
+                _edgeGestureRecognizer.AddTarget(() => InteractiveTransitionRecognizerAction(_edgeGestureRecognizer));
+                View.AddGestureRecognizer(_edgeGestureRecognizer);
             }
             else
             {
-                _interactiveTransitionGestureRecognizer.Enabled = true;
+                _edgeGestureRecognizer.Enabled = true;
             }
         }
 
         void RemoveInteractiveTransitionRecognizer()
         {
-            if (_interactiveTransitionGestureRecognizer != null && 
-                View.GestureRecognizers.Contains(_interactiveTransitionGestureRecognizer))
+            if (_edgeGestureRecognizer != null && 
+                View.GestureRecognizers.Contains(_edgeGestureRecognizer))
             {
-                _interactiveTransitionGestureRecognizer.Enabled = false;
+                _edgeGestureRecognizer.Enabled = false;
                 InteractivePopGestureRecognizer.Enabled = true;
             }
             InteractivePopGestureRecognizer.Enabled = true;
@@ -295,7 +295,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     if (percent > 0.5 || sender.VelocityInView(sender.View).X > 300)
                     {
                         _percentDrivenInteractiveTransition.FinishInteractiveTransition();
-
                         /*
                          * IMPORTANT!
                          *
