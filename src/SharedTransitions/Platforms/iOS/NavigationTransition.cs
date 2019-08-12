@@ -6,8 +6,6 @@ using System.Diagnostics;
 using CoreAnimation;
 using CoreGraphics;
 using UIKit;
-using Xamarin.Forms;
-using Xamarin.Forms.Platform.iOS;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
@@ -35,14 +33,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         readonly List<(UIView ToView, UIView FromView)> _viewsToAnimate;
         readonly UINavigationControllerOperation _operation;
         readonly UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
+        private IUIViewControllerContextTransitioning _transitionContext; 
+        UIViewController _fromViewController;
+        UIViewController _toViewController;
+        List<CAShapeLayer> _masksToAnimate;
+        private double _transitionDuration;
 
         public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, SharedTransitionNavigationRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
         {
-            _navigationPage = navigationPage;
-            _operation = operation;
+            _navigationPage        = navigationPage;
+            _operation             = operation;
             _edgeGestureRecognizer = edgeGestureRecognizer;
+            _masksToAnimate        = new List<CAShapeLayer>();
 
             //Auto z-index, to avoid mess when animating multiple views, layouts ecc.
+            //TODO: Create a property for custom z-index
             _viewsToAnimate = viewsToAnimate.OrderBy(x => x.FromView is UIControl || x.FromView is UILabel || x.FromView is UIImageView).ToList();
         }
 
@@ -52,14 +57,17 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// <param name="transitionContext">The transition context.</param>
         public override async void AnimateTransition(IUIViewControllerContextTransitioning transitionContext)
         {
-            var containerView      = transitionContext.ContainerView;
-            var fromViewController = transitionContext.GetViewControllerForKey(UITransitionContext.FromViewControllerKey);
-            var toViewController   = transitionContext.GetViewControllerForKey(UITransitionContext.ToViewControllerKey);
+            _transitionContext  = transitionContext;
+            _fromViewController = _transitionContext.GetViewControllerForKey(UITransitionContext.FromViewControllerKey);
+            _toViewController   = _transitionContext.GetViewControllerForKey(UITransitionContext.ToViewControllerKey);
+            _transitionDuration = TransitionDuration(transitionContext);
+
+            var containerView   = _transitionContext.ContainerView;
 
             // This needs to be added to the view hierarchy for the destination frame to be correct,
             // but we don't want it visible yet.
-            containerView.InsertSubview(toViewController.View, 0);
-            toViewController.View.Alpha = 0;
+            containerView.InsertSubview(_toViewController.View, 0);
+            _toViewController.View.Alpha = 0;
 
             //iterate the destination views, this has two benefits:
             //1) We are sure to dont start transitions with views only in the start controller
@@ -100,17 +108,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         fromViewSnapshot = fromView.CopyView();
                     }
                 }
-                else if (fromView is VisualElementRenderer<BoxView>)
-                {
-                    /*
-                     * IMPORTANT
-                     *
-                     * DAMNIT! this little things made me lost a LOT of time. Me n00b.
-                     * So.. dont use fromView.Frame here or layout will go crazy!
-                     */
-                    fromViewFrame    = fromView.Bounds;
-                    fromViewSnapshot = fromView.SnapshotView(false);
-                }
                 else
                 {
                     /*
@@ -119,7 +116,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                      * DAMNIT! this little things made me lost a LOT of time. Me n00b.
                      * So.. dont use fromView.Frame here or layout will go crazy!
                      */
-                    fromViewFrame = fromView.Bounds;
+                    fromViewFrame    = fromView.Bounds;
                     fromViewSnapshot = fromView.CopyView(softCopy: true);
                 }
 
@@ -145,28 +142,31 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 fromView.Hidden         = true;
 
                 CGRect toFrame;
+                CAShapeLayer toMask;
+
                 if (toView is UIImageView toImageView)
                     toFrame = toImageView.ConvertRectToView(toImageView.GetImageFrame(), containerView);
                 else
                     toFrame = toView.ConvertRectToView(toView.Bounds, containerView);
 
                 //Mask animation (for shape/corner radius)
-                UIGestureRecognizer.Token token = null;
-                var toMask = toView.Layer.GetMask(toView.Bounds);
+                toMask = toView.Layer.GetMask(toView.Bounds);
                 if (toMask != null && fromViewSnapshot.Layer.Mask is CAShapeLayer fromMask)
                 {
-                    var maskLayerAnimation = CreateMaskTransition(transitionContext, fromMask, toMask);
+                    CABasicAnimation maskLayerAnimation = CreateMaskTransition(fromMask, toMask);
                     fromMask.AddAnimation(maskLayerAnimation, "path");
 
                     //Handling the mask transition with the Interactive gesture for pop
-                    if (_edgeGestureRecognizer.State == UIGestureRecognizerState.Began)
+                    //Warning: We need to watch for began and changed because sometimes began is not fired
+                    if (_edgeGestureRecognizer.State == UIGestureRecognizerState.Began ||
+                        _edgeGestureRecognizer.State == UIGestureRecognizerState.Changed)
                     {
                         fromMask.Speed = 0;
-                        token = _edgeGestureRecognizer.AddTarget(() => InteractiveTransitionRecognizerAction(_edgeGestureRecognizer, transitionContext, fromMask));
+                        _masksToAnimate.Add(fromMask);
                     }
                 }
 
-                UIView.Animate(TransitionDuration(transitionContext),0, UIViewAnimationOptions.CurveEaseInOut|UIViewAnimationOptions.AllowUserInteraction, () =>
+                UIView.Animate(_transitionDuration,0, UIViewAnimationOptions.CurveEaseInOut|UIViewAnimationOptions.AllowUserInteraction, () =>
                 {
                     //set the main properties to animate
                     fromViewSnapshot.Frame = toFrame;
@@ -177,66 +177,72 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     toView.Hidden   = false;
                     fromView.Hidden = false;
                     fromViewSnapshot.RemoveFromSuperview();
-
-                    if (token != null)
-                        _edgeGestureRecognizer.RemoveTarget(token);
                 });
             }
 
             //Avoid flickering during push and display a right pop
             if (_operation == UINavigationControllerOperation.Pop)
-                fromViewController.View.Alpha = 0;
+                _fromViewController.View.Alpha = 0;
 
-            FinalizeTransition(transitionContext, fromViewController, toViewController);
+            if (_masksToAnimate.Any())
+            {
+                Debug.WriteLine("========== Subscribe event");
+                _navigationPage.EdgeGesturePanned += NavigationPageOnEdgeGesturePanned;
+            }
+
+            FinalizeTransition();
         }
 
-        private void InteractiveTransitionRecognizerAction(UIScreenEdgePanGestureRecognizer sender, IUIViewControllerContextTransitioning transitionContext, CAShapeLayer fromMask)
+        private void NavigationPageOnEdgeGesturePanned(object sender, EdgeGesturePannedArgs args)
         {
-            var percent = sender.TranslationInView(sender.View).X / sender.View.Frame.Width;
-            var offset  = TransitionDuration(transitionContext) * percent;
-
-            switch (sender.State)
+            //Control the animation on the upper mask layer
+            double offset = _transitionDuration * args.Percent;
+            foreach (CAShapeLayer fromMask in _masksToAnimate)
             {
-                case UIGestureRecognizerState.Changed:
-                    
-                    fromMask.TimeOffset = offset;
-                    break;
+                switch (args.State)
+                {
+                    case UIGestureRecognizerState.Changed:
+                        fromMask.TimeOffset = offset;
+                        break;
 
-                case UIGestureRecognizerState.Ended:
+                    case UIGestureRecognizerState.Ended:
+                        fromMask.Speed = args.FinishTransitionOnEnd ? 1 : -1;
+                        //this do the magic... forget this and it's a mess :)
+                        fromMask.BeginTime = CAAnimation.CurrentMediaTime();
+                        break;
+                }   
+            }
 
-                    if (percent > 0.5 || sender.VelocityInView(sender.View).X > 300)
-                        fromMask.Speed = 1;
-                    else
-                        fromMask.Speed = -1;
-
-                    //this do the magic... forget this and it's a mess :)
-                    fromMask.BeginTime = CAAnimation.CurrentMediaTime();
-                    break;
+            if (args.State == UIGestureRecognizerState.Ended ||
+                args.State == UIGestureRecognizerState.Cancelled ||
+                args.State == UIGestureRecognizerState.Failed)
+            {
+                _navigationPage.EdgeGesturePanned -= NavigationPageOnEdgeGesturePanned;
             }
         }
 
-        CABasicAnimation CreateMaskTransition(IUIViewControllerContextTransitioning transitionContext, CAShapeLayer fromMask, CAShapeLayer toMask)
+        CABasicAnimation CreateMaskTransition(CAShapeLayer fromMask, CAShapeLayer toMask)
         {
             var maskLayerAnimation = CABasicAnimation.FromKeyPath("path");
             maskLayerAnimation.SetFrom(fromMask.Path);
             maskLayerAnimation.SetTo(toMask.Path);
-            maskLayerAnimation.Duration       = TransitionDuration(transitionContext);
+            maskLayerAnimation.Duration = _transitionDuration;
             maskLayerAnimation.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
 
             //Avoid "flashing" at the end of the animation
-            maskLayerAnimation.FillMode            = CAFillMode.Forwards;
+            maskLayerAnimation.FillMode = CAFillMode.Forwards;
             maskLayerAnimation.RemovedOnCompletion = false;
 
             return maskLayerAnimation;
         }
 
-        void FinalizeTransition(IUIViewControllerContextTransitioning transitionContext, UIViewController fromViewController, UIViewController toViewController)
+        void FinalizeTransition()
         {
             var screenWidth = UIScreen.MainScreen.Bounds.Size.Width;
             var backgroundAnimation = _navigationPage.BackgroundAnimation;
 
             //fix animation for push & pop
-            //TODO rework this better i have no time now :P
+            //TODO rework this, I dont have time now :P
             if (_operation == UINavigationControllerOperation.Pop)
             {
                 if (backgroundAnimation == BackgroundAnimation.SlideFromBottom)
@@ -262,27 +268,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 case BackgroundAnimation.None:
 
                     var delay = _operation == UINavigationControllerOperation.Push
-                        ? TransitionDuration(transitionContext)
+                        ? _transitionDuration
                         : 0;
 
                     UIView.Animate(0, delay, UIViewAnimationOptions.TransitionNone, () =>
                     {
-                        toViewController.View.Alpha = 1;
-                    }, () =>
-                    {
-                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
-                    });
+                        _toViewController.View.Alpha = 1;
+                    }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.Fade:
-                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveLinear, () =>
+                    UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveLinear, () =>
                     {
-                        toViewController.View.Alpha = 1;
-                        fromViewController.View.Alpha = 0;
-                    }, () =>
-                    {
-                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
-                    });
+                        _toViewController.View.Alpha = 1;
+                        _fromViewController.View.Alpha = 0;
+                    }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.Flip:
@@ -291,86 +291,71 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     initialTransform.m34 = m34;
                     initialTransform = initialTransform.Rotate((nfloat)(1 * Math.PI * 0.5), 0.0f, 1.0f, 0.0f);
 
-                    fromViewController.View.Alpha = 0;
-                    toViewController.View.Alpha = 0;
-                    toViewController.View.Layer.Transform = initialTransform;
-                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseInOut,
+                    _fromViewController.View.Alpha = 0;
+                    _toViewController.View.Alpha = 0;
+                    _toViewController.View.Layer.Transform = initialTransform;
+                    UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveEaseInOut,
                         () =>
                         {
-                            toViewController.View.Layer.AnchorPoint = new CGPoint((nfloat)0.5, 0.5f);
+                            _toViewController.View.Layer.AnchorPoint = new CGPoint((nfloat)0.5, 0.5f);
                             var newTransform = CATransform3D.Identity;
                             newTransform.m34 = m34;
-                            toViewController.View.Layer.Transform = newTransform;
-                            toViewController.View.Alpha = 1;
-                        }, () =>
-                        {
-                            FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
-                        });
+                            _toViewController.View.Layer.Transform = newTransform;
+                            _toViewController.View.Alpha = 1;
+                        }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.SlideFromBottom:
-                    toViewController.View.Alpha = 1;
-                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y + screenWidth);
-                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    _toViewController.View.Alpha = 1;
+                    _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X, _toViewController.View.Center.Y + screenWidth);
+                    UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveEaseOut, () =>
                     {
-                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X, fromViewController.View.Center.Y - screenWidth);
-                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y - screenWidth);
-                    }, () =>
-                    {
-                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
-                    });
+                        _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X, _fromViewController.View.Center.Y - screenWidth);
+                        _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X, _toViewController.View.Center.Y - screenWidth);
+                    }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.SlideFromLeft:
-                    toViewController.View.Alpha = 1;
-                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X - screenWidth, toViewController.View.Center.Y);
-                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    _toViewController.View.Alpha = 1;
+                    _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X - screenWidth, _toViewController.View.Center.Y);
+                    UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveEaseOut, () =>
                     {
-                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X + screenWidth, fromViewController.View.Center.Y);
-                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X + screenWidth, toViewController.View.Center.Y);
-                    }, () =>
-                    {
-                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
-                    });
+                        _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X + screenWidth, _fromViewController.View.Center.Y);
+                        _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X + screenWidth, _toViewController.View.Center.Y);
+                    }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.SlideFromRight:
-                    toViewController.View.Alpha = 1;
-                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X + screenWidth, toViewController.View.Center.Y);
-                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    _toViewController.View.Alpha = 1;
+                    _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X + screenWidth, _toViewController.View.Center.Y);
+                    UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveEaseOut, () =>
                     {
-                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X - screenWidth, fromViewController.View.Center.Y);
-                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X - screenWidth, toViewController.View.Center.Y);
-                    }, () =>
-                    {
-                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
-                    });
+                        _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X - screenWidth, _fromViewController.View.Center.Y);
+                        _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X - screenWidth, _toViewController.View.Center.Y);
+                    }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.SlideFromTop:
-                    toViewController.View.Alpha = 1;
-                    toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y - screenWidth);
-                    UIView.Animate(TransitionDuration(transitionContext), 0, UIViewAnimationOptions.CurveEaseOut, () =>
+                    _toViewController.View.Alpha = 1;
+                    _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X, _toViewController.View.Center.Y - screenWidth);
+                    UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveEaseOut, () =>
                     {
-                        fromViewController.View.Center = new CGPoint(fromViewController.View.Center.X, fromViewController.View.Center.Y + screenWidth);
-                        toViewController.View.Center = new CGPoint(toViewController.View.Center.X, toViewController.View.Center.Y + screenWidth);
-                    }, () =>
-                    {
-                        FixCompletionForSwipeAndPopToRoot(transitionContext, fromViewController);
-                    });
+                        _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X, _fromViewController.View.Center.Y + screenWidth);
+                        _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X, _toViewController.View.Center.Y + screenWidth);
+                    }, FixCompletionForSwipeAndPopToRoot);
                     break;
             }
         }
 
-        void FixCompletionForSwipeAndPopToRoot(IUIViewControllerContextTransitioning transitionContext, UIViewController fromViewController)
+        void FixCompletionForSwipeAndPopToRoot()
         {
             // Fix 1 for swipe + pop to root
-            fromViewController.View.Alpha = 1;
-            transitionContext.CompleteTransition(!transitionContext.TransitionWasCancelled);
+            _fromViewController.View.Alpha = 1;
+            _transitionContext.CompleteTransition(!_transitionContext.TransitionWasCancelled);
 
             // Fix 2 for swipe + pop to root
-            if (transitionContext.TransitionWasCancelled)
-                fromViewController.View.Alpha = 1;
+            if (_transitionContext.TransitionWasCancelled)
+                _fromViewController.View.Alpha = 1;
         }
 
         /// <summary>

@@ -121,8 +121,8 @@ namespace Plugin.SharedTransitions
         /// <param name="page">The page.</param>
         public void Remove(Page page, Guid formsViewId)
         {
-            var pageStack = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
-            pageStack?.Transitions.Remove(pageStack.Transitions.FirstOrDefault(x=>x.FormsViewId == formsViewId));
+            var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
+            transitionMap?.Transitions.Remove(transitionMap.Transitions.FirstOrDefault(x=>x.FormsViewId == formsViewId));
         }
 
         /// <summary>
@@ -132,8 +132,8 @@ namespace Plugin.SharedTransitions
         /// <param name="page">The page.</param>
         public void Remove(Page page, int nativeViewId)
         {
-            var pageStack = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
-            pageStack?.Transitions.Remove(pageStack.Transitions.FirstOrDefault(x=>x.NativeViewId == nativeViewId));
+            var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
+            transitionMap?.Transitions.Remove(transitionMap.Transitions.FirstOrDefault(x=>x.NativeViewId == nativeViewId));
         }
 
         /// <summary>

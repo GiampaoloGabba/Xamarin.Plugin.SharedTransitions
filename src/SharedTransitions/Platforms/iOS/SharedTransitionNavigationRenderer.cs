@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     {
         public double TransitionDuration { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
+        public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
         string _selectedGroup;
         private UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
 
@@ -273,6 +275,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         void InteractiveTransitionRecognizerAction(UIScreenEdgePanGestureRecognizer sender)
         {
             var percent = sender.TranslationInView(sender.View).X / sender.View.Frame.Width;
+            var finishTransitionOnEnd = percent > 0.5 || sender.VelocityInView(sender.View).X > 300;
+
+            OnEdgeGesturePanned(new EdgeGesturePannedArgs
+            {
+                State = sender.State,
+                Percent = percent,
+                FinishTransitionOnEnd = finishTransitionOnEnd
+            });
 
             switch (sender.State)
             {
@@ -292,7 +302,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     break;
 
                 case UIGestureRecognizerState.Ended:
-                    if (percent > 0.5 || sender.VelocityInView(sender.View).X > 300)
+                    if (finishTransitionOnEnd)
                     {
                         _percentDrivenInteractiveTransition.FinishInteractiveTransition();
                         /*
@@ -316,6 +326,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     break;
             }
         }
+
+        void OnEdgeGesturePanned(EdgeGesturePannedArgs e)
+        {
+            EventHandler<EdgeGesturePannedArgs> handler = EdgeGesturePanned;
+            handler?.Invoke(this, e);
+        }
+
 
         void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

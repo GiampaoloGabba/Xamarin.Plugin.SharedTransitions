@@ -196,8 +196,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
-                var fragments = _fragmentManager.Fragments;
-                var t = _fragmentManager.BeginTransaction();
+                var fragments   = _fragmentManager.Fragments;
+                var transaction = _fragmentManager.BeginTransaction();
 
                 /*
                  * IMPORTANT!
@@ -208,11 +208,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
                  *
                  * NOTE: we don't use "remove" here so we can maintain the state of the root view
                  */
-                
-                t.Detach(fragments.First());
-                t.Attach(fragments.First());
-
-                t.CommitAllowingStateLoss();
+                transaction.Detach(fragments.First());
+                transaction.Attach(fragments.First());
+                transaction.CommitAllowingStateLoss();
             }
             _popToRoot = true;
             var result = await base.OnPopToRootAsync(page, animated);

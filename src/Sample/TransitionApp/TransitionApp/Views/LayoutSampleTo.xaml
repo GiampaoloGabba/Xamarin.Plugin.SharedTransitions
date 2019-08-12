@@ -14,7 +14,7 @@
             <StackLayout BackgroundColor="Red" 
                          sharedTransitions:Transition.Name="Stack2" HeightRequest="100" />
             
-            <BoxView BackgroundColor="Blue" HeightRequest="80"
+            <BoxView BackgroundColor="Blue" HeightRequest="80" 
                      sharedTransitions:Transition.Name="Box3"/>
 
             <pancakeView:PancakeView CornerRadius="30" Padding="0" BackgroundColor="DodgerBlue" HeightRequest="140"

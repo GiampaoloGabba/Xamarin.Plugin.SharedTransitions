@@ -1,6 +1,5 @@
 ﻿using Android.OS;
 using System.ComponentModel;
-using Java.Util;
 using Plugin.SharedTransitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -42,7 +41,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
-                var transitionName = Transition.GetName(element);
+                var transitionName  = Transition.GetName(element);
                 var transitionGroup = Transition.GetGroup(element);
                 
                 //TODO: Rethink this mess... it works but is superduper ugly 

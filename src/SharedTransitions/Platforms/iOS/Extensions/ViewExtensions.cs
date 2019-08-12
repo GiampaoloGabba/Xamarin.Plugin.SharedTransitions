@@ -13,12 +13,17 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /*
          * IMPORTANT!
          *
+         * Boxview snapshot:
+         * cant get the UIBezierPath created in the Draw override, so i rebuild one
+         *
+         * GetImageFrame:
          * Get the snapshot based on the real image size, not his containing frame!
          * This is needed to avoid deformations with image aspectfit
          * where the container frame can a have different size from the contained image
          */
         internal static CGRect GetImageFrame(this UIImageView imageView)
         {
+            //We dont need these calculations from *Fill methods
             if (imageView.ContentMode == UIViewContentMode.ScaleAspectFit)
             {
                 nfloat imageAspect   = imageView.Image.Size.Width / imageView.Image.Size.Height;
@@ -49,15 +54,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             marginLeft = (imageView.Frame.Width - newWidth) / 2;
                         }
                     }
-                    return new CGRect(imageView.Frame.X + marginLeft, imageView.Frame.Y + marginTop, newWidth,
-                        newHeight);
+                    return new CGRect(imageView.Frame.X + marginLeft, imageView.Frame.Y + marginTop, newWidth, newHeight);
                 }
             }
             return new CGRect(imageView.Frame.X, imageView.Frame.Y, imageView.Frame.Width, imageView.Frame.Height);
         }
 
         //Copy a view
-        //For softcopy for now i'm fine to get only the background and put it in the main layer that will be animated
+        //For softcopy for now i'm fine to get only background & mask and put them in the main layer that will be animated
         //TODO: Moar work on mask, border, shape, ecc... BUT is a bit out of scope, we dont reallly want to
         //create a franework for transition-shaping... its superdifficult because every layout/plugin is different from another
         internal static UIView CopyView(this UIView fromView, bool softCopy = false)
@@ -75,15 +79,37 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             };
 
             //properties from standard xforms controls
-            fromViewSnapshot.Layer.CornerRadius    = fromView.Layer.CornerRadius;
-            fromViewSnapshot.Layer.MasksToBounds   = fromView.Layer.MasksToBounds;
-            fromViewSnapshot.Layer.BorderWidth     = fromView.Layer.BorderWidth ;
-            fromViewSnapshot.Layer.BorderColor     = fromView.Layer.BorderColor;
-            fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor?.CGColor ?? Color.White.ToCGColor();
-            fromViewSnapshot.Layer.Mask            = fromView.Layer.Mask;
+            fromViewSnapshot.Layer.CornerRadius  = fromView.Layer.CornerRadius;
+            fromViewSnapshot.Layer.MasksToBounds = fromView.Layer.MasksToBounds;
+            fromViewSnapshot.Layer.BorderWidth   = fromView.Layer.BorderWidth ;
+            fromViewSnapshot.Layer.BorderColor   = fromView.Layer.BorderColor;
+            fromViewSnapshot.Layer.Mask          = fromView.Layer.Mask;
 
-            //lets deep more on layers!
-            fromViewSnapshot.SetPropertiesFromLayer(fromView.Layer);
+            if (fromView is VisualElementRenderer<BoxView> fromBoxRenderer)
+            {
+                /*
+                 * IMPORTANT:
+                 *
+                 * OK, lets admin i'm a noob and i cant figure how to take bounds and background for a boxview
+                 * Probably because everything is set in the ondraw method of the renderer (UIBezierPath with fill)
+                 * I dont like to take a simple raster snapshot cause here i dont know if the destination view
+                 * has different corner radius. So for the sake of good transitions lets rebuild that bezier path!
+                 */
+                var bezierPath = fromBoxRenderer.Element.GetCornersPath(fromBoxRenderer.Bounds);
+                fromViewSnapshot.Layer.BackgroundColor = fromBoxRenderer.Element.BackgroundColor.ToCGColor() ?? Color.Default.ToCGColor();
+
+                fromViewSnapshot.Layer.Mask = new CAShapeLayer
+                {
+                    Frame = bezierPath.Bounds,
+                    Path  = bezierPath.CGPath
+                };
+            }
+            else
+            {
+                fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor?.CGColor ?? Color.Default.ToCGColor();
+                //lets deep more on layers!
+                fromViewSnapshot.SetPropertiesFromLayer(fromView.Layer);
+            }
 
             return fromViewSnapshot;
         }
@@ -101,23 +127,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                         fromViewSnapshot.Layer.MasksToBounds   = true;
                         fromViewSnapshot.Layer.BackgroundColor = sublayer.BackgroundColor;
                     }
-
                     if (sublayer is CAShapeLayer subShapeLayer)
                     {
                         if (subShapeLayer.Path != null)
                         {
-                            fromViewSnapshot.Layer.Mask = CreateMask(subShapeLayer.Path, subShapeLayer.Bounds);
+                            fromViewSnapshot.Layer.Mask = subShapeLayer.CopyToMask();
                         }
 
                         if (subShapeLayer.FillColor != null)
                         {
                             fromViewSnapshot.Layer.BackgroundColor = subShapeLayer.FillColor;
                         }
-                        
                     }
                     else if (sublayer is CAGradientLayer subGradientLayer && subGradientLayer.Colors != null)
                     {
-                        //just the first color...
+                        //just the first color for now...
                         fromViewSnapshot.Layer.BackgroundColor = subGradientLayer.Colors[0];
                     }
                     else
@@ -126,36 +150,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     }
                 }
             }
-        }
-
-        //Traverse sublayers to get the mask! Not ideal but better than nothing for animate corners :)
-        internal static CAShapeLayer GetMask(this CALayer fromLayer, CGRect newBounds)
-        {
-            if (fromLayer.Mask != null && fromLayer.Mask is CAShapeLayer shapeLayer)
-            {
-                return CreateMask(shapeLayer.Path, shapeLayer.Bounds);
-            }
-
-            if (fromLayer.Sublayers != null)
-            {
-                foreach (CALayer sublayer in fromLayer.Sublayers)
-                {
-                    if (sublayer.Mask != null && fromLayer.Mask is CAShapeLayer shapeSubLayer)
-                        return CreateMask(shapeSubLayer.Path, shapeSubLayer.Bounds);
-                    else
-                        return sublayer.GetMask(newBounds);
-                }
-            }
-            return null;
-        }
-
-        internal static CAShapeLayer CreateMask(CGPath path, CGRect bounds)
-        {
-            return new CAShapeLayer
-            {
-                Frame = bounds,
-                Path  = path
-            };
         }
     }
 }

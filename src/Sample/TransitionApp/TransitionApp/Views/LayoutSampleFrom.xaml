@@ -38,14 +38,14 @@
             <Label Text="StackLayout"
                    Grid.Row="1" Grid.Column="1"/>
             
-            <BoxView BackgroundColor="Blue"
+            <BoxView BackgroundColor="Blue" CornerRadius="20"
                      Grid.Row="3" Grid.Column="0"
                      sharedTransitions:Transition.Name="Box3" />
 
             <Label Text="BoxView"
                    Grid.Row="4" Grid.Column="0"/>
 
-            <pancakeView:PancakeView CornerRadius="0" Padding="0" BackgroundColor="DodgerBlue"
+            <pancakeView:PancakeView CornerRadius="15,0,0,15" Padding="0" BackgroundColor="DodgerBlue"
                                      Grid.Row="3"  Grid.Column="1"
                                      sharedTransitions:Transition.Name="pancake4" />
 
