@@ -12,7 +12,7 @@
     <AssemblyVersion>2.0.0</AssemblyVersion>
     <AssemblyFileVersion>2.0.0</AssemblyFileVersion>
     <Version>2.0.0</Version>
-    <PackageVersion>2.0.0</PackageVersion>
+    <PackageVersion>2.0.0-beta</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -22,11 +22,10 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 
     <AndroidUseManagedDesignTimeResourceGenerator>False</AndroidUseManagedDesignTimeResourceGenerator>
-    
-    <PackageLicenseUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/blob/master/LICENSE</PackageLicenseUrl>
+
     <PackageProjectUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</RepositoryUrl>
-    <PackageReleaseNotes>See: https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageReleaseNotes>
+    <PackageReleaseNotes>This version has BREAKING CHANGES! Read here: https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/master/images/icon.png</PackageIconUrl>
     <PackageTags>shared element transitions, shared transition, animation, xamarin transition, plugin transitions, xamarin animation, xamarin, ios, android, xamarin.forms, plugin, SharedTransitions</PackageTags>
     
@@ -41,6 +40,14 @@ Transitions in apps provide visual continuity, connecting common elements from o
     <Owners>Giampaolo Gabba</Owners>
     <Authors>Giampaolo Gabba</Authors>
     <Copyright>Copyright 2019</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Android DesignTimeBuild error workaround"> 
+    <DesignTimeBuild>false</DesignTimeBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
