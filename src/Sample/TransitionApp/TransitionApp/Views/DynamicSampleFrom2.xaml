@@ -12,7 +12,7 @@
              sharedTransitions:SharedTransitionNavigationPage.BackgroundAnimation="Fade"
              sharedTransitions:SharedTransitionNavigationPage.TransitionDuration="300">
 
-    <CollectionView ItemsSource="{Binding Dogs}" SelectionMode="None" x:Name="DogList" ItemSizingStrategy="MeasureAllItems">
+    <CollectionView ItemsSource="{Binding Dogs}" SelectionMode="None" x:Name="DogList" ItemSizingStrategy="MeasureAllItems" >
         <CollectionView.ItemTemplate>
             <DataTemplate>
                 <ContentView Padding="25,20,25,5">

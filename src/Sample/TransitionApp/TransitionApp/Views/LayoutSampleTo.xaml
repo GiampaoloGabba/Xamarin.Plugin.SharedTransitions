@@ -14,10 +14,11 @@
             <StackLayout BackgroundColor="Red" 
                          sharedTransitions:Transition.Name="Stack2" HeightRequest="100" />
             
-            <BoxView BackgroundColor="Blue" HeightRequest="80" 
+            <BoxView BackgroundColor="Blue" HeightRequest="80" CornerRadius="{OnPlatform Android=20, iOS=0}"
                      sharedTransitions:Transition.Name="Box3"/>
 
-            <pancakeView:PancakeView CornerRadius="30" Padding="0" HeightRequest="140" BackgroundGradientStartColor="DodgerBlue" BackgroundGradientEndColor="Brown"
+            <pancakeView:PancakeView Padding="0" HeightRequest="140" BackgroundGradientStartColor="DodgerBlue" BackgroundGradientEndColor="Brown" 
+                                     CornerRadius="{OnPlatform Android=15 0 0 15, iOS=30}"
                                      sharedTransitions:Transition.Name="pancake4">
 
             </pancakeView:PancakeView>

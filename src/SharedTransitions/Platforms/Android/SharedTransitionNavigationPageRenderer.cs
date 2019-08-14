@@ -91,6 +91,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //When we are here, the destination page is not yet attached so we dont know if there are transitions
                 //We need to setup transitions only for what we know here, starting from sourcepage
                 var fragmentToHide = _fragmentManager.Fragments.Last();
+                bool animationFound = false;
 
                 //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
                 //During the override we set the propertiescontainer to the page where the push started
@@ -105,6 +106,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
                 //return the tag map filtering by group (if specified) during push
                 var transitionStackFrom = NavPage.TransitionMap.GetMap(sourcePage, isPush ? _selectedGroup : null);
+                var transitionStackTo   = NavPage.TransitionMap.GetMap(destinationPage, null ,true);
 
                 //Get the views who need the transitionName, based on the tags in destination page
                 foreach (var transitionFromMap in transitionStackFrom)
@@ -122,11 +124,23 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (!string.IsNullOrEmpty(_selectedGroup) && _selectedGroup != "0" && !isPush)
                         correspondingTag += "_" + _selectedGroup;
 
+                    //during pop we need to be sure that a transition exists so we can set SetAllowOptimization to true
+                    //Without active shared transition, the allowOptimization need to stay false or pop will not work
+                    if (!isPush && animationFound == false && 
+                        transitionStackTo.FirstOrDefault(x => x.TransitionName == transitionFromMap.TransitionName) != null)
+                    {
+                        animationFound = true;
+                    }
                     transaction.AddSharedElement(fromView, correspondingTag);
                 }
 
-                //This is needed to make shared transitions works with hide & add fragments instead of .replace
-                transaction.SetAllowOptimization(true);
+                //During push we always set the optimization, is harmless even if we dont have transitions
+                //During pop we need to check or we risk to break the pop (i love rock anyway....)
+                if (animationFound || isPush)
+                {
+                    //This is needed to make shared transitions works with hide & add fragments instead of .replace
+                    transaction.SetAllowOptimization(true);
+                } 
                 AnimateBackground(transaction, isPush);
             }
         }
@@ -189,7 +203,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //We need to take the transition configuration from the destination page
             //At this point the pop is not started so we need to go back in the stack
             PropertiesContainer = ((INavigationPageController)Element).Peek(1);
-            return await base.OnPopViewAsync(page, animated); 
+            return await base.OnPopViewAsync(page, animated);
         }
 
         //During PopToRoot we skip everything and make the default animation
