@@ -182,13 +182,24 @@ Background animations provided:
 
 ```
 
-## Important notes
+## General notes
 * The ```sharedTransitions:Transition.Name``` in source and destination page needs to match in order to display the animated transition
 * You can animate multiple views at once, just remember that every Transition Name in a page needs to be unique
 * You can animate the same element in multiple, subsequent pages
-* On IOS you can pop the page using a PanGesture on the left side of the screen
-* On IOS BoxView animation is not supported. You can animate other layouts like frame, stacklayout, ecc...
+
+## IOS Notes
+* Full shape layout transition is supported (eg: different corner radius between starting and ending views)
+* You can pop the page using a PanGesture on the left side of the screen
+
+## Android Limitations
 * When animating layouts (frame, stacklayouts....) i suggest to dont use a background transition other than "Fade" (or "None"). Android doesnt play well with background animation + shared transitions of layouts
+* Shape layout transitions are not well supported (they play well only on pushing Frames). I suppose there is some problem with clipping, maybe we can adjust this making a custom SharedTransition callback and play with shapes & clip, but i didnt find yet a way to do this (playng with shapes & clip i mean, create a custom callback is easy). IF anyone want to help it will be SUPER-welcome!
+* The Collectionview has a strange behaviour: when popping to the first item, if the collectionview scroll is zero the transition has some minor glitch. If we make a small scroll (even 1 pixel) everything works fine. This happens ONLY in the first item and ONLY when the scroll is 0. I'm waiting for the final collectionview and if this will persists i'll make a simple customrenderer that will set the minscroll to 1
+
+## New Sample app!
+The sample app has been completely rewritten: you can find simple examples (images & layouts) as well as dynamic examples (for both listview & collectionview).
+Tha app is made with [Prism](https://github.com/PrismLibrary/Prism) and it sports the superawesome [PancakeView](https://github.com/sthewissen/Xamarin.Forms.PancakeView/) and [FFImageLoading](https://github.com/luberda-molinet/FFImageLoading) plugins
+
 
 ## More samples!
 
@@ -198,26 +209,23 @@ Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) u
 
 This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
 
+Note: This sample use the old version of this plugin. That code will not work with the version 2.
+
 ## Roadmap
-
-- [x] More background animations (scale, etc)
-- [x] Support layouts (frame, stacklayout, ecc..
-- [x] Full MVVM Support
-- [x] New sample app
-
-## To do
-- [ ] Fix layouts bounds during transitions in ios where certain type of layout placement are used (only for layouts)
-- [ ] Enahnce iOS animations, investigate better solutions
-- [ ] Add a property to control SelectedGroup in viewmodels (see the viewmodel sample for details)
+- [ ] Fix android minor glitch in the Collectionview preview when we pop the first element and the CollectionView scroll is at 0
+- [ ] Improve Android shape transitions (different corner radius)
 
 
 ## Latest release notes
 2.0.0
-* **Properties renamed to Transition.Name and Transition.Group <-- BREAKING**
+* **Properties renamed to: Transition.Name, Transition.Group and TransitionDuration  <-- BREAKING**
 * Full MVVM support with TransitionSelectedGroup
-* New, improved Transition management under the hood (no more limitation to int number for transition names, faster view lookup for transitions)
-* New sample app with listview and MVVM example, as well as normal transitions
-* General bug fixing
+* New, improved Transition management under the hood (no more limitation to int number for transition names & groups, faster view lookup for transitions)
+* New transition engine for ios (supporting shape transitions, images with different bounds, aspect ratios, ecc..)
+* New sample app in full MVVM with listview, collectionview and normal transitions (including demostrations with PancakeView and FFImageLoading)
+* Everything mostly rewritten fro the ground-up: better stability and functionality
+* Improved code comments and error handling 
+* Added useful notes in code to help contributors to make this plugin better!
 
 
 1.1.0
