@@ -17,7 +17,7 @@
             <BoxView BackgroundColor="Blue" HeightRequest="80" 
                      sharedTransitions:Transition.Name="Box3"/>
 
-            <pancakeView:PancakeView CornerRadius="30" Padding="0" BackgroundColor="DodgerBlue" HeightRequest="140"
+            <pancakeView:PancakeView CornerRadius="30" Padding="0" HeightRequest="140" BackgroundGradientStartColor="DodgerBlue" BackgroundGradientEndColor="Brown"
                                      sharedTransitions:Transition.Name="pancake4">
 
             </pancakeView:PancakeView>

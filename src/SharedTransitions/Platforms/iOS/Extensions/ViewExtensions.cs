@@ -3,8 +3,10 @@ using Foundation;
 using UIKit;
 using CoreGraphics;
 using CoreAnimation;
+using ObjCRuntime;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
+using Color = Xamarin.Forms.Color;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
@@ -13,14 +15,24 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /*
          * IMPORTANT!
          *
+         * GetImageFrame:
+         * Get the Frame based on the real image size, not his containing frame!
+         * This is needed to avoid deformations with image aspectfit
+         * where the container frame can a have different size from the contained image
+         *
          * Boxview snapshot:
          * cant get the UIBezierPath created in the Draw override, so i rebuild one
          *
-         * GetImageFrame:
-         * Get the snapshot based on the real image size, not his containing frame!
-         * This is needed to avoid deformations with image aspectfit
-         * where the container frame can a have different size from the contained image
+         * GradientLayer resize animation:
+         * GradientLayers doesnt change their bounds during animation
+         * We fix this with a custom UIView as subview that change his main layer as CAGradientLayer
          */
+
+        /// <summary>
+        /// Get the Frame based on the real image size, not his containing frame. Useful for images with AspectFit
+        /// </summary>
+        /// <param name="imageView">Input Image</param>
+        /// <returns></returns>
         internal static CGRect GetImageFrame(this UIImageView imageView)
         {
             //We dont need these calculations from *Fill methods
@@ -60,12 +72,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             return new CGRect(imageView.Frame.X, imageView.Frame.Y, imageView.Frame.Width, imageView.Frame.Height);
         }
 
-        //Copy a view
-        //For softcopy for now i'm fine to get only background & mask and put them in the main layer that will be animated
-        //TODO: Moar work on mask, border, shape, ecc... BUT is a bit out of scope, we dont reallly want to
-        //create a franework for transition-shaping... its superdifficult because every layout/plugin is different from another
+        /// <summary>
+        /// Copy a view
+        /// </summary>
+        /// <param name="fromView">View to copy</param>
+        /// <param name="softCopy">Get only background & mask and put them in the main layer that will be animated</param>
         internal static UIView CopyView(this UIView fromView, bool softCopy = false)
         {
+            //TODO: More work on mask, border, shape, ecc... BUT is a bit out of scope, we dont reallly want to create a full framework for transition-shaping...
+            //TODO: its superdifficult because every layout/plugin handle layers and subviews in different ways
+
             if (!softCopy)
                 return (UIView) NSKeyedUnarchiver.UnarchiveObject(NSKeyedArchiver.ArchivedDataWithRootObject(fromView));
 
@@ -83,7 +99,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             fromViewSnapshot.Layer.MasksToBounds = fromView.Layer.MasksToBounds;
             fromViewSnapshot.Layer.BorderWidth   = fromView.Layer.BorderWidth ;
             fromViewSnapshot.Layer.BorderColor   = fromView.Layer.BorderColor;
-            fromViewSnapshot.Layer.Mask          = fromView.Layer.Mask;
 
             if (fromView is VisualElementRenderer<BoxView> fromBoxRenderer)
             {
@@ -106,50 +121,99 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
             else
             {
-                fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor ?? fromView.BackgroundColor?.CGColor ?? Color.Default.ToCGColor();
-                //lets deep more on layers!
-                fromViewSnapshot.SetPropertiesFromLayer(fromView.Layer);
+                //Try to get background and mask. If we dont get something we try to traverse sublayers hierarchy
+                if (fromView.Layer.Mask != null && fromView.Layer.Mask is CAShapeLayer shapedMask)
+                    fromViewSnapshot.Layer.Mask = shapedMask.CopyToMask();
+
+                if (fromView.Layer.BackgroundColor!=null && fromView.Layer.BackgroundColor.Alpha > 0)
+                    fromViewSnapshot.Layer.BackgroundColor = fromView.Layer.BackgroundColor;
+                
+                if (fromViewSnapshot.Layer.Mask == null || 
+                    (!fromViewSnapshot.Layer.HasBackground() && fromViewSnapshot.BackgroundColor == null))
+                    fromViewSnapshot.SetBgAndMaskFromLayerHierarchy(fromView.Layer);
             }
 
             return fromViewSnapshot;
         }
 
-        //Get the properties we like!
-        internal static void SetPropertiesFromLayer(this UIView fromViewSnapshot, CALayer fromLayer)
+        /// <summary>
+        /// Update the Background and Mask on main Layer traversing the sublayers
+        /// </summary>
+        /// <param name="fromViewSnapshot">View to update</param>
+        /// <param name="fromLayer">Starting layer to traverse</param>
+        internal static void SetBgAndMaskFromLayerHierarchy(this UIView fromViewSnapshot, CALayer fromLayer)
         {
             if (fromLayer.Sublayers != null)
             {
                 foreach (CALayer sublayer in fromLayer.Sublayers)
                 {
-                    if (sublayer.BackgroundColor != null && sublayer.BackgroundColor.Alpha > 0)
+                    //try to get the right background specified
+                    if (sublayer is CAGradientLayer subGradientLayer && subGradientLayer.Colors != null)
                     {
-                        fromViewSnapshot.Layer.Frame           = sublayer.Bounds;
-                        fromViewSnapshot.Layer.MasksToBounds   = true;
+                        var gradientView = new UIGradientView();
+
+                        var gradientLayer = (CAGradientLayer) gradientView.Layer;
+                        gradientLayer.Colors     = subGradientLayer.Colors;
+                        gradientLayer.StartPoint = subGradientLayer.StartPoint;
+                        gradientLayer.EndPoint   = subGradientLayer.EndPoint;
+                        gradientLayer.Locations  = subGradientLayer.Locations;
+
+                        fromViewSnapshot.AddSubview(gradientView);
+                    } 
+                    else if (sublayer.HasBackground())
+                    {
                         fromViewSnapshot.Layer.BackgroundColor = sublayer.BackgroundColor;
                     }
+
+                    if (sublayer.Mask != null && sublayer.Mask is CAShapeLayer shapedMask)
+                        fromViewSnapshot.Layer.Mask = shapedMask.CopyToMask();
+
+                    //Get shapes to create the mask
                     if (sublayer is CAShapeLayer subShapeLayer)
                     {
-                        if (subShapeLayer.Path != null)
-                        {
+                        //no mask yet? Take the path!
+                        if (fromViewSnapshot.Layer.Mask == null && subShapeLayer.Path != null)
                             fromViewSnapshot.Layer.Mask = subShapeLayer.CopyToMask();
-                        }
 
-                        if (subShapeLayer.FillColor != null)
-                        {
+                        //no background yet? Take the fill!
+                        if (!fromViewSnapshot.Layer.HasBackground() && subShapeLayer.FillColor != null)
                             fromViewSnapshot.Layer.BackgroundColor = subShapeLayer.FillColor;
-                        }
                     }
-                    else if (sublayer is CAGradientLayer subGradientLayer && subGradientLayer.Colors != null)
-                    {
-                        //just the first color for now...
-                        fromViewSnapshot.Layer.BackgroundColor = subGradientLayer.Colors[0];
-                    }
-                    else
-                    {
-                        fromViewSnapshot.SetPropertiesFromLayer(sublayer);
-                    }
+
+                    fromViewSnapshot.SetBgAndMaskFromLayerHierarchy(sublayer);
                 }
             }
+        }
+    }
+
+    /*
+     * IMPORTANT:
+     * During animations, GradientLayers doesnt change their bounds based on parent UIView
+     * To fix this, we create a customview with a CAGradientLayer as his main layer
+     * and then put this new view inside our snapshot view
+     * This is important because:
+     * 1) Main Layer get always resized to match their parent view
+     * 2) Subviews can math parent size automatically with AutoresizingMask
+     *
+     * I tried everything with CAGradientLayers: CABasicAnimation, subclassing mainview
+     * and override LayoutIfNeeded, Bounds, Frame, ecc... But the results where superchoppy or plain wrong
+     * So far this is the best method with fluid fluid performance and perfecr animation i found
+     */
+
+    /// <summary>
+    /// Custom UIView with a CAGradientLayer as his main Layer
+    /// </summary>
+    internal sealed class UIGradientView : UIView
+    {
+        [Export ("layerClass")]
+        public static Class LayerClass ()
+        {
+            return new Class (typeof(CAGradientLayer));
+        }
+
+        public UIGradientView()
+        {
+            AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
         }
     }
 }

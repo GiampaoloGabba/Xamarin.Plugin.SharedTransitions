@@ -16,7 +16,7 @@
         <CollectionView.ItemTemplate>
             <DataTemplate>
                 <ContentView Padding="25,20,25,5">
-                    <yummy:PancakeView CornerRadius="10" Padding="0,0,0,10" BackgroundColor="DodgerBlue" Elevation="4" HasShadow="True"
+                    <yummy:PancakeView CornerRadius="10" Padding="0,0,0,10" BackgroundGradientStartColor="DarkSlateBlue" BackgroundGradientEndColor="DodgerBlue" Elevation="4" HasShadow="True"
                            sharedTransitions:Transition.Name="DogBackground" 
                            sharedTransitions:Transition.Group="{Binding Id}">
                         

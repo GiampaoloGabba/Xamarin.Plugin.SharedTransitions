@@ -40,14 +40,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     [Preserve(AllMembers = true)]
     public class SharedTransitionNavigationRenderer : NavigationRenderer, IUINavigationControllerDelegate, IUIGestureRecognizerDelegate
     {
-        public double TransitionDuration { get; set; }
-        public BackgroundAnimation BackgroundAnimation { get; set; }
-        public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
-        string _selectedGroup;
-        private UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
+        internal event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
+        internal double TransitionDuration  { get; set; }
+        internal BackgroundAnimation BackgroundAnimation { get; set; }
 
+        /// <summary>
+        /// Track the page we need to get the custom properties for the shared transitions
+        /// </summary>
         Page _propertiesContainer;
-        public Page PropertiesContainer
+        Page PropertiesContainer
         {
             get => _propertiesContainer;
             set
@@ -71,11 +72,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
         }
 
-        UIPercentDrivenInteractiveTransition _percentDrivenInteractiveTransition;
         SharedTransitionNavigationPage NavPage => Element as SharedTransitionNavigationPage;
+        UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
+        UIPercentDrivenInteractiveTransition _percentDrivenInteractiveTransition;
         bool _popToRoot;
+        string _selectedGroup;
 
-        public SharedTransitionNavigationRenderer() : base()
+        public SharedTransitionNavigationRenderer()
         {
             Delegate = this;
         }
@@ -98,12 +101,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     //During the override we set the PropertiesContainer to the page where the push started
                     //So we reflect the TransitionStacks accoringly
                     transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer, _selectedGroup);
-                    transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
+                    transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage, null);
                 }
                 else
                 {
                     //During POP, everyting is fine and clear
-                    transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage);
+                    transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage, null);
                     transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer, _selectedGroup);
                 }
 
@@ -232,7 +235,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
              * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
              * This add no more than 5ms to the navigation i think is largely acceptable
              */
-            var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, true);
+            var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, null, true);
             if (mapStack.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
                 await Task.Yield();
 
@@ -245,6 +248,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             InteractivePopGestureRecognizer.Delegate = this;
         }
 
+        /// <summary>
+        /// Add our custom EdgePanGesture
+        /// </summary>
         void AddInteractiveTransitionRecognizer()
         {
             InteractivePopGestureRecognizer.Enabled = false;
@@ -261,6 +267,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
         }
 
+        /// <summary>
+        /// Remove our custom EdgePanGesture
+        /// </summary>
         void RemoveInteractiveTransitionRecognizer()
         {
             if (_edgeGestureRecognizer != null && 
@@ -272,6 +281,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             InteractivePopGestureRecognizer.Enabled = true;
         }
 
+        /// <summary>
+        ///  Handle the custom EdgePanGesture to control the Shared Transition state
+        /// </summary>
         void InteractiveTransitionRecognizerAction(UIScreenEdgePanGestureRecognizer sender)
         {
             var percent = sender.TranslationInView(sender.View).X / sender.View.Frame.Width;
@@ -315,7 +327,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                          */
 
                         var pageCount = Element.Navigation.NavigationStack.Count;
-                        if (pageCount > 2 && NavPage.TransitionMap.GetMap(Element.Navigation.NavigationStack[pageCount - 3]).Count==0)
+                        if (pageCount > 2 && NavPage.TransitionMap.GetMap(Element.Navigation.NavigationStack[pageCount - 3],null).Count==0)
                             RemoveInteractiveTransitionRecognizer();
                     }
                     else
@@ -327,12 +339,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
         }
 
+        /// <summary>
+        /// Event fired when the EdgeGesture is working.
+        /// Useful to commanding additional animations attached to the transition
+        /// </summary>
         void OnEdgeGesturePanned(EdgeGesturePannedArgs e)
         {
             EventHandler<EdgeGesturePannedArgs> handler = EdgeGesturePanned;
             handler?.Invoke(this, e);
         }
-
 
         void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

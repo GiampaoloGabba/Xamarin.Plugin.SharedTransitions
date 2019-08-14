@@ -5,7 +5,11 @@ namespace Plugin.SharedTransitions
 {
     public static class PageExtensions
     {
-        public static Page GetCurrentPageInNavigationStack(this Page mainPage)
+        /// <summary>
+        /// Find the current navigation stack based on the MainPage type
+        /// </summary>
+        /// <param name="mainPage">Application current mainpage</param>
+        internal static Page GetCurrentPageInNavigationStack(this Page mainPage)
         {
             switch (mainPage)
             {

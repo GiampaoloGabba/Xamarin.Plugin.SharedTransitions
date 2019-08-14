@@ -25,7 +25,7 @@ namespace Plugin.SharedTransitions
         public const string FullName = ResolutionGroupName + "." + EffectName;
 
         /// <summary>
-        /// Transition name to associate views animation between pages
+        /// Transition name used to associate views between pages
         /// </summary>
         public static readonly BindableProperty NameProperty = BindableProperty.CreateAttached(
             "Name", 
@@ -66,7 +66,7 @@ namespace Plugin.SharedTransitions
         /// Sets the shared transition name for the element
         /// </summary>
         /// <param name="bindable">Xamarin Forms Element</param>
-        /// <param name="value">The shared transition name.</param>
+        /// <param name="value">The shared transition name</param>
         public static void SetName(BindableObject bindable, string value)
         {
             bindable.SetValue(NameProperty, value);
@@ -109,17 +109,16 @@ namespace Plugin.SharedTransitions
             return 0;
         }
 
+        /// <summary>
+        /// Remove the transition configuration from the Stack
+        /// </summary>
+        /// <param name="view">View associated to the transition</param>
+        /// <param name="currentPage">Container Page</param>
         public static void RemoveTransition(View view, Page currentPage)
         {
             ((SharedTransitionNavigationPage) currentPage.Parent).TransitionMap.Remove(currentPage,view.Id);
         }
 
-        /// <summary>
-        /// Called when a property is changed.
-        /// </summary>
-        /// <param name="bindable">Xamarin Forms Element</param>
-        /// <param name="oldValue">The old value</param>
-        /// <param name="newValue">The new value</param>
         static void OnPropertyChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (bindable == null)

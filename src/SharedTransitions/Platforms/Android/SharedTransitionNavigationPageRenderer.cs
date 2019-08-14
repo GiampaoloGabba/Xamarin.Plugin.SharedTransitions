@@ -41,12 +41,13 @@ namespace Plugin.SharedTransitions.Platforms.Android
         readonly FragmentManager _fragmentManager;
         bool _popToRoot;
         string _selectedGroup;
-
         BackgroundAnimation _backgroundAnimation;
         int _TransitionDuration;
-
         SharedTransitionNavigationPage NavPage => Element as SharedTransitionNavigationPage;
 
+        /// <summary>
+        /// Track the page we need to get the custom properties for the shared transitions
+        /// </summary>
         Page _propertiesContainer;
         private Page PropertiesContainer
         {
@@ -126,7 +127,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
                 //This is needed to make shared transitions works with hide & add fragments instead of .replace
                 transaction.SetAllowOptimization(true);
-                FinalizePageTransition(transaction, isPush);
+                AnimateBackground(transaction, isPush);
             }
         }
 
@@ -176,7 +177,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
              * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
              * This add no more than 5ms to the navigation i think is largely acceptable
              */
-            var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, true);
+            var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, null, true);
             if (mapStack.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
                 await Task.Yield();
 
@@ -225,7 +226,10 @@ namespace Plugin.SharedTransitions.Platforms.Android
             set => _TransitionDuration = value;
         }
 
-        void FinalizePageTransition(FragmentTransaction transaction, bool isPush)
+        /// <summary>
+        /// Animate the background based on user choices
+        /// </summary>
+        void AnimateBackground(FragmentTransaction transaction, bool isPush)
         {
             switch (_backgroundAnimation)
             {

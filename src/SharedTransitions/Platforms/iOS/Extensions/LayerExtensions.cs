@@ -7,7 +7,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 {
     internal static class LayerExtensions
     {
-        //Traverse sublayers to get the mask! Not ideal but better than nothing for animate corners :)
+        /// <summary>
+        /// Traverse sublayers to get the mask created by a CAShaperLayer or UIBezierPath
+        /// </summary>
+        /// <param name="fromLayer">Starting layer</param>
+        /// <param name="newBounds">New bounds to apply to the mask</param>
+        /// <remarks>Not ideal but better than nothing for animate corners :)</remarks>
         internal static CAShapeLayer GetMask(this CALayer fromLayer, CGRect newBounds)
         {
             //Fix for boxRenderer
@@ -30,13 +35,18 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 {
                     if (sublayer.Mask != null && fromLayer.Mask is CAShapeLayer shapeSubLayer)
                         return shapeSubLayer.CopyToMask();
-                    else
-                        return sublayer.GetMask(newBounds);
+                    
+                    return sublayer.GetMask(newBounds);
                 }
             }
             return null;
         }
 
+        /// <summary>
+        /// Copy the shape to a new layer to create a brand new mask
+        /// </summary>
+        /// <param name="shapeLayer">Layer to copy</param>
+        /// <returns></returns>
         internal static CAShapeLayer CopyToMask(this CAShapeLayer shapeLayer)
         {
             return new CAShapeLayer
@@ -44,6 +54,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 Frame = shapeLayer.Bounds,
                 Path  = shapeLayer.Path
             };
+        }
+
+        /// <summary>
+        /// Check if this layer has a valid, visible background
+        /// </summary>
+        /// <param name="layer">Layer to check</param>
+        /// <returns></returns>
+        internal static bool HasBackground(this CALayer layer)
+        {
+            return layer.BackgroundColor != null && layer.BackgroundColor.Alpha > 0;
         }
     }
 }

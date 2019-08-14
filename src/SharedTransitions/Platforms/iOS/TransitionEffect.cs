@@ -35,6 +35,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             base.OnElementPropertyChanged(args);
         }
 
+        /// <summary>
+        /// Update the shared transition name and/or group
+        /// </summary>
         void UpdateTag()
         {
             if (Element is View element)

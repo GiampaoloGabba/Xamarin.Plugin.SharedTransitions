@@ -7,9 +7,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 {
     internal static class FormsElementExtensions
     {
-        internal static UIBezierPath GetCornersPath(this BoxView formsElement, CGRect bounds)
+        /// <summary>
+        /// Get an UIBezierPath based on BoxView CornerRadius property
+        /// </summary>
+        /// <param name="boxview">Xamarin Forms Boxview</param>
+        /// <param name="bounds">Bounds of the native view</param>
+        internal static UIBezierPath GetCornersPath(this BoxView boxview, CGRect bounds)
         {
-            var cornerRadius = formsElement.CornerRadius;
+            var cornerRadius = boxview.CornerRadius;
             var topLeft      = (float)cornerRadius.TopLeft;
             var topRight     = (float)cornerRadius.TopRight;
             var bottomLeft   = (float)cornerRadius.BottomLeft;

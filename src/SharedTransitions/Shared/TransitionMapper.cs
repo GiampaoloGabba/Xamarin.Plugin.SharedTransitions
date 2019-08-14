@@ -18,28 +18,18 @@ namespace Plugin.SharedTransitions
 
         public IReadOnlyList<TransitionMap> TransitionStack => _transitionStack.Value;
 
-        public IReadOnlyList<TransitionDetail> GetMap(Page page, string selectedGroup = null)
+        public IReadOnlyList<TransitionDetail> GetMap(Page page, string selectedGroup, bool ignoreGroup = false)
         {
+            if (ignoreGroup)
+                return TransitionStack.Where(x => x.PageId == page.Id)
+                           .Select(x => x.Transitions.ToList())
+                           .FirstOrDefault() ?? new List<TransitionDetail>();
+
             return TransitionStack.Where(x => x.PageId == page.Id)
                            .Select(x => x.Transitions.Where(tr=>tr.TransitionGroup == selectedGroup).ToList())
                            .FirstOrDefault() ?? new List<TransitionDetail>();
         }
 
-        public IReadOnlyList<TransitionDetail> GetMap(Page page, bool ignoreGroup)
-        {
-            return TransitionStack.Where(x => x.PageId == page.Id)
-                       .Select(x => x.Transitions.ToList())
-                       .FirstOrDefault() ?? new List<TransitionDetail>();
-        }
-
-        /// <summary>
-        /// Add transition information for the specified Page to the TransitionStack
-        /// </summary>
-        /// <param name="page">The page.</param>
-        /// <param name="transitionName">The name of the shared transition.</param>
-        /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
-        /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
-        /// <param name="nativeViewId">The Native view unique identifier.</param>
         public int AddOrUpdate(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId)
         {
             var transitionMap = _transitionStack.Value.FirstOrDefault(x => x.PageId == page.Id);
@@ -114,46 +104,24 @@ namespace Plugin.SharedTransitions
             return nativeViewId;
         }
 
-        /// <summary>
-        /// Removes the specified transitionDetail from the TransitionStack
-        /// </summary>
-        /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
-        /// <param name="page">The page.</param>
         public void Remove(Page page, Guid formsViewId)
         {
             var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
             transitionMap?.Transitions.Remove(transitionMap.Transitions.FirstOrDefault(x=>x.FormsViewId == formsViewId));
         }
 
-        /// <summary>
-        /// Removes the specified transitionDetail from the TransitionStack
-        /// </summary>
-        /// <param name="nativeViewId">The Native view unique identifier.</param>
-        /// <param name="page">The page.</param>
         public void Remove(Page page, int nativeViewId)
         {
             var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
             transitionMap?.Transitions.Remove(transitionMap.Transitions.FirstOrDefault(x=>x.NativeViewId == nativeViewId));
         }
 
-        /// <summary>
-        /// Removes the specified page from the TransitionStack
-        /// </summary>
-        /// <param name="page">The page.</param>
         public void RemoveFromPage(Page page)
         {
             _transitionStack.Value.Remove(_transitionStack.Value.FirstOrDefault(x => x.PageId == page.Id));
         }
 
-        /// <summary>
-        /// Creates a transition with additional information
-        /// </summary>
-        /// <param name="transitionName">The name of the shared transition.</param>
-        /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
-        /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
-        /// <param name="nativeViewId">The Native view unique identifier.</param>
-        /// <returns></returns>
-        TransitionDetail CreateTransition(string transitionName,string transitionGroup, Guid formsViewId, int nativeViewId)
+        public TransitionDetail CreateTransition(string transitionName,string transitionGroup, Guid formsViewId, int nativeViewId)
         {
             return new TransitionDetail
             {

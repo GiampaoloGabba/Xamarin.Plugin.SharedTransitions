@@ -37,6 +37,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
             base.OnElementPropertyChanged(args);
         }
 
+        /// <summary>
+        /// Update the shared transition name and/or group
+        /// </summary>
         void UpdateTag()
         {
             if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)

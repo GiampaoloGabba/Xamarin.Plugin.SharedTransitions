@@ -33,11 +33,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         readonly List<(UIView ToView, UIView FromView)> _viewsToAnimate;
         readonly UINavigationControllerOperation _operation;
         readonly UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
-        private IUIViewControllerContextTransitioning _transitionContext; 
+        readonly List<CAShapeLayer> _masksToAnimate;
+        IUIViewControllerContextTransitioning _transitionContext; 
         UIViewController _fromViewController;
         UIViewController _toViewController;
-        List<CAShapeLayer> _masksToAnimate;
-        private double _transitionDuration;
+        double _transitionDuration;
 
         public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, SharedTransitionNavigationRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
         {
@@ -52,9 +52,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         }
 
         /// <summary>
-        /// Animates the transition.
+        /// Setup the animation transitions between elements (also animate the background)
         /// </summary>
-        /// <param name="transitionContext">The transition context.</param>
+        /// <param name="transitionContext">The transition context</param>
         public override async void AnimateTransition(IUIViewControllerContextTransitioning transitionContext)
         {
             _transitionContext  = transitionContext;
@@ -142,15 +142,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 fromView.Hidden         = true;
 
                 CGRect toFrame;
-                CAShapeLayer toMask;
-
                 if (toView is UIImageView toImageView)
                     toFrame = toImageView.ConvertRectToView(toImageView.GetImageFrame(), containerView);
                 else
                     toFrame = toView.ConvertRectToView(toView.Bounds, containerView);
 
                 //Mask animation (for shape/corner radius)
-                toMask = toView.Layer.GetMask(toView.Bounds);
+                var toMask = toView.Layer.GetMask(toView.Bounds);
                 if (toMask != null && fromViewSnapshot.Layer.Mask is CAShapeLayer fromMask)
                 {
                     CABasicAnimation maskLayerAnimation = CreateMaskTransition(fromMask, toMask);
@@ -185,14 +183,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 _fromViewController.View.Alpha = 0;
 
             if (_masksToAnimate.Any())
-            {
-                Debug.WriteLine("========== Subscribe event");
                 _navigationPage.EdgeGesturePanned += NavigationPageOnEdgeGesturePanned;
-            }
 
-            FinalizeTransition();
+            AnimateBackground();
         }
 
+        /// <summary>
+        /// Handle the main EdgePanGesture on the NavigationPage used to swipe back
+        /// </summary>
         private void NavigationPageOnEdgeGesturePanned(object sender, EdgeGesturePannedArgs args)
         {
             //Control the animation on the upper mask layer
@@ -221,6 +219,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
         }
 
+        /// <summary>
+        /// Create an animate transition between two masks
+        /// </summary>
+        /// <param name="fromMask">Starting mask</param>
+        /// <param name="toMask">Ending mask</param>
         CABasicAnimation CreateMaskTransition(CAShapeLayer fromMask, CAShapeLayer toMask)
         {
             var maskLayerAnimation = CABasicAnimation.FromKeyPath("path");
@@ -236,7 +239,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             return maskLayerAnimation;
         }
 
-        void FinalizeTransition()
+        /// <summary>
+        /// Animate the background based on user choices
+        /// </summary>
+        void AnimateBackground()
         {
             var screenWidth = UIScreen.MainScreen.Bounds.Size.Width;
             var backgroundAnimation = _navigationPage.BackgroundAnimation;
@@ -347,6 +353,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
         }
 
+        /// <summary>
+        /// Fix the animation completion for swipe back and pop to root
+        /// </summary>
         void FixCompletionForSwipeAndPopToRoot()
         {
             // Fix 1 for swipe + pop to root
@@ -362,7 +371,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// The duration of the transition
         /// </summary>
         /// <param name="transitionContext">The transition context.</param>
-        /// <returns></returns>
         public override double TransitionDuration(IUIViewControllerContextTransitioning transitionContext)
         {
             return _navigationPage.TransitionDuration;
