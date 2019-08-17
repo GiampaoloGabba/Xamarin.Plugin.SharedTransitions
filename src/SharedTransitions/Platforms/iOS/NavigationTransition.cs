@@ -178,8 +178,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 });
             }
 
-            //Avoid flickering during push and display a right pop
-            if (_operation == UINavigationControllerOperation.Pop)
+            //Needed to hide the controller during the transition
+            if (_navigationPage.BackgroundAnimation == BackgroundAnimation.None)
                 _fromViewController.View.Alpha = 0;
 
             if (_masksToAnimate.Any())
