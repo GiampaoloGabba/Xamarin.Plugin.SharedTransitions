@@ -9,10 +9,10 @@
     <PackageId>Xamarin.Plugin.SharedTransitions</PackageId>
     
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
-    <AssemblyFileVersion>2.0.0</AssemblyFileVersion>
-    <Version>2.0.0</Version>
-    <PackageVersion>2.0.0-beta</PackageVersion>
+    <AssemblyVersion>2.0.1</AssemblyVersion>
+    <AssemblyFileVersion>2.0.1</AssemblyFileVersion>
+    <Version>2.0.1</Version>
+    <PackageVersion>2.0.1</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -31,11 +31,10 @@
     
     <Title>Shared Element Transitions Plugin for Xamarin Forms</Title>
     <Summary>
-        Animations connecting common elements from one page to the next/previous.
+        Animations connecting common elements from one page to another. Support for iOS/Android.
     </Summary>
-    <Description>A shared element transition determines how elements that are present in two pages transition between them. For example, an image that is displayed on both Page A and Page B, transitions from A to B when B becomes visible.
-Transitions in apps provide visual continuity, connecting common elements from one page to the next.
-    </Description>
+    <Description>Xamarin.Forms plugin for iOS/Android to enable Shared Transition animations between two pages.
+A shared element transition determines how elements that are present in two pages transition between them. For example, an image that is displayed on both Page A and Page B, transitions from A to B when B becomes visible.</Description>
     
     <Owners>Giampaolo Gabba</Owners>
     <Authors>Giampaolo Gabba</Authors>
