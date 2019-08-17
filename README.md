@@ -288,8 +288,6 @@ Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) u
 
 This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
 
-*Note: This sample use the old version of this plugin. That code will not work with the version 2.*
-
 ## Roadmap
 - [ ] Fix android minor glitch in the Collectionview preview when we pop the first element and the CollectionView scroll is at 0
 - [ ] Improve Android shape transitions (different corner radius)
