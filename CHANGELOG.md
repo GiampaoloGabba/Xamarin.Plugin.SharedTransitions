@@ -1,4 +1,9 @@
-2.0.1
+## 2.0.2
+* Fix issue [#10](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/10) (crash in iOS with non-existant image)
+* Fix issue [#11](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/11) (backward transition duration in iOS)
+* Fix Android backward transition duration
+
+## 2.0.1
 * **BREAKING:** Properties renamed to: Transition.Name, Transition.Group and TransitionDuration 
 * Full MVVM support with TransitionSelectedGroup
 * New, improved Transition management under the hood (no more limitation to int number for transition names & groups, faster view lookup for transitions)

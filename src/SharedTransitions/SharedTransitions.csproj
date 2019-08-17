@@ -9,10 +9,10 @@
     <PackageId>Xamarin.Plugin.SharedTransitions</PackageId>
     
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>2.0.1</AssemblyVersion>
-    <AssemblyFileVersion>2.0.1</AssemblyFileVersion>
-    <Version>2.0.1</Version>
-    <PackageVersion>2.0.1</PackageVersion>
+    <AssemblyVersion>2.0.2</AssemblyVersion>
+    <AssemblyFileVersion>2.0.2</AssemblyFileVersion>
+    <Version>2.0.2</Version>
+    <PackageVersion>2.0.2</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

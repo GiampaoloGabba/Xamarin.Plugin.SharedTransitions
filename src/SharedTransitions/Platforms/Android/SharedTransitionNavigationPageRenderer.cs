@@ -142,7 +142,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     transaction.SetAllowOptimization(true);
                 } 
 
-                //This is needed to retain the tranistion duration for backwards transitions
+                //This is needed to retain the transition duration for backwards transitions
                 //Miss this and they will ignore our custom duration!
                 fragmentToHide.SharedElementEnterTransition = NavigationTransition();
 
