@@ -1,5 +1,5 @@
-## 2.0.0
-* **Properties renamed to: Transition.Name, Transition.Group and TransitionDuration  <-- BREAKING**
+2.0.1
+* **BREAKING:** Properties renamed to: Transition.Name, Transition.Group and TransitionDuration 
 * Full MVVM support with TransitionSelectedGroup
 * New, improved Transition management under the hood (no more limitation to int number for transition names & groups, faster view lookup for transitions)
 * New transition engine for ios (supporting shape transitions, images with different bounds, aspect ratios, ecc..)
