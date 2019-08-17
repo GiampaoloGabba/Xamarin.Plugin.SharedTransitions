@@ -15,7 +15,7 @@ For example, an image that is displayed on both Page A and Page B, transitions f
 ## Setup
 
 * [Available on Nuget](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/)  [![NuGet](https://img.shields.io/nuget/v/Xamarin.Plugin.SharedTransitions.svg?label=NuGet)](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/)
-* Install into your NetStandard project and Client projects.
+* Install into your NetStandard project and Platforms projects.
 
 **Platform Support**
 
@@ -29,7 +29,7 @@ For example, an image that is displayed on both Page A and Page B, transitions f
 Starting from version 2, attached properties have been renamed to: ```Transition.Name```, ```Transition.Group``` and ```TransitionDuration```.
 **This is a Breaking change!**
 
-The new [sample app](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample/TransitionApp) will include everything you need to play with this plugin. 
+The new [sample app](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample/TransitionApp) include everything you need to play with this plugin. 
 Btw, I recommend to read all this page, expecially the few Android limitations.
 
 ## Usage
