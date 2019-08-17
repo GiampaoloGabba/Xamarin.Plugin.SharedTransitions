@@ -129,7 +129,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                              * without calling the Detach method from our effect. So we need to find the right element!
                              */
                             
-                            foreach (var nativeView in transitionStackFrom.Where(x => x.TransitionName == transitionToMap.TransitionName))
+                            foreach (var nativeView in transitionStackFrom.Where(x => x.TransitionName == transitionToMap.TransitionName).OrderByDescending(x=>x.NativeViewId))
                             {
                                 var fromView = fromViewController.View.ViewWithTag(nativeView.NativeViewId);
                                 if (fromView != null)
