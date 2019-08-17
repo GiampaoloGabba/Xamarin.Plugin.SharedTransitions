@@ -141,6 +141,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     //This is needed to make shared transitions works with hide & add fragments instead of .replace
                     transaction.SetAllowOptimization(true);
                 } 
+
+                //This is needed to retain the tranistion duration for backwards transitions
+                //Miss this and they will ignore our custom duration!
+                fragmentToHide.SharedElementEnterTransition = NavigationTransition();
+
                 AnimateBackground(transaction, isPush);
             }
         }
@@ -149,14 +154,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             if (!(child is Toolbar) && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
             {
+                //Set the initial shared transition
                 var fragments = _fragmentManager.Fragments;
                 var fragmentToShow = fragments.Last();
 
-                var navigationTransition = TransitionInflater.From(Context)
-                                                             .InflateTransition(Resource.Transition.navigation_transition)
-                                                             .SetDuration(_TransitionDuration);
-
-                fragmentToShow.SharedElementEnterTransition = navigationTransition;
+                fragmentToShow.SharedElementEnterTransition  = NavigationTransition();
 
                 if (fragments.Count > 1)
                 {
@@ -203,6 +205,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //We need to take the transition configuration from the destination page
             //At this point the pop is not started so we need to go back in the stack
             PropertiesContainer = ((INavigationPageController)Element).Peek(1);
+
             return await base.OnPopViewAsync(page, animated);
         }
 
@@ -238,6 +241,16 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             get => _TransitionDuration;
             set => _TransitionDuration = value;
+        }
+
+        /// <summary>
+        /// Get the custom transition to be applied to the shared elements
+        /// </summary>
+        global::Android.Transitions.Transition NavigationTransition()
+        {
+            return TransitionInflater.From(Context)
+                .InflateTransition(Resource.Transition.navigation_transition)
+                .SetDuration(_TransitionDuration);
         }
 
         /// <summary>
