@@ -36,7 +36,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         internal static CGRect GetImageFrame(this UIImageView imageView)
         {
             //We dont need these calculations from *Fill methods
-            if (imageView.ContentMode == UIViewContentMode.ScaleAspectFit)
+            if (imageView.ContentMode == UIViewContentMode.ScaleAspectFit && imageView.Image != null)
             {
                 nfloat imageAspect   = imageView.Image.Size.Width / imageView.Image.Size.Height;
                 nfloat boundslAspect = imageView.Frame.Size.Width / imageView.Frame.Size.Height;
