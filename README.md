@@ -230,17 +230,17 @@ In the destination page, you have to just set the Transition Name property to di
 
 Everything is in the [sample app](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample/TransitionApp), go take a look at it :)
 
-## Transition attache properties
+## Transition attached properties
 
 |Bindable property|Description|
-| -------------------  | :------------------: |
+| -------------------  | ------------------ |
 |```Transition.Name```|The name of the transition used to associate viewvs between pages|
 |```Transition.Group```|The unique group used to associate transition groups in dynamic lists|
 
 ## SharedNavigationPage properties
 
 |Bindable property|Description|
-| -------------------  | :------------------: |
+| -------------------  | ------------------ |
 |```SelectedTransitionGroup```|The selected ```Transition.Group``` used for dynamic transitions|
 |```SharedTransitionDuration```|Duration, in ms, of the shared transition|
 |```BackgroundAnimation```| Sets the background animation for this page. This is applied to also to all the views not included in the shared transition|
@@ -248,7 +248,7 @@ Everything is in the [sample app](https://github.com/Evolutionlab/Xamarin.Plugin
 ## Background animations provided:
 
 |Background animation|Description|
-| -------------------  | :------------------: |
+| -------------------  | ------------------ |
 |```None```|Do not animate|
 |```Fade```|Show a fade animation|
 |```Flip```|Show a flip animation|
@@ -277,6 +277,8 @@ The sample app has been completely rewritten: you can find examples for images &
 
 The app is made with [Prism](https://github.com/PrismLibrary/Prism) and it sports the superawesome [PancakeView](https://github.com/sthewissen/Xamarin.Forms.PancakeView/) and [FFImageLoading](https://github.com/luberda-molinet/FFImageLoading) plugins!
 
+*Note: Yes my dog is supercute and deserve her sample app :D*
+
 
 ## More samples!
 
@@ -286,7 +288,7 @@ Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) u
 
 This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
 
-Note: This sample use the old version of this plugin. That code will not work with the version 2.
+*Note: This sample use the old version of this plugin. That code will not work with the version 2.*
 
 ## Roadmap
 - [ ] Fix android minor glitch in the Collectionview preview when we pop the first element and the CollectionView scroll is at 0
@@ -294,24 +296,16 @@ Note: This sample use the old version of this plugin. That code will not work wi
 
 
 ## Latest release notes
-2.0.1
+**2.0.1**
 * **BREAKING:** Properties renamed to: Transition.Name, Transition.Group and TransitionDuration 
 * Full MVVM support with TransitionSelectedGroup
 * New, improved Transition management under the hood (no more limitation to int number for transition names & groups, faster view lookup for transitions)
-* New transition engine for ios (supporting shape transitions, images with different bounds, aspect ratios, ecc..)
+* New transition engine for ios (support for shape transitions, including boxview, images with different bounds, aspect ratios, ecc..)
 * New sample app in full MVVM with listview, collectionview and normal transitions (including demostrations with PancakeView and FFImageLoading)
 * Everything mostly rewritten fro the ground-up: better stability and functionality
 * Improved code comments and error handling 
 * Added useful notes in code to help contributors to make this plugin better!
 
-
-1.1.0
-* Update to .NETStandard 2
-* Fixed transitions between images with different aspect ratios
-* Enable transitions between layouts (frame, stacklayout, ecc..) **Note: BoxView in iOS is not currently supported**
-* Updated Xamarin.Forms version from 3.1 to 3.6 (#6) by **@jsuarezruiz**
-* Added new BackgroundAnimations (Flip, SlideFromLeft, etc.) (#7) by **@jsuarezruiz**
-* Updated README with a new sample reference (#8) by **@jsuarezruiz**
 
 ## Copyright and license
 
