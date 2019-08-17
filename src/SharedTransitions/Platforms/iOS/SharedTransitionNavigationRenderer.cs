@@ -99,7 +99,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 {
                     //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
                     //During the override we set the PropertiesContainer to the page where the push started
-                    //So we reflect the TransitionStacks accoringly
+                    //So we reflect the TransitionStacks accordingly
                     transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer, _selectedGroup);
                     transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage, null);
                 }
@@ -125,7 +125,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                             /*
                              * IMPORTANT
                              *
-                             * Using ListView/Collection cause the first item to be created two times, but then one of them is discarded
+                             * Using ListView/Collection, the first item is created two times, but then one of them is discarded
                              * without calling the Detach method from our effect. So we need to find the right element!
                              */
                             
@@ -160,14 +160,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     }
                 }
 
+                //IF we have views to animate, proceed with custom transition and edge gesture
                 //No view to animate = standard push & pop
                 if (viewsToAnimate.Any())
                 {
                     //deactivate normal pop gesture and activate the custom one suited for the shared transitions
                     if (operation == UINavigationControllerOperation.Push)
-                    {
                         AddInteractiveTransitionRecognizer();
-                    }
+
                     return new NavigationTransition(viewsToAnimate, operation, this, _edgeGestureRecognizer);
                 }
             }
@@ -177,8 +177,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
              *
              * standard push & pop
              * i dont use my custom edgeswipe because it does not play well with standard pop
-             * doing this work here, is good for push and doing the check on new the page
-             * when doing the custom, interactive, pop i need to double check the custom gesture
+             * Doing this work here, is good for push.
+             * When doing the custom, interactive, pop i need to double check the custom gesture later
+             * (see comments in UIGestureRecognizerState.Ended)
              */
 
             RemoveInteractiveTransitionRecognizer();
