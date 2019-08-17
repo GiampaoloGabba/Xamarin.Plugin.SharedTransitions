@@ -35,7 +35,7 @@
         </ListView>
 
         <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" />
-        <Slider x:Name="SliderDuration" Maximum="5000" Value="300" Margin="20,0" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
+        <Slider x:Name="SliderDuration" Maximum="5000" Value="300" Margin="20,0,20,30" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
 
     </StackLayout>
 
