@@ -33,12 +33,17 @@ namespace Plugin.SharedTransitions
         {
 	        var currentSection = shell?.CurrentItem?.CurrentItem?.CurrentItem;
 
-	        if (currentSection != null && currentSection is IShellContentController shellContentController)
+	        if (currentSection != null && currentSection is NavigableElement navigableElement)
 	        {
-		        return shellContentController.Page;
+		        var lastElement = navigableElement.Navigation.NavigationStack?.Last();
+
+		        if (lastElement != null)
+			        return lastElement;
+
+		        if (currentSection is IShellContentController shellContentController)
+			        return shellContentController.Page;
 	        }
 	        return null;
-
         }
 
     }

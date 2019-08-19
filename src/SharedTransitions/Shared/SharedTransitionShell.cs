@@ -34,16 +34,22 @@ namespace Plugin.SharedTransitions
         public static readonly BindableProperty TransitionDurationProperty =
             BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionShell), (long)300);
 
+        internal ITransitionMapper TransitionMap
+        {
+	        get => (ITransitionMapper)GetValue(TransitionMapProperty);
+	        set => SetValue(TransitionMapPropertyKey, value);
+        }
+
         /// <summary>
         /// Gets the transition map
         /// </summary>
         /// <value>
         /// The transition map
         /// </value>
-        public ITransitionMapper TransitionMap
+        ITransitionMapper ISharedTransitionContainer.TransitionMap
         {
-            get => (ITransitionMapper)GetValue(TransitionMapProperty);
-            internal set => SetValue(TransitionMapPropertyKey, value);
+	        get => TransitionMap;
+	        set => TransitionMap = value;
         }
 
         public SharedTransitionShell() => TransitionMap = new TransitionMapper();

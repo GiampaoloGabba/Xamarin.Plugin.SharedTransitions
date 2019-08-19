@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using Xamarin.Forms;
 
 namespace TransitionShellApp.Views
 {
@@ -7,6 +8,11 @@ namespace TransitionShellApp.Views
         public ImageSampleFrom()
         {
             InitializeComponent();
+        }
+
+        private async void Button_OnClicked(object sender, EventArgs e)
+        {
+	        await Navigation.PushAsync(new ImageSampleTo());
         }
     }
 }

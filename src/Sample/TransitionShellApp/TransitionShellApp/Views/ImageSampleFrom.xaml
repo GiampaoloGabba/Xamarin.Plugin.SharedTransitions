@@ -29,7 +29,7 @@
     <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" />
     <Slider x:Name="SliderDuration" Maximum="5000" Value="300" Margin="20,0" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
 
-    <Button Text="Tap to navigate!"  />
+    <Button Text="Tap to navigate!" Clicked="Button_OnClicked"  />
 
 </StackLayout>
     

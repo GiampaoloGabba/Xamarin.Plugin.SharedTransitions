@@ -1,6 +1,8 @@
-﻿namespace TransitionShellApp
+﻿using Plugin.SharedTransitions;
+
+namespace TransitionShellApp
 {
-	public partial class AppShell : Xamarin.Forms.Shell
+	public partial class AppShell : SharedTransitionShell
 	{
 		public AppShell()
 		{

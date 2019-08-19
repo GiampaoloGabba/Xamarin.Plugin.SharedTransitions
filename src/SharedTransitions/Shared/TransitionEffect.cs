@@ -96,15 +96,17 @@ namespace Plugin.SharedTransitions
 
             if ((!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
             {
+
+	            if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
+	            {
+		            return shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
+	            }
 	            if (currentPage.Parent is ISharedTransitionContainer navPage)
 	            {
 		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
 	            }
 
-	            if (!(currentPage.Parent is ISharedTransitionContainer))
-	            {
-		            throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
-	            }
+		        throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
             }
 
             Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
@@ -118,7 +120,15 @@ namespace Plugin.SharedTransitions
         /// <param name="currentPage">Container Page</param>
         public static void RemoveTransition(View view, Page currentPage)
         {
-            ((SharedTransitionNavigationPage) currentPage.Parent).TransitionMap.Remove(currentPage,view.Id);
+	        switch (currentPage.Parent)
+	        {
+		        case SharedTransitionNavigationPage sharedTransitionNavigationPage:
+			        sharedTransitionNavigationPage.TransitionMap.Remove(currentPage,view.Id);
+			        break;
+		        case SharedTransitionShell sharedTransitionshell:
+			        sharedTransitionshell.TransitionMap.Remove(currentPage,view.Id);
+			        break;
+	        }
         }
 
         static void OnPropertyChanged(BindableObject bindable, object oldValue, object newValue)

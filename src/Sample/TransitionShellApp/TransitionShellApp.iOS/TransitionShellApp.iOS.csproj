@@ -143,4 +143,16 @@
       <Name>TransitionShellApp</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\christmas_dog.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\cute_dog.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\lazy_dog.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\what_the_dog.jpg" />
+  </ItemGroup>
 </Project>

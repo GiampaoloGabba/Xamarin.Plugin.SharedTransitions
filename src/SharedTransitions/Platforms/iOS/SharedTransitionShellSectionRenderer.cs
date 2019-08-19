@@ -3,45 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Foundation;
-using Plugin.SharedTransitions;
-using Plugin.SharedTransitions.Platforms.iOS;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.iOS;
-
-[assembly:ExportRenderer(typeof(SharedTransitionNavigationPage), typeof(SharedTransitionNavigationRenderer))]
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
-    /*
-     * IMPORTANT NOTES:
-     * Read the dedicate comments in code for more info about those fixes.
-     *
-     * Listview/collection view hidden item:
-     * Fix First item is created two times, then discarded and Detach not called
-     *
-     * MapStack cleaning:
-     * Clean here instead of the shared project
-     * for dynamic transitions with virtualization
-     *
-     * Pop a controller with transitions groups:
-     * Fix to allow the group to be set wit hbinding
-     *
-     * Custom edge gesture recognizer:
-     * I need to enable/disable the standard edge swipe when needed
-     * because the custom one works well with transition but not so much without
-     */
-
-    /// <summary>
-    /// Platform Renderer for the NavigationPage responsible to manage the Shared Transitions
-    /// </summary>
-    [Preserve(AllMembers = true)]
-    public class SharedTransitionNavigationRenderer : NavigationRenderer, ITransitionRenderer, IUINavigationControllerDelegate, IUIGestureRecognizerDelegate
-    {
-	    public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
-        public double TransitionDuration  { get; set; }
+	public class SharedTransitionShellSectionRenderer : ShellSectionRenderer, ITransitionRenderer, IUINavigationControllerDelegate, IUIGestureRecognizerDelegate
+	{
+        public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
+        public double TransitionDuration { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
 
         /// <summary>
@@ -72,18 +45,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
         }
 
-        SharedTransitionNavigationPage NavPage => Element as SharedTransitionNavigationPage;
         UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
         UIPercentDrivenInteractiveTransition _percentDrivenInteractiveTransition;
         bool _popToRoot;
         string _selectedGroup;
+        readonly IShellContext _context;
+        private SharedTransitionShell NavPage;
 
-        public SharedTransitionNavigationRenderer()
-        {
-            Delegate = this;
-        }
+        public SharedTransitionShellSectionRenderer(IShellContext context) : base(context)
+		{
+			_context = context;
+			NavPage = (SharedTransitionShell)_context.Shell;
+			Delegate = this;
+		}
 
-        [Export("navigationController:animationControllerForOperation:fromViewController:toViewController:")]
+		[Export("navigationController:animationControllerForOperation:fromViewController:toViewController:")]
         public IUIViewControllerAnimatedTransitioning GetAnimationControllerForOperation(UINavigationController navigationController, UINavigationControllerOperation operation, UIViewController fromViewController, UIViewController toViewController)
         {
             if (!_popToRoot)
@@ -97,16 +73,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 if (operation == UINavigationControllerOperation.Push)
                 {
-                    //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
-                    //During the override we set the PropertiesContainer to the page where the push started
-                    //So we reflect the TransitionStacks accordingly
                     transitionStackFrom = NavPage.TransitionMap.GetMap(PropertiesContainer, _selectedGroup);
-                    transitionStackTo   = NavPage.TransitionMap.GetMap(NavPage.CurrentPage, null);
+                    transitionStackTo   = NavPage.TransitionMap.GetMap(ShellSection.Stack.Last(), null);
                 }
                 else
                 {
                     //During POP, everyting is fine and clear
-                    transitionStackFrom = NavPage.TransitionMap.GetMap(NavPage.CurrentPage, null);
+                    transitionStackFrom = NavPage.TransitionMap.GetMap(ShellSection.Stack.Last(), null);
                     transitionStackTo   = NavPage.TransitionMap.GetMap(PropertiesContainer, _selectedGroup);
                 }
 
@@ -152,8 +125,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                             NavPage.TransitionMap.Remove(
                                 operation == UINavigationControllerOperation.Push
-                                    ? NavPage.CurrentPage
-                                    : PropertiesContainer, transitionToMap.NativeViewId);
+                                    ? PropertiesContainer
+                                    : ShellSection.Stack.Last(), transitionToMap.NativeViewId);
 
                             Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree and has been removed");
                         }
@@ -193,53 +166,23 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         }
 
         //During PopToRoot we skip everything and make the default animation
-        protected override async Task<bool> OnPopToRoot(Page page, bool animated)
+        protected override void OnPopToRootRequested(NavigationRequestedEventArgs e)
         {
             _popToRoot = true;
-            var result = await base.OnPopToRoot(page, true);
+            base.OnPopToRootRequested(e);
             _popToRoot = false;
-
-            return result;
         }
 
         public override UIViewController PopViewController(bool animated)
         {
-            //We need to take the transition configuration from the destination page
-            //At this point the pop is not started so we need to go back in the stack
-            var pageCount = Element.Navigation.NavigationStack.Count;
-            if (pageCount > 1)
-                PropertiesContainer = Element.Navigation.NavigationStack[pageCount - 2];
-
+			//at this point, currentitem is already set to the new page, wich contains our properties
+            PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem).Page;
             return base.PopViewController(animated); ;
         }
-        
-        public override async void PushViewController(UIViewController viewController, bool animated)
+
+        public override void PushViewController(UIViewController viewController, bool animated)
         {
-            //We need to take the transition configuration from the page we are leaving page
-            //At this point the current page in the navigation stack is already set with the page we are pusing
-            //So we need to go back in the stack to retrieve what we want
-            var pageCount = Element.Navigation.NavigationStack.Count;
-            PropertiesContainer = pageCount > 1 
-                ? Element.Navigation.NavigationStack[pageCount - 2] 
-                : NavPage.CurrentPage;
-
-            /*
-             * IMPORTANT!
-             *
-             * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
-             * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
-             * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
-             * buyt is not ideal cause i want this full compatible with binding and mvvm
-             * We can use Yield the task or a small delay like Task.Delay(10) or Task.Delay(5).
-             * On faster phones Task.Delay(1) work, but i wouldnt trust it in slower phones :)
-             *
-             * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
-             * This add no more than 5ms to the navigation i think is largely acceptable
-             */
-            var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, null, true);
-            if (mapStack.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
-                await Task.Yield();
-
+	        PropertiesContainer = ((IShellContentController)ShellSection.CurrentItem).Page;
             base.PushViewController(viewController, animated);
         }
 
@@ -327,8 +270,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                          * If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
                          */
 
-                        var pageCount = Element.Navigation.NavigationStack.Count;
-                        if (pageCount > 2 && NavPage.TransitionMap.GetMap(Element.Navigation.NavigationStack[pageCount - 3],null).Count==0)
+                        var pageCount = ShellSection.Stack.Count;
+                        if (pageCount > 2 && NavPage.TransitionMap.GetMap(ShellSection.Stack[pageCount - 3],null).Count==0)
                             RemoveInteractiveTransitionRecognizer();
                     }
                     else
@@ -380,5 +323,5 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         {
             _selectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(PropertiesContainer);
         }
-    }
+	}
 }

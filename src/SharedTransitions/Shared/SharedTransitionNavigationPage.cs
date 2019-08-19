@@ -47,8 +47,8 @@ namespace Plugin.SharedTransitions
         }
         ITransitionMapper ISharedTransitionContainer.TransitionMap
         {
-	        get => this.TransitionMap;
-	        set => this.TransitionMap = value;
+	        get => TransitionMap;
+	        set => TransitionMap = value;
         }
 
         public SharedTransitionNavigationPage(Page root) : base(root) => TransitionMap = new TransitionMapper();
