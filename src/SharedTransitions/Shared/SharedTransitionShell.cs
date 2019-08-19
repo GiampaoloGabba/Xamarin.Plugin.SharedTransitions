@@ -3,16 +3,16 @@
 namespace Plugin.SharedTransitions
 {
     /// <summary>
-    /// Navigation Page with support for shared transitions
+    /// Shell with support for shared transitions
     /// </summary>
-    /// <seealso cref="Xamarin.Forms.NavigationPage" />
-    public class SharedTransitionNavigationPage : NavigationPage, ISharedTransitionContainer
+    /// <seealso cref="Xamarin.Forms.Shell" />
+    public class SharedTransitionShell : Shell, ISharedTransitionContainer
     {
         /// <summary>
-        /// Map for all transitions (and support properties) associated with this SharedTransitionNavigationPage
+        /// Map for all transitions (and support properties) associated with this SharedTransitionShell
         /// </summary>
         internal static readonly BindablePropertyKey TransitionMapPropertyKey =
-            BindableProperty.CreateReadOnly("TransitionMap", typeof(ITransitionMapper), typeof(SharedTransitionNavigationPage), default(ITransitionMapper));
+            BindableProperty.CreateReadOnly("TransitionMap", typeof(ITransitionMapper), typeof(SharedTransitionShell), default(ITransitionMapper));
 
         public static readonly BindableProperty TransitionMapProperty = TransitionMapPropertyKey.BindableProperty;
 
@@ -20,19 +20,19 @@ namespace Plugin.SharedTransitions
         /// The shared transition selected group for dynamic transitions
         /// </summary>
         public static readonly BindableProperty TransitionSelectedGroupProperty =
-            BindableProperty.CreateAttached("TransitionSelectedGroup", typeof(string), typeof(SharedTransitionNavigationPage), null);
+            BindableProperty.CreateAttached("TransitionSelectedGroup", typeof(string), typeof(SharedTransitionShell), null);
 
         /// <summary>
         /// The background animation associated with the current page in stack
         /// </summary>
         public static readonly BindableProperty BackgroundAnimationProperty =
-            BindableProperty.CreateAttached("BackgroundAnimation", typeof(BackgroundAnimation), typeof(SharedTransitionNavigationPage), BackgroundAnimation.Fade);
+            BindableProperty.CreateAttached("BackgroundAnimation", typeof(BackgroundAnimation), typeof(SharedTransitionShell), BackgroundAnimation.Fade);
 
         /// <summary>
         /// The shared transition duration (in ms) associated with the current page in stack
         /// </summary>
         public static readonly BindableProperty TransitionDurationProperty =
-            BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionNavigationPage), (long)300);
+            BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionShell), (long)300);
 
         /// <summary>
         /// Gets the transition map
@@ -40,18 +40,13 @@ namespace Plugin.SharedTransitions
         /// <value>
         /// The transition map
         /// </value>
-        internal ITransitionMapper TransitionMap
+        public ITransitionMapper TransitionMap
         {
-	        get => (ITransitionMapper)GetValue(TransitionMapProperty);
-	        set => SetValue(TransitionMapPropertyKey, value);
-        }
-        ITransitionMapper ISharedTransitionContainer.TransitionMap
-        {
-	        get => this.TransitionMap;
-	        set => this.TransitionMap = value;
+            get => (ITransitionMapper)GetValue(TransitionMapProperty);
+            internal set => SetValue(TransitionMapPropertyKey, value);
         }
 
-        public SharedTransitionNavigationPage(Page root) : base(root) => TransitionMap = new TransitionMapper();
+        public SharedTransitionShell() => TransitionMap = new TransitionMapper();
 
         /// <summary>
         /// Gets the transition selected group

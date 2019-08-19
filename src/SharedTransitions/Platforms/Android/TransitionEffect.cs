@@ -15,7 +15,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         private Page _currentPage;
         protected override void OnAttached()
         {
-            _currentPage = Application.Current.MainPage.GetCurrentPageInNavigationStack();
+            _currentPage = Application.Current.MainPage.GetCurrentPage();
             if (_currentPage == null)
                 throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
 

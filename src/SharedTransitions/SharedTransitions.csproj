@@ -80,6 +80,10 @@ A shared element transition determines how elements that are present in two page
     <Compile Include="Platforms\iOS\**\*.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Shared\ISharedTransitionContainer.cs" />
+  </ItemGroup>
+
    <!--<Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />-->
 
 </Project>

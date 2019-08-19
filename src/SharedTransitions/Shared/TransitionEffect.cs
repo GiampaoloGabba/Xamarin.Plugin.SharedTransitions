@@ -94,15 +94,17 @@ namespace Plugin.SharedTransitions
             var transitionName  = GetName(element);
             var transitionGroup = GetGroup(element);
 
-            if (currentPage.Parent is SharedTransitionNavigationPage navPage &&
-                (!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
+            if ((!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
             {
-                return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
-            }
+	            if (currentPage.Parent is ISharedTransitionContainer navPage)
+	            {
+		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
+	            }
 
-            if (!(currentPage.Parent is SharedTransitionNavigationPage))
-            {
-                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
+	            if (!(currentPage.Parent is ISharedTransitionContainer))
+	            {
+		            throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
+	            }
             }
 
             Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
