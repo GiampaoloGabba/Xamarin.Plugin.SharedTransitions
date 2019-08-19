@@ -10,7 +10,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LiveXAML" Version="2.1.72" />
     <PackageReference Include="Xamarin.Forms" Version="4.1.0.673156" />  
     <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SharedTransitions\SharedTransitions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\ImageSampleFrom.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ImageSampleTo.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

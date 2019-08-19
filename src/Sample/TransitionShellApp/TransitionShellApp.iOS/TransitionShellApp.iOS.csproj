@@ -134,6 +134,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\..\SharedTransitions\SharedTransitions.csproj">
+      <Project>{447b5f11-2f97-4e1d-89ff-b8dc2889b81b}</Project>
+      <Name>SharedTransitions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TransitionShellApp\TransitionShellApp.csproj">
       <Project>{7702F653-FEC7-4AFB-AA8C-407997B7C478}</Project>
       <Name>TransitionShellApp</Name>
