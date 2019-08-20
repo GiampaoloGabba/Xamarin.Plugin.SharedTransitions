@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Foundation;
@@ -88,9 +86,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public bool PopToRoot { get; set; }
         public string SelectedGroup { get; set; }
 
+        private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
+
         public SharedTransitionNavigationRenderer()
         {
 	        Delegate = new SharedTransitionDelegate(Delegate,this);
+	        _interactiveTransitionRecognizer = new InteractiveTransitionRecognizer(this);
         }
 
         //During PopToRoot we skip everything and make the default animation
@@ -130,7 +131,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 	        return base.PopViewController(animated); ;
         }
 
-        
         public override async void PushViewController(UIViewController viewController, bool animated)
         {
             /*
@@ -161,18 +161,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// </summary>
         public void AddInteractiveTransitionRecognizer()
         {
-            InteractivePopGestureRecognizer.Enabled = false;
-            if (!View.GestureRecognizers.Contains(EdgeGestureRecognizer))
-            {
-                //Add PanGesture on left edge to POP page
-                EdgeGestureRecognizer = new UIScreenEdgePanGestureRecognizer {Edges = UIRectEdge.Left};
-                EdgeGestureRecognizer.AddTarget(() => InteractiveTransitionRecognizerAction(EdgeGestureRecognizer));
-                View.AddGestureRecognizer(EdgeGestureRecognizer);
-            }
-            else
-            {
-                EdgeGestureRecognizer.Enabled = true;
-            }
+	        _interactiveTransitionRecognizer.AddInteractiveTransitionRecognizer(Element.Navigation.NavigationStack);
         }
 
         /// <summary>
@@ -180,81 +169,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// </summary>
         public void RemoveInteractiveTransitionRecognizer()
         {
-            if (EdgeGestureRecognizer != null && 
-                View.GestureRecognizers.Contains(EdgeGestureRecognizer))
-            {
-                EdgeGestureRecognizer.Enabled = false;
-                InteractivePopGestureRecognizer.Enabled = true;
-            }
-            InteractivePopGestureRecognizer.Enabled = true;
+	        _interactiveTransitionRecognizer.RemoveInteractiveTransitionRecognizer();
         }
 
-        /// <summary>
-        ///  Handle the custom EdgePanGesture to control the Shared Transition state
-        /// </summary>
-        void InteractiveTransitionRecognizerAction(UIScreenEdgePanGestureRecognizer sender)
+        public void OnEdgeGesturePanned(EdgeGesturePannedArgs e)
         {
-            var percent = sender.TranslationInView(sender.View).X / sender.View.Frame.Width;
-            var finishTransitionOnEnd = percent > 0.5 || sender.VelocityInView(sender.View).X > 300;
-
-            OnEdgeGesturePanned(new EdgeGesturePannedArgs
-            {
-                State = sender.State,
-                Percent = percent,
-                FinishTransitionOnEnd = finishTransitionOnEnd
-            });
-
-            switch (sender.State)
-            {
-                case UIGestureRecognizerState.Began:
-                    PercentDrivenInteractiveTransition = new UIPercentDrivenInteractiveTransition();
-                    PopViewController(true);
-                    break;
-
-                case UIGestureRecognizerState.Changed:
-                    PercentDrivenInteractiveTransition.UpdateInteractiveTransition(percent);
-                    break;
-
-                case UIGestureRecognizerState.Cancelled:
-                case UIGestureRecognizerState.Failed:
-                    PercentDrivenInteractiveTransition.CancelInteractiveTransition();
-                    PercentDrivenInteractiveTransition = null;
-                    break;
-
-                case UIGestureRecognizerState.Ended:
-                    if (finishTransitionOnEnd)
-                    {
-                        PercentDrivenInteractiveTransition.FinishInteractiveTransition();
-                        /*
-                         * IMPORTANT!
-                         *
-                         * at the end of this transition, we need to check if we want a normal pop gesture or the custom one for the new page
-                         * as we said before, the custom pop gesture doesnt play well with "normal" pages.
-                         * So, at the end of the transition, we check if a page exists before the one we are opening and then check the mapstack
-                         * If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
-                         */
-
-                        var pageCount = Element.Navigation.NavigationStack.Count;
-                        if (pageCount > 2 && NavPage.TransitionMap.GetMap(Element.Navigation.NavigationStack[pageCount - 3],null).Count==0)
-                            RemoveInteractiveTransitionRecognizer();
-                    }
-                    else
-                    {
-                        PercentDrivenInteractiveTransition.CancelInteractiveTransition();
-                    }
-                    PercentDrivenInteractiveTransition = null;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Event fired when the EdgeGesture is working.
-        /// Useful to commanding additional animations attached to the transition
-        /// </summary>
-        void OnEdgeGesturePanned(EdgeGesturePannedArgs e)
-        {
-            EventHandler<EdgeGesturePannedArgs> handler = EdgeGesturePanned;
-            handler?.Invoke(this, e);
+	        EventHandler<EdgeGesturePannedArgs> handler = EdgeGesturePanned;
+	        handler?.Invoke(this, e);
         }
 
         void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)
