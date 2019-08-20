@@ -74,8 +74,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		public override UIViewController PopViewController(bool animated)
 		{
 			//at this point, currentitem is already set to the new page, wich contains our properties
-			PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem).Page;
-			LastPageInStack = ShellSection.Stack?.Last();
+			if (ShellSection != null)
+			{
+				PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem)?.Page;
+				LastPageInStack     = ShellSection.Stack?.Last();
+			}
 			return base.PopViewController(animated);
 		}
 
