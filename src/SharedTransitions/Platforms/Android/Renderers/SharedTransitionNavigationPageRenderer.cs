@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Android.App;
 using Android.OS;
 using Android.Transitions;
 using Android.Support.V7.Widget;
@@ -69,6 +68,16 @@ namespace Plugin.SharedTransitions.Platforms.Android
             }
         }
         public Page LastPageInStack { get; set; }
+
+        /// <summary>
+        /// Apply the custom transition in context
+        /// </summary>
+        public global::Android.Transitions.Transition InflateTransitionInContext()
+        {
+	        return TransitionInflater.From(Context)
+		        .InflateTransition(Resource.Transition.navigation_transition)
+		        .SetDuration(_transitionDuration);
+        }
 
         bool _popToRoot;
         int _transitionDuration;
@@ -158,16 +167,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		        TransitionMap = ((ISharedTransitionContainer) Element).TransitionMap;
 
 	        base.OnElementChanged(e);
-        }
-
-        /// <summary>
-        /// Apply the custom transition in context
-        /// </summary>
-        public global::Android.Transitions.Transition InflateTransitionInContext()
-        {
-            return TransitionInflater.From(Context)
-                .InflateTransition(Resource.Transition.navigation_transition)
-                .SetDuration(_transitionDuration);
         }
 
         void PropertiesContainerOnPropertyChanged(object sender, PropertyChangedEventArgs e)
