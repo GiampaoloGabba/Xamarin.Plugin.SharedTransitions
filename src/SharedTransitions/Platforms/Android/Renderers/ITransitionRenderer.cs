@@ -5,7 +5,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 {
 	public interface ITransitionRenderer
 	{
-		FragmentManager FragmentManager { get; set; }
+		FragmentManager SupportFragmentManager { get; set; }
 		string SelectedGroup { get; set; }
 		BackgroundAnimation BackgroundAnimation { get; set; }
 		Page PropertiesContainer { get; set; }

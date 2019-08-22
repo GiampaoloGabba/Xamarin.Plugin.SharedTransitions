@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Android.App;
 using Android.OS;
-using Xamarin.Forms;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using Fragment = Android.Support.V4.App.Fragment;
 
 namespace Plugin.SharedTransitions.Platforms.Android
 {
@@ -24,11 +24,10 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		}
 
 		public void SetupPageTransition(FragmentTransaction transaction, bool isPush)
-        {
-            //In Android the mapping logic is inverse compared to IOS
+		{
             //When we are here, the destination page is not yet attached so we dont know if there are transitions
             //We need to setup transitions only for what we know here, starting from sourcepage
-            var fragmentToHide = _renderer.FragmentManager.Fragments.Last();
+            var fragmentToHide = _renderer.SupportFragmentManager.Fragments.Last();
             bool animationFound = false;
 
             //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
@@ -64,7 +63,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
                 //during pop we need to be sure that a transition exists so we can set SetAllowOptimization to true
                 //Without active shared transition, the allowOptimization need to stay false or pop will not work
-                if (!isPush && animationFound == false && transitionStackTo.FirstOrDefault(x => x.TransitionName == transitionFromMap.TransitionName) != null)
+				//With shell, allowOptimization is always off on pop
+                if (!isPush && animationFound == false && !(_renderer is SharedTransitionShellItemRenderer) &&
+                    transitionStackTo.FirstOrDefault(x => x.TransitionName == transitionFromMap.TransitionName) != null)
 	                animationFound = true;
 
                 transaction.AddSharedElement(fromView, correspondingTag);
@@ -83,28 +84,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
             AnimateBackground(transaction, isPush);
         }
 
-		public void HandleAddView(Page currentPage)
-		{
-			//Set the initial shared transition
-			var fragments      = _renderer.FragmentManager.Fragments;
-			var fragmentToShow = fragments.Last();
-
-			fragmentToShow.SharedElementEnterTransition = _renderer.InflateTransitionInContext();
-
-			if (fragments.Count > 1)
-			{
-				//Switch the current here for all the page except the first.
-				//So we can read the properties for subsequent transitions from the page we are leaving
-				_renderer.PropertiesContainer = currentPage;
-			}
-		}
-
 		public void HandlePopToRoot()
 		{
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
 			{
-				var fragments   = _renderer.FragmentManager.Fragments;
-				var transaction = _renderer.FragmentManager.BeginTransaction();
+				var fragments   = _renderer.SupportFragmentManager.Fragments;
+				var transaction = _renderer.SupportFragmentManager.BeginTransaction();
 
 				/*
 				 * IMPORTANT!

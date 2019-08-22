@@ -148,15 +148,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == SharedTransitionNavigationPage.BackgroundAnimationProperty.PropertyName)
+			if (e.PropertyName == SharedTransitionShell.BackgroundAnimationProperty.PropertyName)
 			{
 				UpdateBackgroundTransition();
 			}
-			else if (e.PropertyName == SharedTransitionNavigationPage.TransitionDurationProperty.PropertyName)
+			else if (e.PropertyName == SharedTransitionShell.TransitionDurationProperty.PropertyName)
 			{
 				UpdateTransitionDuration();
 			}
-			else if (e.PropertyName == SharedTransitionNavigationPage.TransitionSelectedGroupProperty.PropertyName)
+			else if (e.PropertyName == SharedTransitionShell.TransitionSelectedGroupProperty.PropertyName)
 			{
 				UpdateSelectedGroup();
 			}
@@ -164,17 +164,17 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		void UpdateBackgroundTransition()
 		{
-			BackgroundAnimation = SharedTransitionNavigationPage.GetBackgroundAnimation(PropertiesContainer);
+			BackgroundAnimation = SharedTransitionShell.GetBackgroundAnimation(PropertiesContainer);
 		}
 
 		void UpdateTransitionDuration()
 		{
-			TransitionDuration = (double) SharedTransitionNavigationPage.GetTransitionDuration(PropertiesContainer) / 1000;
+			TransitionDuration = (double) SharedTransitionShell.GetTransitionDuration(PropertiesContainer) / 1000;
 		}
 
 		void UpdateSelectedGroup()
 		{
-			SelectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(PropertiesContainer);
+			SelectedGroup = SharedTransitionShell.GetTransitionSelectedGroup(PropertiesContainer);
 		}
 	}
 }

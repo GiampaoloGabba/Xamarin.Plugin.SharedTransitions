@@ -34,7 +34,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
     [Preserve(AllMembers = true)]
     public class SharedTransitionNavigationPageRenderer : NavigationPageRenderer, ITransitionRenderer
     {
-        public FragmentManager FragmentManager { get; set; }
+        public FragmentManager SupportFragmentManager { get; set; }
         public string SelectedGroup { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
         public ITransitionMapper TransitionMap { get; set; }
@@ -85,7 +85,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         public SharedTransitionNavigationPageRenderer(Context context) : base(context)
         {
-            FragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager;
+            SupportFragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager;
             _navigationTransition = new NavigationTransition(this);
         }
 
@@ -104,18 +104,22 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         public override void AddView(View child)
         {
-            if (!(child is Toolbar) && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-	            _navigationTransition.HandleAddView(Element.CurrentPage);
-            
-            base.AddView(child);
+	        if (!(child is Toolbar) && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+	        {
+		        //Set the initial shared transition
+		        SupportFragmentManager.Fragments.Last().SharedElementEnterTransition = InflateTransitionInContext();
+	        }
+
+	        base.AddView(child);
         }
 
         protected override async Task<bool> OnPushAsync(Page page, bool animated)
         {
             //At the very start of the navigationpage push occour inflating the first view
             //We save it immediately so we can access the Navigation options needed for the first transaction
-            if (Element.Navigation.NavigationStack.Count == 1)
-                PropertiesContainer = page;
+            PropertiesContainer = Element.Navigation.NavigationStack.Count == 1
+	            ? page
+	            : ((INavigationPageController) Element).Peek(1);
 
             /*
              * IMPORTANT!
