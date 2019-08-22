@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
@@ -88,9 +89,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                          * So, at the end of the transition, we check if a page exists before the one we are opening and then check the mapstack
                          * If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
                          */
-
                         var pageCount = pageStack.Count;
-                        if (pageCount > 2 && _renderer.NavPage.TransitionMap.GetMap(pageStack[pageCount - 3],null).Count==0)
+                        if (pageCount > 2 && _renderer.TransitionMap.GetMap(pageStack[pageCount - 3],null).Count==0)
                             RemoveInteractiveTransitionRecognizer();
                     }
                     else

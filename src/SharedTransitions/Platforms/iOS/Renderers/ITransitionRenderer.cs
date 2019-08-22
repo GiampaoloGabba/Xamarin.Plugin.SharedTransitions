@@ -7,12 +7,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 	public interface ITransitionRenderer
 	{
 		double TransitionDuration { get; set; }
-		bool   PopToRoot     { get; set; }
+		bool DisableTransition { get; set; }
 		string SelectedGroup { get; set; }
 		BackgroundAnimation BackgroundAnimation { get; set; }
 		Page PropertiesContainer { get; set; }
 		Page LastPageInStack { get; set; }
-		ISharedTransitionContainer NavPage { get; set; }
+		ITransitionMapper TransitionMap { get; set; }
 		UIPercentDrivenInteractiveTransition PercentDrivenInteractiveTransition { get; set; }
 		UIScreenEdgePanGestureRecognizer EdgeGestureRecognizer { get; set; }
 

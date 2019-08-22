@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using Foundation;
-using ObjCRuntime;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -49,26 +45,26 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		public Page LastPageInStack { get; set; }
 		public UIScreenEdgePanGestureRecognizer EdgeGestureRecognizer { get; set; }
-		public bool PopToRoot { get; set; }
+		public bool DisableTransition { get; set; }
 		public string SelectedGroup { get; set; }
-		public ISharedTransitionContainer NavPage { get; set; }
+		public ITransitionMapper TransitionMap { get; set; }
 		public UIPercentDrivenInteractiveTransition PercentDrivenInteractiveTransition { get; set; }
 
 		private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
 
 		public SharedTransitionShellSectionRenderer(IShellContext context) : base(context)
 		{
-			NavPage  = (SharedTransitionShell) context.Shell;
 			Delegate = new SharedTransitionDelegate(Delegate, this);
+			TransitionMap = ((ISharedTransitionContainer) context.Shell).TransitionMap;
 			_interactiveTransitionRecognizer = new InteractiveTransitionRecognizer(this);
 		}
 
 		//During PopToRoot we skip everything and make the default animation
 		protected override void OnPopToRootRequested(NavigationRequestedEventArgs e)
 		{
-			PopToRoot = true;
+			DisableTransition = true;
 			base.OnPopToRootRequested(e);
-			PopToRoot = false;
+			DisableTransition = false;
 		}
 
 		public override UIViewController PopViewController(bool animated)
@@ -138,8 +134,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		void UpdateTransitionDuration()
 		{
-			TransitionDuration = (double) SharedTransitionNavigationPage.GetTransitionDuration(PropertiesContainer) /
-			                     1000;
+			TransitionDuration = (double) SharedTransitionNavigationPage.GetTransitionDuration(PropertiesContainer) / 1000;
 		}
 
 		void UpdateSelectedGroup()

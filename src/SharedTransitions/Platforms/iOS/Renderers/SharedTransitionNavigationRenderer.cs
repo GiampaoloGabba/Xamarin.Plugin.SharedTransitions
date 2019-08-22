@@ -46,9 +46,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// Track the page we need to get the custom properties for the shared transitions
         /// </summary>
         Page _propertiesContainer;
-
-        private ISharedTransitionContainer _navPage;
-
         public Page PropertiesContainer
         {
             get => _propertiesContainer;
@@ -74,16 +71,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         }
 
         public Page LastPageInStack { get; set; }
-
-        public ISharedTransitionContainer NavPage
-        {
-	        get => _navPage ?? Element as SharedTransitionNavigationPage;
-	        set => _navPage = value;
-        }
-
+        public ITransitionMapper TransitionMap { get; set; }
         public UIScreenEdgePanGestureRecognizer EdgeGestureRecognizer { get; set; }
         public UIPercentDrivenInteractiveTransition PercentDrivenInteractiveTransition { get; set; }
-        public bool PopToRoot { get; set; }
+        public bool DisableTransition { get; set; }
         public string SelectedGroup { get; set; }
 
         private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
@@ -91,15 +82,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public SharedTransitionNavigationRenderer()
         {
 	        Delegate = new SharedTransitionDelegate(Delegate,this);
+	        TransitionMap = ((ISharedTransitionContainer) Element).TransitionMap;
 	        _interactiveTransitionRecognizer = new InteractiveTransitionRecognizer(this);
         }
 
         //During PopToRoot we skip everything and make the default animation
         protected override async Task<bool> OnPopToRoot(Page page, bool animated)
         {
-            PopToRoot = true;
+            DisableTransition = true;
             var result = await base.OnPopToRoot(page, true);
-            PopToRoot = false;
+            DisableTransition = false;
 
             return result;
         }
@@ -107,13 +99,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         protected override async Task<bool> OnPushAsync(Page page, bool animated)
         {
 	        LastPageInStack = page;
-
-	        //We need to take the transition configuration from the page we are leaving
-	        //At this point the current page in the navigation stack is already set with the page we are pusing
-	        //So we need to go back in the stack to retrieve what we want
-	        var pageCount = Element.Navigation.NavigationStack.Count;
-	        if (pageCount > 1)
-		        PropertiesContainer = Element.Navigation.NavigationStack[pageCount - 2];
+	        UpdatePropertyContainer();
 
 	        return await base.OnPushAsync(page, animated);
         }
@@ -121,12 +107,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public override UIViewController PopViewController(bool animated)
         {
 	        LastPageInStack = Element.Navigation.NavigationStack.Last();
-
-	        //We need to take the transition configuration from the destination page
-	        //At this point the pop is not started so we need to go back in the stack
-	        var pageCount = Element.Navigation.NavigationStack.Count;
-	        if (pageCount > 1)
-		        PropertiesContainer = Element.Navigation.NavigationStack[pageCount - 2];
+	        UpdatePropertyContainer();
 
 	        return base.PopViewController(animated); ;
         }
@@ -148,8 +129,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
              */
             if (PropertiesContainer != null)
             {
-	            var mapStack = NavPage.TransitionMap?.GetMap(PropertiesContainer, null, true);
-	            if (mapStack.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
+	            var mapStack = TransitionMap?.GetMap(PropertiesContainer, null, true);
+	            if (mapStack?.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
 		            await Task.Yield();
             }
 
@@ -192,6 +173,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 UpdateSelectedGroup();
             }
+        }
+
+        public void UpdatePropertyContainer()
+        {
+	        var pageCount = Element.Navigation.NavigationStack.Count;
+	        if (pageCount > 1)
+		        PropertiesContainer = Element.Navigation.NavigationStack[pageCount - 2];
         }
 
         void UpdateBackgroundTransition()

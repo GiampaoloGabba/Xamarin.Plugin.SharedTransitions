@@ -11,13 +11,15 @@ namespace Plugin.SharedTransitions
         /// <param name="mainPage">Application current mainpage</param>
         internal static Page GetCurrentPage(this Page mainPage)
         {
-            switch (mainPage)
+	        mainPage = mainPage.GetCurrentPageFromModal();
+
+	        switch (mainPage)
             {
 				case Shell appShell:
 					return appShell.GetCurrentShellPage();
                 case SharedTransitionNavigationPage navPage:
-                    return navPage.Navigation?.NavigationStack?.Last();
-                case MasterDetailPage masterPage:
+                    return navPage.Navigation?.NavigationStack?.Last()?.GetCurrentPageFromModal();
+				case MasterDetailPage masterPage:
                     return masterPage.Detail.GetCurrentPage();
                 case TabbedPage tabbedPage:
                     return tabbedPage.CurrentPage.GetCurrentPage();
@@ -38,13 +40,23 @@ namespace Plugin.SharedTransitions
 		        var lastElement = navigableElement.Navigation.NavigationStack?.Last();
 
 		        if (lastElement != null)
-			        return lastElement;
+		        {
+					
+			        return lastElement.GetCurrentPageFromModal();
+		        }
+			        
 
 		        if (currentSection is IShellContentController shellContentController)
-			        return shellContentController.Page;
+			        return shellContentController.Page?.GetCurrentPageFromModal();
 	        }
 	        return null;
         }
 
+        internal static Page GetCurrentPageFromModal(this Page page)
+        {
+	        return page.Navigation?.ModalStack?.Count > 0 
+		        ? page.Navigation.ModalStack.Last().GetCurrentPage() 
+		        : page;
+        }
     }
 }

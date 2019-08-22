@@ -29,7 +29,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		public override IUIViewControllerAnimatedTransitioning GetAnimationControllerForOperation(UINavigationController navigationController, UINavigationControllerOperation operation, UIViewController fromViewController, UIViewController toViewController)
 		{
-			if (!_self.PopToRoot)
+			if (!_self.DisableTransition)
 			{
 				//At this point the property TargetPage refers to the view we are pushing or popping
 				//This view is not yet visible in our app but the variable is already set
@@ -40,14 +40,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 				if (operation == UINavigationControllerOperation.Push)
 				{
-					transitionStackFrom = _self.NavPage.TransitionMap.GetMap(_self.PropertiesContainer, _self.SelectedGroup);
-					transitionStackTo = _self.NavPage.TransitionMap.GetMap(_self.LastPageInStack, null);
+					transitionStackFrom = _self.TransitionMap.GetMap(_self.PropertiesContainer, _self.SelectedGroup);
+					transitionStackTo = _self.TransitionMap.GetMap(_self.LastPageInStack, null);
 				}
 				else
 				{
 					//During POP, everyting is fine and clear
-					transitionStackFrom = _self.NavPage.TransitionMap.GetMap(_self.LastPageInStack, null);
-					transitionStackTo = _self.NavPage.TransitionMap.GetMap(_self.PropertiesContainer, _self.SelectedGroup);
+					transitionStackFrom = _self.TransitionMap.GetMap(_self.LastPageInStack, null);
+					transitionStackTo = _self.TransitionMap.GetMap(_self.PropertiesContainer, _self.SelectedGroup);
 				}
 
 				if (transitionStackFrom != null)
@@ -92,7 +92,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 							 * This is the only way i found to have a reliable, clean mapstack.
 							 */
 
-							_self.NavPage.TransitionMap.Remove(
+							_self.TransitionMap.Remove(
 								operation == UINavigationControllerOperation.Push
 									? _self.PropertiesContainer
 									: _self.LastPageInStack, transitionToMap.NativeViewId);

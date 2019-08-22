@@ -4,7 +4,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly:ExportRenderer(typeof(SharedTransitionShell), typeof(SharedTransitionShellRenderer))]
-
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
 	public class SharedTransitionShellRenderer : ShellRenderer
@@ -13,6 +12,5 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		{
 			return new SharedTransitionShellSectionRenderer(this);
 		}
-
 	}
 }
