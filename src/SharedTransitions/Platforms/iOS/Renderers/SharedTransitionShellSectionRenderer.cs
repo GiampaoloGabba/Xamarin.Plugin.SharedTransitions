@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -8,6 +9,17 @@ using Xamarin.Forms.Platform.iOS;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
+	/*
+	 * IMPORTANT NOTES:
+	 * Read the dedicate comments in code for more info about those fixes.
+	 *
+	 * Pop a controller with transitions groups:
+	 * Fix to allow the group to be set wit hbinding
+	 */
+
+	/// <summary>
+	/// Platform Renderer for ShellSection responsible to manage the Shared Transitions
+	/// </summary>
 	public sealed class SharedTransitionShellSectionRenderer : ShellSectionRenderer, ITransitionRenderer
 	{
 		public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
@@ -71,17 +83,31 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		{
 			//at this point, currentitem is already set to the new page, wich contains our properties
 			if (ShellSection != null)
-			{
-				PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem)?.Page;
-				LastPageInStack     = ShellSection.Stack?.Last();
-			}
+				UpdatePropertyContainer();
+
 			return base.PopViewController(animated);
 		}
 
-		public override void PushViewController(UIViewController viewController, bool animated)
+		public override async void PushViewController(UIViewController viewController, bool animated)
 		{
-			PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem).Page;
-			LastPageInStack = ShellSection.Stack?.Last();
+			UpdatePropertyContainer();
+
+			/*
+			 * IMPORTANT!
+			 *
+			 * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
+			 * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
+			 * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
+			 * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
+			 * This add no more than 5ms to the navigation i think is largely acceptable
+			 */
+			if (PropertiesContainer != null)
+			{
+				var mapStack = TransitionMap?.GetMap(PropertiesContainer, null, true);
+				if (mapStack?.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
+					await Task.Yield();
+			}
+
 			base.PushViewController(viewController, animated);
 		}
 
@@ -109,6 +135,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		{
 			EventHandler<EdgeGesturePannedArgs> handler = EdgeGesturePanned;
 			handler?.Invoke(this, e);
+		}
+
+		/// <summary>
+		/// Set the page we are using to read transition properties
+		/// </summary>
+		void UpdatePropertyContainer()
+		{
+			PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem)?.Page;
+			LastPageInStack     = ShellSection.Stack?.Last();
 		}
 
 		void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)

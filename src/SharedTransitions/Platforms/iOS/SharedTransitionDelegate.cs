@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using ObjCRuntime;
 using UIKit;
 
@@ -8,6 +9,22 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 {
 	public class SharedTransitionDelegate : UINavigationControllerDelegate
 	{
+		/*
+		 * IMPORTANT NOTES:
+		 * Read the dedicate comments in code for more info about those fixes.
+		 *
+		 * Listview/collection view hidden item:
+		 * Fix First item is created two times, then discarded and Detach not called
+		 *
+		 * MapStack cleaning:
+		 * Clean here instead of the shared project
+		 * for dynamic transitions with virtualization
+		 *
+		 * Custom edge gesture recognizer:
+		 * I need to enable/disable the standard edge swipe when needed
+		 * because the custom one works well with transition but not so much without
+		 */
+
 		readonly IUINavigationControllerDelegate _oldDelegate;
 		readonly ITransitionRenderer _self;
 
@@ -91,11 +108,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 							 * aaaand.... they are slow to execute and leave the mapstack corrupted!
 							 * This is the only way i found to have a reliable, clean mapstack.
 							 */
-
-							_self.TransitionMap.Remove(
-								operation == UINavigationControllerOperation.Push
-									? _self.PropertiesContainer
-									: _self.LastPageInStack, transitionToMap.NativeViewId);
+							Task.Run(() =>
+							{
+								_self.TransitionMap.Remove(
+									operation == UINavigationControllerOperation.Push
+										? _self.PropertiesContainer
+										: _self.LastPageInStack, transitionToMap.NativeViewId);
+							}).ConfigureAwait(false);
 
 							Debug.WriteLine(
 								$"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree and has been removed");

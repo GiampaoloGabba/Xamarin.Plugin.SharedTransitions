@@ -17,23 +17,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
      * IMPORTANT NOTES:
      * Read the dedicate comments in code for more info about those fixes.
      *
-     * Listview/collection view hidden item:
-     * Fix First item is created two times, then discarded and Detach not called
-     *
-     * MapStack cleaning:
-     * Clean here instead of the shared project
-     * for dynamic transitions with virtualization
-     *
      * Pop a controller with transitions groups:
      * Fix to allow the group to be set wit hbinding
-     *
-     * Custom edge gesture recognizer:
-     * I need to enable/disable the standard edge swipe when needed
-     * because the custom one works well with transition but not so much without
      */
 
     /// <summary>
-    /// Platform Renderer for the NavigationPage responsible to manage the Shared Transitions
+    /// Platform Renderer for NavigationPage responsible to manage the Shared Transitions
     /// </summary>
     [Preserve(AllMembers = true)]
     public class SharedTransitionNavigationRenderer : NavigationRenderer, ITransitionRenderer
@@ -69,7 +58,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 UpdateSelectedGroup();
             }
         }
-
         public Page LastPageInStack { get; set; }
         public ITransitionMapper TransitionMap { get; set; }
         public UIScreenEdgePanGestureRecognizer EdgeGestureRecognizer { get; set; }
@@ -82,7 +70,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public SharedTransitionNavigationRenderer()
         {
 	        Delegate = new SharedTransitionDelegate(Delegate,this);
-	        TransitionMap = ((ISharedTransitionContainer) Element).TransitionMap;
 	        _interactiveTransitionRecognizer = new InteractiveTransitionRecognizer(this);
         }
 
@@ -120,10 +107,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
              * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
              * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
              * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
-             * buyt is not ideal cause i want this full compatible with binding and mvvm
-             * We can use Yield the task or a small delay like Task.Delay(10) or Task.Delay(5).
-             * On faster phones Task.Delay(1) work, but i wouldnt trust it in slower phones :)
-             *
              * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
              * This add no more than 5ms to the navigation i think is largely acceptable
              */
@@ -135,6 +118,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
 
             base.PushViewController(viewController, animated);
+        }
+
+        protected override void OnElementChanged(VisualElementChangedEventArgs e)
+        {
+	        if (e.NewElement != null)
+		        TransitionMap = ((ISharedTransitionContainer) Element).TransitionMap;
+
+	        base.OnElementChanged(e);
         }
 
         /// <summary>
@@ -175,11 +166,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             }
         }
 
-        public void UpdatePropertyContainer()
+        /// <summary>
+        /// Set the page we are using to read transition properties
+        /// </summary>
+        void UpdatePropertyContainer()
         {
 	        var pageCount = Element.Navigation.NavigationStack.Count;
 	        if (pageCount > 1)
-		        PropertiesContainer = Element.Navigation.NavigationStack[pageCount - 2];
+	        {
+		        PropertiesContainer = ((INavigationPageController)Element).Peek(1);
+	        }
         }
 
         void UpdateBackgroundTransition()

@@ -9,6 +9,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 {
 	public class InteractiveTransitionRecognizer
 	{
+		/*
+		 * IMPORTANT NOTES:
+		 * Read the dedicate comments in code for more info about those fixes.
+		 *
+		 * Custom edge gesture recognizer:
+		 * I need to enable/disable the standard edge swipe when needed
+		 * because the custom one works well with transition but not so much without
+		 */
+
 		readonly ITransitionRenderer _renderer;
 		public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
 

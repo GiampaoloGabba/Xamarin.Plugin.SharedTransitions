@@ -186,15 +186,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
              * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
              * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
              * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
-             * buyt is not ideal cause i want this full compatible with binding and mvvm
-             * We can use Yield the task or a small delay like Task.Delay(10) or Task.Delay(5).
-             * On faster phones Task.Delay(1) work, but i wouldnt trust it in slower phones :)
-             *
              * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
              * This add no more than 5ms to the navigation i think is largely acceptable
              */
             var mapStack = NavPage.TransitionMap.GetMap(PropertiesContainer, null, true);
-            if (mapStack.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
+            if (mapStack?.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
                 await Task.Yield();
 
             return await base.OnPushAsync(page, animated);
