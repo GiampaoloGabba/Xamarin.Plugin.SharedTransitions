@@ -70,7 +70,7 @@ namespace Plugin.SharedTransitions
         /// <summary>
         /// Page Guid with the associated transitions
         /// </summary>
-        public Guid PageId { get; set; }
+        public Page Page { get; set; }
         /// <summary>
         /// List of associated transitions to the Page Guid
         /// </summary>

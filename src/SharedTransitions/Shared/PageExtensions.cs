@@ -40,11 +40,7 @@ namespace Plugin.SharedTransitions
 		        var lastElement = navigableElement.Navigation.NavigationStack?.Last();
 
 		        if (lastElement != null)
-		        {
-					
 			        return lastElement.GetCurrentPageFromModal();
-		        }
-			        
 
 		        if (currentSection is IShellContentController shellContentController)
 			        return shellContentController.Page?.GetCurrentPageFromModal();

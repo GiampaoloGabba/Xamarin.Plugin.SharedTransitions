@@ -21,18 +21,18 @@ namespace Plugin.SharedTransitions
         public IReadOnlyList<TransitionDetail> GetMap(Page page, string selectedGroup, bool ignoreGroup = false)
         {
             if (ignoreGroup)
-                return TransitionStack.Where(x => x.PageId == page.Id)
+                return TransitionStack.Where(x => x.Page == page)
                            .Select(x => x.Transitions.ToList())
                            .FirstOrDefault() ?? new List<TransitionDetail>();
 
-            return TransitionStack.Where(x => x.PageId == page.Id)
+            return TransitionStack.Where(x => x.Page == page)
                            .Select(x => x.Transitions.Where(tr=>tr.TransitionGroup == selectedGroup).ToList())
                            .FirstOrDefault() ?? new List<TransitionDetail>();
         }
 
         public int AddOrUpdate(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId)
         {
-            var transitionMap = _transitionStack.Value.FirstOrDefault(x => x.PageId == page.Id);
+            var transitionMap = _transitionStack.Value.FirstOrDefault(x => x.Page == page);
 
             if (transitionMap == null)
             {
@@ -42,7 +42,7 @@ namespace Plugin.SharedTransitions
                 _transitionStack.Value.Add(
                     new TransitionMap
                     {
-                        PageId = page.Id,
+                        Page = page,
                         Transitions   = new List<TransitionDetail> {CreateTransition(transitionName, transitionGroup, formsViewId, nativeViewId)}
                     }
                 );
@@ -106,19 +106,19 @@ namespace Plugin.SharedTransitions
 
         public void Remove(Page page, Guid formsViewId)
         {
-            var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
+            var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.Page == page);
             transitionMap?.Transitions.Remove(transitionMap.Transitions.FirstOrDefault(x=>x.FormsViewId == formsViewId));
         }
 
         public void Remove(Page page, int nativeViewId)
         {
-            var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.PageId == page.Id);
+            var transitionMap = _transitionStack.Value.FirstOrDefault(x=>x.Page == page);
             transitionMap?.Transitions.Remove(transitionMap.Transitions.FirstOrDefault(x=>x.NativeViewId == nativeViewId));
         }
 
         public void RemoveFromPage(Page page)
         {
-            _transitionStack.Value.Remove(_transitionStack.Value.FirstOrDefault(x => x.PageId == page.Id));
+            _transitionStack.Value.Remove(_transitionStack.Value.FirstOrDefault(x => x.Page == page));
         }
 
         public TransitionDetail CreateTransition(string transitionName,string transitionGroup, Guid formsViewId, int nativeViewId)

@@ -16,7 +16,6 @@ using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 
 [assembly: ExportRenderer(typeof(SharedTransitionNavigationPage), typeof(SharedTransitionNavigationPageRenderer))]
-
 namespace Plugin.SharedTransitions.Platforms.Android
 {
     /*
@@ -60,7 +59,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
                 if (_propertiesContainer != null)
                 {
-                    _propertiesContainer.PropertyChanged += PropertiesContainerOnPropertyChanged;
+	                _propertiesContainer.PropertyChanged += PropertiesContainerOnPropertyChanged;
                     UpdateBackgroundTransition();
                     UpdateTransitionDuration();
                     UpdateSelectedGroup();
