@@ -2,7 +2,6 @@
 using Android.App;
 using Android.OS;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
-using Fragment = Android.Support.V4.App.Fragment;
 
 namespace Plugin.SharedTransitions.Platforms.Android
 {
@@ -51,7 +50,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
                 if (fromView == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"The source ViewId {transitionFromMap.NativeViewId} has no corrisponding Navive Views in tree");
+                    System.Diagnostics.Debug.WriteLine($"The source ViewId {transitionFromMap.NativeViewId} has no corrisponding Navive Views in tree and has been cleared");
+                    Transition.RemoveTransition(transitionFromMap.View, sourcePage);
                     continue;
                 }
 
