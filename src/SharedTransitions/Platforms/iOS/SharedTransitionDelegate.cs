@@ -16,10 +16,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		 * Listview/collection view hidden item:
 		 * Fix First item is created two times, then discarded and Detach not called
 		 *
-		 * MapStack cleaning:
-		 * Clean here instead of the shared project
-		 * for dynamic transitions with virtualization
-		 *
 		 * Custom edge gesture recognizer:
 		 * I need to enable/disable the standard edge swipe when needed
 		 * because the custom one works well with transition but not so much without
@@ -100,24 +96,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 						}
 						else
 						{
-							/*
-							 * IMPORTANT:
-							 *
-							 * FIX for collectionview element recycling... or similar controls/virtualizations.
-							 * I cant clean the mapstack in the shared project cause its managed by binding and attached properties
-							 * aaaand.... they are slow to execute and leave the mapstack corrupted!
-							 * This is the only way i found to have a reliable, clean mapstack.
-							 */
-							Task.Run(() =>
-							{
-								_self.TransitionMap.Remove(
-									operation == UINavigationControllerOperation.Push
-										? _self.PropertiesContainer
-										: _self.LastPageInStack, transitionToMap.NativeViewId);
-							}).ConfigureAwait(false);
-
-							Debug.WriteLine(
-								$"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree and has been removed");
+							Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree");
 						}
 					}
 				}

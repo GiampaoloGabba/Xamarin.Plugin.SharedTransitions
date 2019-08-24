@@ -85,25 +85,25 @@ namespace Plugin.SharedTransitions
         /// <summary>
         /// Registers the transition element in the TransitionStack
         /// </summary>
-        /// <param name="element">Xamarin Forms Element</param>
+        /// <param name="view">Xamarin Forms View</param>
         /// <param name="nativeViewId">The platform View identifier</param>
         /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(View element, int nativeViewId, Page currentPage)
+        public static int RegisterTransition(View view, int nativeViewId, Page currentPage)
         {
-            var transitionName  = GetName(element);
-            var transitionGroup = GetGroup(element);
+            var transitionName  = GetName(view);
+            var transitionGroup = GetGroup(view);
 
             if ((!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
             {
 
 	            if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
 	            {
-		            return shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
+		            return shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId);
 	            }
 	            if (currentPage.Parent is ISharedTransitionContainer navPage)
 	            {
-		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
+		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId);
 	            }
 
 		        throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
@@ -123,10 +123,10 @@ namespace Plugin.SharedTransitions
 	        switch (currentPage.Parent)
 	        {
 		        case SharedTransitionNavigationPage sharedTransitionNavigationPage:
-			        sharedTransitionNavigationPage.TransitionMap.Remove(currentPage,view.Id);
+			        sharedTransitionNavigationPage.TransitionMap.Remove(currentPage,view);
 			        break;
 		        case SharedTransitionShell sharedTransitionshell:
-			        sharedTransitionshell.TransitionMap.Remove(currentPage,view.Id);
+			        sharedTransitionshell.TransitionMap.Remove(currentPage,view);
 			        break;
 	        }
         }
@@ -145,6 +145,10 @@ namespace Plugin.SharedTransitions
             if (existing == null && newValue != null && newValue.ToString() != "")
             {
                 element.Effects.Add(new TransitionEffect());
+            }
+            else if (existing != null && GetName(bindable) == null && GetGroup(bindable) == null)
+            {
+	            element.Effects.Remove(new TransitionEffect());
             }
         }
     }
