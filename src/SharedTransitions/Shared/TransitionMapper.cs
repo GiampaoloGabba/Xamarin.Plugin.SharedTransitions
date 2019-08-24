@@ -123,7 +123,8 @@ namespace Plugin.SharedTransitions
 	            TransitionName  = transitionName,
 	            TransitionGroup = transitionGroup,
 	            View            = view,
-	            NativeViewId    = nativeViewId
+	            NativeViewId    = nativeViewId,
+				IsDirty         = false
             };
         }
     }

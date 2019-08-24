@@ -108,5 +108,10 @@ namespace Plugin.SharedTransitions
         /// Native View Id (or Tag for iOS) associated with the transitions
         /// </summary>
         public int NativeViewId { get; set; }
+
+        /// <summary>
+        /// Dirty flag, if true this transition will be cleaned at the next mapping check for the page
+        /// </summary>
+        public bool IsDirty { get; set; }
     }
 }

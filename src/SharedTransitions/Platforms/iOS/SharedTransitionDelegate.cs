@@ -13,9 +13,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		 * IMPORTANT NOTES:
 		 * Read the dedicate comments in code for more info about those fixes.
 		 *
-		 * Listview/collection view hidden item:
-		 * Fix First item is created two times, then discarded and Detach not called
-		 *
 		 * Custom edge gesture recognizer:
 		 * I need to enable/disable the standard edge swipe when needed
 		 * because the custom one works well with transition but not so much without
@@ -75,28 +72,44 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 							//get the matching transition: we store the destination view and the corrispondent transition in the source view,
 							//so we can match them during transition.
 
-							/*
-							 * IMPORTANT
-							 *
-							 * Using ListView/Collection, the first item is created two times, but then one of them is discarded
-							 * without calling the Detach method from our effect. So we need to find the right element!
-							 */
+							var fromView = transitionStackFrom.FirstOrDefault(x => x.TransitionName == transitionToMap.TransitionName);
 
-							foreach (var nativeView in transitionStackFrom
-								.Where(x => x.TransitionName == transitionToMap.TransitionName)
-								.OrderByDescending(x => x.NativeViewId))
+							if (fromView == null)
 							{
-								var fromView = fromViewController.View.ViewWithTag(nativeView.NativeViewId);
-								if (fromView != null)
-								{
-									viewsToAnimate.Add((toView, fromView));
-									break;
-								}
+								Debug.WriteLine($"The native view for {transitionToMap.TransitionName} does not exists in stack and has been removed from the MapStack");
+
+								Transition.RemoveTransition(transitionToMap.View,
+									operation == UINavigationControllerOperation.Push
+										? _self.LastPageInStack
+										: _self.PropertiesContainer);
+
+								continue;
+							}
+
+							var fromNativeView = fromViewController.View.ViewWithTag(fromView.NativeViewId);
+							if (fromView != null)
+							{
+								viewsToAnimate.Add((toView, fromNativeView));
+							}
+							else
+							{
+								Debug.WriteLine($"The native view for {transitionToMap.TransitionName} does not exists in page and has been removed from the MapStack");
+
+								Transition.RemoveTransition(fromView.View,
+									operation == UINavigationControllerOperation.Push
+										? _self.PropertiesContainer
+										: _self.LastPageInStack);
+
 							}
 						}
 						else
 						{
-							Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree");
+							Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree and has been removed from the MapStack");
+
+							Transition.RemoveTransition(transitionToMap.View,
+								operation == UINavigationControllerOperation.Push
+									? _self.LastPageInStack
+									: _self.PropertiesContainer);
 						}
 					}
 				}
