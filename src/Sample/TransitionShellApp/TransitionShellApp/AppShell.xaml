@@ -29,11 +29,17 @@
 
     <!-- Your Pages -->
     <TabBar>
-        <Tab Title="Browse" Icon="tab_feed.png">
-            <ShellContent ContentTemplate="{DataTemplate local:ItemsPage}" />
-        </Tab>
-        <Tab Title="Image sample" Icon="tab_about.png">
+        <Tab Title="Images" Icon="tab_about.png">
             <ShellContent ContentTemplate="{DataTemplate local:ImageSampleFrom}" />
+        </Tab>
+        <Tab Title="Layouts" Icon="tab_feed.png">
+            <ShellContent ContentTemplate="{DataTemplate local:LayoutSampleFrom}" />
+        </Tab>
+        <Tab Title="ListView" Icon="tab_feed.png">
+            <ShellContent ContentTemplate="{DataTemplate local:DynamicSampleFrom}" />
+        </Tab>
+        <Tab Title="CollectionView" Icon="tab_feed.png">
+            <ShellContent ContentTemplate="{DataTemplate local:DynamicSampleFrom2}" />
         </Tab>
     </TabBar>
 

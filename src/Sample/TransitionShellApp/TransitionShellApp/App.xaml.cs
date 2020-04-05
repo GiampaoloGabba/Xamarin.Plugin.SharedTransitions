@@ -1,5 +1,4 @@
 ﻿using Xamarin.Forms;
-using TransitionShellApp.Services;
 
 namespace TransitionShellApp
 {
@@ -9,8 +8,6 @@ namespace TransitionShellApp
 		public App()
 		{
 			InitializeComponent();
-
-			DependencyService.Register<MockDataStore>();
 			MainPage = new AppShell();
 		}
 
