@@ -15,7 +15,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         private Page _currentPage;
         protected override void OnAttached()
         {
-            _currentPage = Application.Current.MainPage.GetCurrentPageInNavigationStack();
+            _currentPage = Application.Current.MainPage.GetCurrentPage();
             if (_currentPage == null)
                 throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
 
@@ -50,6 +50,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //TODO: Rethink this mess... it works but is superduper ugly 
                 if (transitionGroup != null)
                     transitionName += "_" + transitionGroup;
+
+                var controlId = Control?.Id ?? Container?.Id;
 
                 if (Control != null)
                 {

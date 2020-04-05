@@ -6,7 +6,7 @@ namespace Plugin.SharedTransitions
     /// Navigation Page with support for shared transitions
     /// </summary>
     /// <seealso cref="Xamarin.Forms.NavigationPage" />
-    public class SharedTransitionNavigationPage : NavigationPage
+    public class SharedTransitionNavigationPage : NavigationPage, ISharedTransitionContainer
     {
         /// <summary>
         /// Map for all transitions (and support properties) associated with this SharedTransitionNavigationPage
@@ -40,10 +40,15 @@ namespace Plugin.SharedTransitions
         /// <value>
         /// The transition map
         /// </value>
-        public ITransitionMapper TransitionMap
+        internal ITransitionMapper TransitionMap
         {
-            get => (ITransitionMapper)GetValue(TransitionMapProperty);
-            internal set => SetValue(TransitionMapPropertyKey, value);
+	        get => (ITransitionMapper)GetValue(TransitionMapProperty);
+	        set => SetValue(TransitionMapPropertyKey, value);
+        }
+        ITransitionMapper ISharedTransitionContainer.TransitionMap
+        {
+	        get => TransitionMap;
+	        set => TransitionMap = value;
         }
 
         public SharedTransitionNavigationPage(Page root) : base(root) => TransitionMap = new TransitionMapper();

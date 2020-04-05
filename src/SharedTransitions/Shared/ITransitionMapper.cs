@@ -28,16 +28,23 @@ namespace Plugin.SharedTransitions
         /// <param name="page">The page.</param>
         /// <param name="transitionName">The name of the shared transition.</param>
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
-        /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
+        /// <param name="view">The Xamarin Forms view associated to this transition.</param>
         /// <param name="nativeViewId">The Native view unique identifier.</param>
-        int AddOrUpdate(Page page, string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId);
+        int AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, int nativeViewId);
+
+        /// <summary>
+        /// Clear the MapStack from old reference for recycled elements
+        /// </summary>
+        /// <param name="transitionMap">The transition map to clear</param>
+        /// <param name="transitionDetail">The new transitiondetail to check for old, recycled, elements</param>
+        void ClearMapStackForElementRecycling(TransitionMap transitionMap, TransitionDetail transitionDetail);
 
         /// <summary>
         /// Removes the specified transitionDetail from the TransitionStack
         /// </summary>
-        /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
+        /// <param name="view">The Xamarin Forms view associated to remove from transition.</param>
         /// <param name="page">The page.</param>
-        void Remove(Page page, Guid formsViewId);
+        void Remove(Page page, View view);
 
         /// <summary>
         /// Removes the specified transitionDetail from the TransitionStack
@@ -57,9 +64,9 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="transitionName">The name of the shared transition.</param>
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
-        /// <param name="formsViewId">The Xamarin Forms view unique identifier.</param>
+        /// <param name="view">The Xamarin Forms view associated to this transition.</param>
         /// <param name="nativeViewId">The Native view unique identifier.</param>
-        TransitionDetail CreateTransition(string transitionName, string transitionGroup, Guid formsViewId, int nativeViewId);
+        TransitionDetail CreateTransition(string transitionName, string transitionGroup, View view, int nativeViewId);
     }
 
     /// <summary>
@@ -68,11 +75,11 @@ namespace Plugin.SharedTransitions
     public class TransitionMap
     {
         /// <summary>
-        /// Page Guid with the associated transitions
+        /// Page with the associated transitions
         /// </summary>
-        public Guid PageId { get; set; }
+        public Page Page { get; set; }
         /// <summary>
-        /// List of associated transitions to the Page Guid
+        /// List of associated transitions to the Page
         /// </summary>
         public List<TransitionDetail> Transitions { get; set; }
     }
@@ -93,13 +100,18 @@ namespace Plugin.SharedTransitions
         public string TransitionGroup { get; set; }
 
         /// <summary>
-        /// Xamarin Forms View Guid associated with the transitions
+        /// Xamarin Forms View associated with the transitions
         /// </summary>
-        public Guid FormsViewId { get; set; }
+        public View View { get; set; }
 
         /// <summary>
         /// Native View Id (or Tag for iOS) associated with the transitions
         /// </summary>
         public int NativeViewId { get; set; }
+
+        /// <summary>
+        /// Dirty flag, if true this transition will be cleaned at the next mapping check for the page
+        /// </summary>
+        public bool IsDirty { get; set; }
     }
 }

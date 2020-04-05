@@ -29,7 +29,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
          * when the frame has different size than the contained image
          */
 
-        readonly SharedTransitionNavigationRenderer _navigationPage;
+        readonly ITransitionRenderer _navigationPage;
         readonly List<(UIView ToView, UIView FromView)> _viewsToAnimate;
         readonly UINavigationControllerOperation _operation;
         readonly UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
@@ -39,7 +39,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         UIViewController _toViewController;
         double _transitionDuration;
 
-        public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, SharedTransitionNavigationRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
+        public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, ITransitionRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
         {
             _navigationPage        = navigationPage;
             _operation             = operation;

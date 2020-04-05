@@ -30,7 +30,7 @@ namespace Plugin.SharedTransitions
         public static readonly BindableProperty NameProperty = BindableProperty.CreateAttached(
             "Name", 
             typeof(string), 
-            typeof(Transition), 
+            typeof(BindableObject), 
             null, 
             propertyChanged: OnPropertyChanged);
 
@@ -40,7 +40,7 @@ namespace Plugin.SharedTransitions
         public static readonly BindableProperty GroupProperty = BindableProperty.CreateAttached(
             "Group", 
             typeof(string), 
-            typeof(Transition), 
+            typeof(BindableObject), 
             null,
             propertyChanged: OnPropertyChanged);
 
@@ -85,24 +85,28 @@ namespace Plugin.SharedTransitions
         /// <summary>
         /// Registers the transition element in the TransitionStack
         /// </summary>
-        /// <param name="element">Xamarin Forms Element</param>
+        /// <param name="view">Xamarin Forms View</param>
         /// <param name="nativeViewId">The platform View identifier</param>
         /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(View element, int nativeViewId, Page currentPage)
+        public static int RegisterTransition(View view, int nativeViewId, Page currentPage)
         {
-            var transitionName  = GetName(element);
-            var transitionGroup = GetGroup(element);
+            var transitionName  = GetName(view);
+            var transitionGroup = GetGroup(view);
 
-            if (currentPage.Parent is SharedTransitionNavigationPage navPage &&
-                (!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
+            if ((!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
             {
-                return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, element.Id, nativeViewId);
-            }
 
-            if (!(currentPage.Parent is SharedTransitionNavigationPage))
-            {
-                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
+	            if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
+	            {
+		            return shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId);
+	            }
+	            if (currentPage.Parent is ISharedTransitionContainer navPage)
+	            {
+		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId);
+	            }
+
+		        throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
             }
 
             Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
@@ -116,7 +120,15 @@ namespace Plugin.SharedTransitions
         /// <param name="currentPage">Container Page</param>
         public static void RemoveTransition(View view, Page currentPage)
         {
-            ((SharedTransitionNavigationPage) currentPage.Parent).TransitionMap.Remove(currentPage,view.Id);
+	        switch (currentPage.Parent)
+	        {
+		        case SharedTransitionNavigationPage sharedTransitionNavigationPage:
+			        sharedTransitionNavigationPage.TransitionMap.Remove(currentPage,view);
+			        break;
+		        case SharedTransitionShell sharedTransitionshell:
+			        sharedTransitionshell.TransitionMap.Remove(currentPage,view);
+			        break;
+	        }
         }
 
         static void OnPropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -127,12 +139,18 @@ namespace Plugin.SharedTransitions
                 return;
             }
 
+            Debug.WriteLine($"===== SAHARED: update property for {bindable}: {oldValue} - {newValue}");
+
             var element = (View)bindable;
             var existing = element.Effects.FirstOrDefault(x => x is TransitionEffect);
 
             if (existing == null && newValue != null && newValue.ToString() != "")
             {
                 element.Effects.Add(new TransitionEffect());
+            }
+            else if (existing != null && GetName(bindable) == null && GetGroup(bindable) == null)
+            {
+	            element.Effects.Remove(new TransitionEffect());
             }
         }
     }
