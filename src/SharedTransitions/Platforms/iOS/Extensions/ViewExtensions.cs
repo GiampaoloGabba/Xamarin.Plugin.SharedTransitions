@@ -83,7 +83,13 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             //TODO: its superdifficult because every layout/plugin handle layers and subviews in different ways
 
             if (!softCopy)
+            {
+                //Fix for collectionview item selection inside shell
+	            if (fromView is UIImageView image)
+                    image.Highlighted = false;
+
                 return (UIView) NSKeyedUnarchiver.UnarchiveObject(NSKeyedArchiver.ArchivedDataWithRootObject(fromView));
+            }
 
             var fromViewSnapshot = new UIView
             {

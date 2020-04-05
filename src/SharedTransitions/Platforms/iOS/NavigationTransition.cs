@@ -173,14 +173,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 }, () =>
                 {
                     toView.Hidden   = false;
-                    fromView.Hidden = false;
+
+                    //Fix for boxview inside shell
+                    //tldr: it get immediatly disposed after the animation!
+                    try
+                    {
+                        fromView.Hidden = false;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e);
+                    }
+
                     fromViewSnapshot.RemoveFromSuperview();
                 });
             }
-
-            //Needed to hide the controller during the transition
-            if (_navigationPage.BackgroundAnimation == BackgroundAnimation.None)
-                _fromViewController.View.Alpha = 0;
 
             if (_masksToAnimate.Any())
                 _navigationPage.EdgeGesturePanned += NavigationPageOnEdgeGesturePanned;
