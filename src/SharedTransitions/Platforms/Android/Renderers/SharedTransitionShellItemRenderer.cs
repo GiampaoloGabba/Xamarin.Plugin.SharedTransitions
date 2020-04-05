@@ -88,7 +88,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		protected override void OnDisplayedPageChanged(Page newPage, Page oldPage)
 		{
 			base.OnDisplayedPageChanged(newPage, oldPage);
-			if (ShellSection.Stack.Count == 1 && (_oldShellSection == null || _oldShellSection != ShellSection))
+			if (ShellSection != null && ShellSection.Stack.Count == 1 && (_oldShellSection == null || _oldShellSection != ShellSection))
 			{
 				_oldShellSection = ShellSection;
 				PropertiesContainer = newPage;

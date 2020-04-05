@@ -15,7 +15,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         {
             _currentPage = Application.Current.MainPage.GetCurrentPage();
             if (_currentPage == null)
-                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
+                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage or SharedTransitionShell");
 
             UpdateTag();
         }
@@ -28,9 +28,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == Transition.NameProperty.PropertyName ||
-                args.PropertyName == Transition.GroupProperty.PropertyName && Transition.GetGroup(Element)!=null)
-                UpdateTag();
+	        if ((args.PropertyName == Transition.NameProperty.PropertyName && Transition.GetName(Element) != null) ||
+	            (args.PropertyName == Transition.GroupProperty.PropertyName && Transition.GetGroup(Element) != null))
+	        {
+		        UpdateTag();
+	        }
+                
 
             base.OnElementPropertyChanged(args);
         }

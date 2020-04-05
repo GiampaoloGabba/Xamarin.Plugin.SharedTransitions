@@ -51,6 +51,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 if (transitionGroup != null)
                     transitionName += "_" + transitionGroup;
 
+                var controlId = Control?.Id ?? Container?.Id;
+
                 if (Control != null)
                 {
                     if (Control.Id == -1)

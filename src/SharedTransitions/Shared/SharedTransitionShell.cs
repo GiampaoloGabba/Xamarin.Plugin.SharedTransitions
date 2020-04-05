@@ -26,7 +26,7 @@ namespace Plugin.SharedTransitions
         /// The background animation associated with the current page in stack
         /// </summary>
         public static readonly BindableProperty BackgroundAnimationProperty =
-            BindableProperty.CreateAttached("BackgroundAnimation", typeof(BackgroundAnimation), typeof(SharedTransitionShell), BackgroundAnimation.Fade);
+            BindableProperty.CreateAttached("BackgroundAnimation", typeof(BackgroundAnimation), typeof(SharedTransitionShell), BackgroundAnimation.None);
 
         /// <summary>
         /// The shared transition duration (in ms) associated with the current page in stack

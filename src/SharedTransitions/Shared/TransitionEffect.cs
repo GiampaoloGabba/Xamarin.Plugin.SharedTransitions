@@ -30,7 +30,7 @@ namespace Plugin.SharedTransitions
         public static readonly BindableProperty NameProperty = BindableProperty.CreateAttached(
             "Name", 
             typeof(string), 
-            typeof(Transition), 
+            typeof(BindableObject), 
             null, 
             propertyChanged: OnPropertyChanged);
 
@@ -40,7 +40,7 @@ namespace Plugin.SharedTransitions
         public static readonly BindableProperty GroupProperty = BindableProperty.CreateAttached(
             "Group", 
             typeof(string), 
-            typeof(Transition), 
+            typeof(BindableObject), 
             null,
             propertyChanged: OnPropertyChanged);
 
@@ -138,6 +138,8 @@ namespace Plugin.SharedTransitions
                 Debug.WriteLine($"BindableObject should not be null at this point (Attached Property changed)");
                 return;
             }
+
+            Debug.WriteLine($"===== SAHARED: update property for {bindable}: {oldValue} - {newValue}");
 
             var element = (View)bindable;
             var existing = element.Effects.FirstOrDefault(x => x is TransitionEffect);

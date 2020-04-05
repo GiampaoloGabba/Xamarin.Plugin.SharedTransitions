@@ -54,7 +54,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 				}
 				else
 				{
-					//During POP, everyting is fine and clear
 					transitionStackFrom = _self.TransitionMap.GetMap(_self.LastPageInStack, null);
 					transitionStackTo = _self.TransitionMap.GetMap(_self.PropertiesContainer, _self.SelectedGroup);
 				}
@@ -68,31 +67,24 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 						var toView = toViewController.View.ViewWithTag(transitionToMap.NativeViewId);
 						if (toView != null)
 						{
-							//get the matching transition: we store the destination view and the corrispondent transition in the source view,
-							//so we can match them during transition.
-
+							//Using LastOrDefault because the CollectionView created the first element twice
+							//and then hide the first without detaching the effect.
 							var fromView = transitionStackFrom.FirstOrDefault(x => x.TransitionName == transitionToMap.TransitionName);
 
 							if (fromView == null)
 							{
-								Debug.WriteLine($"The native view for {transitionToMap.TransitionName} does not exists in stack and has been removed from the MapStack");
-
-								Transition.RemoveTransition(transitionToMap.View,
-									operation == UINavigationControllerOperation.Push
-										? _self.LastPageInStack
-										: _self.PropertiesContainer);
-
+								Debug.WriteLine($"The from view for {transitionToMap.TransitionName} does not exists in stack, ignoring the transition");
 								continue;
 							}
 
 							var fromNativeView = fromViewController.View.ViewWithTag(fromView.NativeViewId);
-							if (fromView != null)
+							if (fromNativeView != null)
 							{
 								viewsToAnimate.Add((toView, fromNativeView));
 							}
 							else
 							{
-								Debug.WriteLine($"The native view for {transitionToMap.TransitionName} does not exists in page and has been removed from the MapStack");
+								Debug.WriteLine($"The native view with id {fromView.NativeViewId} for {transitionToMap.TransitionName} does not exists in page and has been removed from the MapStack");
 
 								Transition.RemoveTransition(fromView.View,
 									operation == UINavigationControllerOperation.Push
@@ -124,7 +116,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 					return new NavigationTransition(viewsToAnimate, operation, _self, _self.EdgeGestureRecognizer);
 				}
 			}
-
+			
 			/*
 			 * IMPORTANT!
 			 *
