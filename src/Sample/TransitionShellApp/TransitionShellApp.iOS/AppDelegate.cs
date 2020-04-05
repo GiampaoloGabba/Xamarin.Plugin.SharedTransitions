@@ -24,6 +24,9 @@ namespace TransitionShellApp.iOS
         {
             global::Xamarin.Forms.Forms.SetFlags("Shell_Experimental", "Visual_Experimental", "CollectionView_Experimental", "FastRenderers_Experimental");
             global::Xamarin.Forms.Forms.Init();
+
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init();
+
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);
