@@ -13,15 +13,48 @@ namespace Plugin.SharedTransitions.Platforms.Android
     public class TransitionEffect : PlatformEffect
     {
         private Page _currentPage;
+        private Element _currentElement;
         protected override void OnAttached()
         {
-            _currentPage = Application.Current.MainPage.GetCurrentPage();
-            if (_currentPage == null)
-                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage");
-
-            UpdateTag();
+            if (Application.Current.MainPage is Shell appShell)
+            {
+                _currentPage = appShell.GetCurrentShellPage();
+                UpdateTag();
+            }
+            else
+            {
+                FindContainerPageAndUpdateTag(Element);
+            }
         }
-        
+
+        private void FindContainerPageAndUpdateTag(Element element)
+        {
+            _currentElement = element;
+	        var parent = _currentElement.Parent;
+            if (parent != null && parent is Page page)
+            {
+                _currentPage = page;
+                UpdateTag();
+            }
+            else if (parent != null)
+            {
+                FindContainerPageAndUpdateTag(parent);
+            }
+            else if (_currentPage == null)
+            {
+                _currentElement.PropertyChanged += CurrentElementOnPropertyChanged;
+            }
+        }
+
+        protected void CurrentElementOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "Parent")
+            {
+                _currentElement.PropertyChanged -= CurrentElementOnPropertyChanged;
+                FindContainerPageAndUpdateTag(_currentElement);
+            }
+        }
+
         protected override void OnDetached()
         {
             if (Element is View element)
@@ -42,7 +75,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         /// </summary>
         void UpdateTag()
         {
-            if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            if (Element is View element && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop && _currentPage != null)
             {
                 var transitionName  = Transition.GetName(element);
                 var transitionGroup = Transition.GetGroup(element);
@@ -61,6 +94,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     //TransitionName needs to be unique for page to enable transitions between more than 2 pages
                     Transition.RegisterTransition(element, Control.Id, _currentPage);
                         Control.TransitionName = _currentPage.Id + "_" + transitionName;
+
                 } 
                 else if (Container != null)
                 {
