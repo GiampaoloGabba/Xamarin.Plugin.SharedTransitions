@@ -51,6 +51,8 @@ namespace Plugin.SharedTransitions
 	        set => TransitionMap = value;
         }
 
+        public SharedTransitionNavigationPage() : base() => TransitionMap = new TransitionMapper();
+
         public SharedTransitionNavigationPage(Page root) : base(root) => TransitionMap = new TransitionMapper();
 
         /// <summary>
