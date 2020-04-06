@@ -47,7 +47,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //Get the views who need the transitionName, based on the tags in destination page
             foreach (var transitionFromMap in transitionStackFrom)
             {
-                var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
+	            var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
                 if (fromView == null)
                 {
                     System.Diagnostics.Debug.WriteLine($"The source ViewId {transitionFromMap.NativeViewId} has no corrisponding Navive Views in tree and has been cleared");
