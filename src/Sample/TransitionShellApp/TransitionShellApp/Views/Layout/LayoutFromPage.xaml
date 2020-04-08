@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:pancakeView="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+             x:Class="TransitionShellApp.Views.Layout.LayoutFromPage" Title="Layout sample"
+             sharedTransitions:SharedTransitionShell.TransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}">
+
+    <StackLayout Padding="10" Spacing="20" Margin="0,20">
+        <Grid ColumnSpacing="10" HorizontalOptions="FillAndExpand">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Frame Padding="0" HasShadow="False" BackgroundColor="GreenYellow" CornerRadius="5"
+                   Grid.Row="0" Grid.Column="0"
+                   sharedTransitions:Transition.Name="Frame1" />
+
+            <Label Text="Frame"
+                   Grid.Row="1" Grid.Column="0"/>
+
+            <StackLayout BackgroundColor="Red" 
+                         Grid.Row="0" Grid.Column="1"
+                         sharedTransitions:Transition.Name="Stack2" />
+
+            <Label Text="StackLayout"
+                   Grid.Row="1" Grid.Column="1"/>
+            
+            <BoxView BackgroundColor="Blue" CornerRadius="20"
+                     Grid.Row="3" Grid.Column="0"
+                     sharedTransitions:Transition.Name="Box3" />
+
+            <Label Text="BoxView"
+                   Grid.Row="4" Grid.Column="0"/>
+
+            <pancakeView:PancakeView CornerRadius="15,0,0,15" Padding="0" BackgroundGradientStartColor="DodgerBlue" BackgroundGradientEndColor="Brown"
+                                     Grid.Row="3"  Grid.Column="1"
+                                     sharedTransitions:Transition.Name="pancake4" />
+
+            <Label Text="Pancake"
+                   Grid.Row="4" Grid.Column="1"/>
+
+        </Grid>
+
+        <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" HorizontalOptions="Center"/>
+        <Slider x:Name="SliderDuration" Maximum="5000" Value="600" Margin="20,0" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
+
+        <Button Text="Tap to navigate!" Clicked="Button_OnClicked" />
+
+    </StackLayout>
+    
+</ContentPage>

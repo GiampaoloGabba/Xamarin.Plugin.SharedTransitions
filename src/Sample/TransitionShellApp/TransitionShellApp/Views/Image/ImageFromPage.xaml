@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             x:Class="TransitionShellApp.Views.Image.ImageFromPage" Title="Image sample"
+             sharedTransitions:SharedTransitionShell.TransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}">
+
+<StackLayout Padding="10" Spacing="20">
+    <Grid ColumnSpacing="10" HorizontalOptions="FillAndExpand" VerticalOptions="Center">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions >
+            <RowDefinition Height="100" />
+        </Grid.RowDefinitions>
+
+        <Image Grid.Column="0" Source="what_the_dog.jpg" sharedTransitions:Transition.Name="WhatTheDog" />
+        <Image Grid.Column="1" Source="cute_dog.jpg" sharedTransitions:Transition.Name="CuteDog" />
+        <Image Grid.Column="2" Source="christmas_dog.jpg" sharedTransitions:Transition.Name="ChristmasDog" />
+
+    </Grid>
+
+
+    <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" />
+    <Slider x:Name="SliderDuration" Maximum="5000" Value="300" Margin="20,0" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
+
+    <Button Text="Tap to navigate!" Clicked="Button_OnClicked" />
+
+</StackLayout>
+    
+
+</ContentPage>

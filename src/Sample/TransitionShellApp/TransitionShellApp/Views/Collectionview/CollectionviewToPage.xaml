@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+             Padding="0"
+             x:Class="TransitionShellApp.Views.Collectionview.CollectionviewToPage" Title="Collectionview Sample">
+
+<ScrollView>
+    <yummy:PancakeView CornerRadius="0" Padding="0" BackgroundGradientStartColor="DarkSlateBlue" BackgroundGradientEndColor="DodgerBlue"
+                             sharedTransitions:Transition.Name="DogBackground">
+
+        <StackLayout Spacing="20">
+
+            <ffimageloading:CachedImage Aspect="AspectFill" HeightRequest="300"
+                                        Source="{Binding SelectedDog.Image}"
+                                        sharedTransitions:Transition.Name="DogImage" />
+
+            <Label Text="{Binding SelectedDog.Title}" HorizontalOptions="Center"
+                   FontAttributes="Bold" FontSize="Large" TextColor="White"
+                   sharedTransitions:Transition.Name="DogTitle"/>
+            <Label Text="{Binding SelectedDog.Description}" Margin="20,0,20,0"
+                   FontSize="Medium" TextColor="White"/>
+        </StackLayout>
+    </yummy:PancakeView>
+</ScrollView>
+        
+    
+
+</ContentPage>

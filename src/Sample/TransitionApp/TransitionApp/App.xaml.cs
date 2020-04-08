@@ -3,6 +3,8 @@ using Prism;
 using Prism.Ioc;
 using TransitionApp.ViewModels;
 using TransitionApp.Views;
+using TransitionApp.Views.Collectionview;
+using TransitionApp.Views.Listview;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -39,7 +41,10 @@ namespace TransitionApp
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<SharedTransitionNavigationPage>();
-            containerRegistry.RegisterForNavigation<DynamicSampleTo2, DynamicSampleToViewModel>();
+            containerRegistry.RegisterForNavigation<ListViewFromPage, ListViewFromPageViewModel>();
+            containerRegistry.RegisterForNavigation<ListViewToPage, CollectionviewToPageViewModel>();
+            containerRegistry.RegisterForNavigation<CollectionviewFromPage, CollectionviewFromPageViewModel>();
+            containerRegistry.RegisterForNavigation<CollectionviewToPage, CollectionviewToPageViewModel>();
         }
     }
 }

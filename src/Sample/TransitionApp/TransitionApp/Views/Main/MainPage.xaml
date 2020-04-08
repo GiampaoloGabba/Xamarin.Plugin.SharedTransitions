@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TransitionApp.Views.Main.MainPage"
+             xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+             Title="Main Menu">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="Button">
+                <Setter Property="HorizontalOptions" Value="Center"/>
+                <Setter Property="WidthRequest" Value="300"/>
+            </Style>
+
+            <Style x:Key="SubTitle" TargetType="Label">
+                <Setter Property="Margin" Value="0,5"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+
+            <Style x:Key="Info" TargetType="Label">
+                <Setter Property="TextColor" Value="LightSlateGray"/>
+                <Setter Property="FontAttributes" Value="Italic"/>
+                <Setter Property="FontSize" Value="Small"/>
+                <Setter Property="Margin" Value="0,-8,0,8"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+            
+            <Label Text="Select a demo"
+                   HorizontalTextAlignment="Center" TextColor="IndianRed"
+                   FontSize="30" FontAttributes="Bold" />
+
+            <yummy:PancakeView BackgroundColor="DodgerBlue" CornerRadius="15" Padding="5,10" Elevation="4" Margin="20,15"
+                               sharedTransitions:Transition.Name="camilla">
+                <yummy:PancakeView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{prism:NavigateTo 'GuestStarPage'}" />
+                </yummy:PancakeView.GestureRecognizers>
+
+                <Label Text="Guest Star: #CamillaFasionDog :)" HorizontalOptions="Center" TextColor="White"
+                       sharedTransitions:Transition.Name="fashionDog"/>
+            </yummy:PancakeView>
+
+            <Label Text="Simple transitions:" Style="{StaticResource SubTitle}" />
+
+            <Button Text="Images"  Command="{prism:NavigateTo 'ImageFromPage'}" />
+            <Button Text="Layouts" Command="{prism:NavigateTo 'LayoutFromPage'}" />
+            <Label Text="With PancakeView" Style="{StaticResource Info}" />
+
+            <Label Text="Dynamic transitions:" Style="{StaticResource SubTitle}" />
+
+            <Button Text="Listview (simple)" Command="{prism:NavigateTo 'ListViewFromPage'}" />
+            <Button Text="Collectionview (multiple items)"  Command="{prism:NavigateTo 'CollectionviewFromPage'}" />
+            <Label Text="With FFImageLoading &amp; PancakeView" Style="{StaticResource Info}" />
+
+            <Button Text="Back to Main Home" Command="{prism:NavigateTo '/HomePage'}" />
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

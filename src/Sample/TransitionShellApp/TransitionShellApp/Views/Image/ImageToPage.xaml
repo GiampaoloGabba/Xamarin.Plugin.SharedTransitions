@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             x:Class="TransitionShellApp.Views.Image.ImageToPage" Title="Image sample">
+
+    <ScrollView>
+        <StackLayout Spacing="20" Padding="10">
+            
+            <Image Source="what_the_dog.jpg" sharedTransitions:Transition.Name="WhatTheDog" HeightRequest="250" />
+            <!-- Changed aspect proportion -->
+            <Image Source="christmas_dog.jpg" sharedTransitions:Transition.Name="ChristmasDog" WidthRequest="330" HeightRequest="150" Aspect="Fill" />
+            <Image Source="cute_dog.jpg" sharedTransitions:Transition.Name="CuteDog" />
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

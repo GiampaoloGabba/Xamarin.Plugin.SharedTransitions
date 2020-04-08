@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:views="clr-namespace:TransitionApp.Views;assembly=TransitionApp"
+             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:effects="clr-namespace:TransitionApp.Effects;assembly=TransitionApp"
+             xmlns:image="clr-namespace:TransitionApp.Views.Image;assembly=TransitionApp"
+             xmlns:layout="clr-namespace:TransitionApp.Views.Layout;assembly=TransitionApp"
+             xmlns:listview="clr-namespace:TransitionApp.Views.Listview;assembly=TransitionApp"
+             xmlns:collectionview="clr-namespace:TransitionApp.Views.Collectionview;assembly=TransitionApp"
+             android:TabbedPage.ToolbarPlacement="Bottom"
+
+             BarBackgroundColor="#2196F3"
+             BarTextColor="White"
+             x:Class="TransitionApp.Views.Main.MainTabbedPage">
+
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="Images" IconImageSource="">
+        <x:Arguments>
+            <image:ImageFromPage/>
+        </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="Layouts">
+        <x:Arguments>
+            <layout:LayoutFromPage/>
+        </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="List">
+      <x:Arguments>
+          <listview:ListViewFromPage/>
+      </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="Collection">
+        <x:Arguments>
+            <collectionview:CollectionviewFromPage/>
+        </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+    <views:BlankPage Title="Back to Main" />
+
+    <TabbedPage.Effects>
+        <effects:NoShiftEffect />
+    </TabbedPage.Effects>
+
+</TabbedPage>

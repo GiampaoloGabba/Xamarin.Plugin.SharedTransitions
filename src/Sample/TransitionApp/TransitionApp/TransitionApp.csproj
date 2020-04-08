@@ -16,42 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\DynamicSampleFrom2.xaml.cs">
-      <DependentUpon>DynamicSampleFrom2.xaml</DependentUpon>
+    <Compile Update="Views\GuestStarPagePage.xaml.cs">
+      <DependentUpon>GuestStarPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\DynamicSampleFrom.xaml.cs">
-      <DependentUpon>DynamicSampleFrom.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\DynamicSampleTo2.xaml.cs">
-      <DependentUpon>DynamicSampleTo2.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\DynamicSampleTo.xaml.cs">
-      <DependentUpon>DynamicSampleTo.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\GuestStar.xaml.cs">
-      <DependentUpon>GuestStar.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\LayoutSampleFrom.xaml.cs">
-      <DependentUpon>LayoutSampleFrom.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\LayoutSampleTo.xaml.cs">
-      <DependentUpon>LayoutSampleTo.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\ImageSampleTo.xaml.cs">
-      <DependentUpon>ImageSampleTo.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Views\ImageSampleFrom.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainMasterDetailPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Views\MainTabbedPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

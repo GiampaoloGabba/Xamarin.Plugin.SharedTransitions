@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sharedTransitions:SharedTransitionShell xmlns="http://xamarin.com/schemas/2014/forms" 
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:local="clr-namespace:TransitionShellApp.Views"
+       xmlns:image="clr-namespace:TransitionShellApp.Views.Image;assembly=TransitionShellApp"
+       xmlns:layout="clr-namespace:TransitionShellApp.Views.Layout;assembly=TransitionShellApp"
+       xmlns:listview="clr-namespace:TransitionShellApp.Views.Listview;assembly=TransitionShellApp"
+       xmlns:collectionview="clr-namespace:TransitionShellApp.Views.Collectionview;assembly=TransitionShellApp"
+
        xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
        Title="TransitionShellApp"
        x:Class="TransitionShellApp.AppShell">
@@ -29,17 +33,17 @@
 
     <!-- Your Pages -->
     <TabBar>
-        <Tab Title="Images" Icon="tab_about.png">
-            <ShellContent ContentTemplate="{DataTemplate local:ImageSampleFrom}" />
+        <Tab Title="Images">
+            <ShellContent ContentTemplate="{DataTemplate image:ImageFromPage}" />
         </Tab>
-        <Tab Title="Layouts" Icon="tab_feed.png">
-            <ShellContent ContentTemplate="{DataTemplate local:LayoutSampleFrom}" />
+        <Tab Title="Layouts">
+            <ShellContent ContentTemplate="{DataTemplate layout:LayoutFromPage}" />
         </Tab>
-        <Tab Title="ListView" Icon="tab_feed.png">
-            <ShellContent ContentTemplate="{DataTemplate local:DynamicSampleFrom}" />
+        <Tab Title="ListView">
+            <ShellContent ContentTemplate="{DataTemplate listview:ListViewFromPage}" />
         </Tab>
-        <Tab Title="CollectionView" Icon="tab_feed.png">
-            <ShellContent ContentTemplate="{DataTemplate local:DynamicSampleFrom2}" />
+        <Tab Title="CollectionView">
+            <ShellContent ContentTemplate="{DataTemplate collectionview:CollectionviewFromPage}" />
         </Tab>
     </TabBar>
 
