@@ -86,31 +86,31 @@ namespace Plugin.SharedTransitions
         /// Registers the transition element in the TransitionStack
         /// </summary>
         /// <param name="view">Xamarin Forms View</param>
-        /// <param name="nativeViewId">The platform View identifier</param>
+        /// <param name="nativeView">The platform native View</param>
         /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(View view, int nativeViewId, object nativeView, Page currentPage)
+        public static void RegisterTransition(View view, object nativeView, Page currentPage)
         {
             var transitionName  = GetName(view);
             var transitionGroup = GetGroup(view);
 
             if ((!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
             {
-
 	            if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
 	            {
-		            return shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId, nativeView);
+		            shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeView);
 	            }
-	            if (currentPage.Parent is ISharedTransitionContainer navPage)
+	            else if (currentPage.Parent is ISharedTransitionContainer navPage)
 	            {
-		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId, nativeView);
+		            navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeView);
 	            }
-
-		        throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
+	            else
+	            {
+		            throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
+	            }
             }
 
             Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
-            return 0;
         }
 
         /// <summary>

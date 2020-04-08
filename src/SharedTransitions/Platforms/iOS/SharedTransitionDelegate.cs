@@ -64,9 +64,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 					//With this, we are sure to dont start transitions with no mathing transitions in destination
 					foreach (var transitionToMap in transitionStackTo)
 					{
-						//var toView = toViewController.View.ViewWithTag(transitionToMap.NativeViewId);
-						var toView = (UIView) transitionToMap.NativeView;
-						if (toView != null)
+						if (transitionToMap.NativeView is UIView toView && toView != null)
 						{
 							//Using LastOrDefault because the CollectionView created the first element twice
 							//and then hide the first without detaching the effect.
@@ -78,26 +76,23 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 								continue;
 							}
 
-							//var fromNativeView = fromViewController.View.ViewWithTag(fromView.NativeViewId);
-							var fromNativeView = (UIView) fromView.NativeView;
-							if (fromNativeView != null)
+							if (fromView.NativeView is UIView fromNativeView && fromNativeView != null)
 							{
 								viewsToAnimate.Add((toView, fromNativeView));
 							}
 							else
 							{
-								Debug.WriteLine($"The native view with id {fromView.NativeViewId} for {transitionToMap.TransitionName} does not exists in page and has been removed from the MapStack");
+								Debug.WriteLine($"The native view with for {transitionToMap.TransitionName} does not exists in page and has been removed from the MapStack");
 
 								Transition.RemoveTransition(fromView.View,
 									operation == UINavigationControllerOperation.Push
 										? _self.PropertiesContainer
 										: _self.LastPageInStack);
-
 							}
 						}
 						else
 						{
-							Debug.WriteLine($"The destination ViewId {transitionToMap.NativeViewId} has no corrisponding Navive Views in tree and has been removed from the MapStack");
+							Debug.WriteLine($"The destination View for {transitionToMap.TransitionName} has no corrisponding Navive Views in tree and has been removed from the MapStack");
 
 							Transition.RemoveTransition(transitionToMap.View,
 								operation == UINavigationControllerOperation.Push

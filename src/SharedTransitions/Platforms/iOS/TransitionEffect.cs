@@ -80,11 +80,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 if (Control != null)
                 {
-                    Control.Tag = Transition.RegisterTransition(element, (int)Control.Tag, Control, _currentPage);
+                    Transition.RegisterTransition(element, Control, _currentPage);
                 } 
                 else if (Container != null)
                 {
-                    Container.Tag = Transition.RegisterTransition(element, (int)Container.Tag, Container, _currentPage);
+                    Transition.RegisterTransition(element, Container, _currentPage);
                 }
             }
         }

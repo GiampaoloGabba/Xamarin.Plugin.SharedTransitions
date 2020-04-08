@@ -29,9 +29,8 @@ namespace Plugin.SharedTransitions
         /// <param name="transitionName">The name of the shared transition.</param>
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
         /// <param name="view">The Xamarin Forms view associated to this transition.</param>
-        /// <param name="nativeViewId">The Native view unique identifier.</param>
         /// <param name="nativeView">The Native View</param>
-        int AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, int nativeViewId, object nativeView);
+        void AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, object nativeView);
 
         /// <summary>
         /// Clear the MapStack from old reference for recycled elements
@@ -48,13 +47,6 @@ namespace Plugin.SharedTransitions
         void Remove(Page page, View view);
 
         /// <summary>
-        /// Removes the specified transitionDetail from the TransitionStack
-        /// </summary>
-        /// <param name="nativeViewId">The Native view unique identifier.</param>
-        /// <param name="page">The page.</param>
-        void Remove(Page page, int nativeViewId);
-
-        /// <summary>
         /// Removes the specified page from the TransitionStack
         /// </summary>
         /// <param name="page">The page.</param>
@@ -66,9 +58,8 @@ namespace Plugin.SharedTransitions
         /// <param name="transitionName">The name of the shared transition.</param>
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
         /// <param name="view">The Xamarin Forms view associated to this transition.</param>
-        /// <param name="nativeViewId">The Native view unique identifier.</param>
         /// <param name="nativeView">The Native View</param>
-        TransitionDetail CreateTransition(string transitionName, string transitionGroup, View view, int nativeViewId, object nativeView);
+        TransitionDetail CreateTransition(string transitionName, string transitionGroup, View view, object nativeView);
     }
 
     /// <summary>
@@ -102,15 +93,13 @@ namespace Plugin.SharedTransitions
         public string TransitionGroup { get; set; }
 
         /// <summary>
-        /// Xamarin Forms View associated with the transitions
+        /// Xamarin Forms View associated to the transition
         /// </summary>
         public View View { get; set; }
 
         /// <summary>
-        /// Native View Id (or Tag for iOS) associated with the transitions
+        /// Native View associated to the transition
         /// </summary>
-        public int NativeViewId { get; set; }
-
         public object NativeView { get; set; }
 
         /// <summary>
