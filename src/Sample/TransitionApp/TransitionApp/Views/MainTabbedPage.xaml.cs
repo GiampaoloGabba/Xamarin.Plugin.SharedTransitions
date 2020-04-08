@@ -16,12 +16,10 @@ namespace TransitionApp.Views
 			InitializeComponent();
 		}
 
-		protected override async void OnCurrentPageChanged()
+		protected override void OnCurrentPageChanged()
 		{
 			if (CurrentPage is BlankPage)
-			{
 				Application.Current.MainPage = new HomePage();
-			}
 		}
 	}
 }

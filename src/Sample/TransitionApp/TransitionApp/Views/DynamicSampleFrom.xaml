@@ -7,31 +7,51 @@
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" Padding="0"
              xmlns:behaviors="http://prismlibrary.com"
+             xmlns:templateSelectors="clr-namespace:TransitionApp.TemplateSelectors;assembly=TransitionApp"
              x:Class="TransitionApp.Views.DynamicSampleFrom" Title="Listview sample"
              sharedTransitions:SharedTransitionNavigationPage.TransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}"
              sharedTransitions:SharedTransitionNavigationPage.TransitionSelectedGroup="{Binding SelectedDogId }" >
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="template1">
+                <ViewCell>
+                    <StackLayout Orientation="Horizontal" BackgroundColor="White">
+                        <Image Source="{Binding Image}" WidthRequest="100" Margin="0,8"
+                               sharedTransitions:Transition.Name="DogImage"
+                               sharedTransitions:Transition.Group="{Binding Id}" />
+                        <Label Text="{Binding Title}" VerticalOptions="Center" />
+                    </StackLayout>
+                </ViewCell>
+            </DataTemplate>
+
+            <DataTemplate x:Key="template2">
+                <ViewCell>
+                    <StackLayout Orientation="Horizontal" BackgroundColor="Cornsilk">
+                        <Image Source="{Binding Image}" WidthRequest="100" Margin="0,8"
+                               sharedTransitions:Transition.Name="DogImage"
+                               sharedTransitions:Transition.Group="{Binding Id}" />
+                        <Label Text="{Binding Title}" VerticalOptions="Center" />
+                    </StackLayout>
+                </ViewCell>
+            </DataTemplate>
+
+            <templateSelectors:MyTemplateSelector x:Key="myTemplateSelector"
+                                              Template1="{StaticResource template1}"
+                                              Template2="{StaticResource template2}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <StackLayout Padding="10" Spacing="20">
         <Label Text="Tap the Dog!" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Large" />
         <ListView Footer="" ItemsSource="{Binding Dogs}" HasUnevenRows="True" SelectionMode="None"
-                  ios:ListView.SeparatorStyle="FullWidth">
+                  ios:ListView.SeparatorStyle="FullWidth"
+                  ItemTemplate="{StaticResource myTemplateSelector}">
             <ListView.Behaviors>
                 <behaviors:EventToCommandBehavior EventName="ItemTapped"
                                                   Command="{Binding NavigateDogCommand}" 
                                                   EventArgsParameterPath="Item" />
             </ListView.Behaviors>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Orientation="Horizontal">
-                            <Image Source="{Binding Image}" WidthRequest="100" Margin="0,8"
-                                   sharedTransitions:Transition.Name="DogImage"
-                                   sharedTransitions:Transition.Group="{Binding Id}"/>
-                            <Label Text="{Binding Title}" VerticalOptions="Center" />
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
         </ListView>
 
         <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" />

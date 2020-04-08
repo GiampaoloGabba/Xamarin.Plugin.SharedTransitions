@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                  xmlns:prism="http://prismlibrary.com"
+                  xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+                  xmlns:views="clr-namespace:TransitionApp.Views;assembly=TransitionApp"
+                  x:Class="TransitionApp.Views.MainMasterDetailPage">
+
+    <MasterDetailPage.Master>
+        <ContentPage Title="Menu">
+            <StackLayout Padding="20">
+                
+                <Button Text="Images" Command="{prism:NavigateTo 'SharedTransitionNavigationPage/ImageSampleFrom'}" />
+                <Button Text="Layouts" Command="{prism:NavigateTo 'SharedTransitionNavigationPage/LayoutSampleFrom'}" />
+                <Button Text="Listview" Command="{prism:NavigateTo 'SharedTransitionNavigationPage/DynamicSampleFrom'}" />
+                <Button Text="Collectionview" Command="{prism:NavigateTo 'SharedTransitionNavigationPage/DynamicSampleFrom2'}" />
+                <Button Text="Back to main Home" Command="{prism:NavigateTo '/HomePage'}" />
+            </StackLayout>
+        </ContentPage>
+    </MasterDetailPage.Master>
+
+    <MasterDetailPage.Detail>
+        <sharedTransitions:SharedTransitionNavigationPage>
+            <x:Arguments>
+                <views:ImageSampleFrom/>
+            </x:Arguments>
+        </sharedTransitions:SharedTransitionNavigationPage>
+    </MasterDetailPage.Detail>
+
+    
+</MasterDetailPage>

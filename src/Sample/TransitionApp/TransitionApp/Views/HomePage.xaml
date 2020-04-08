@@ -15,7 +15,7 @@
 
             <Button Text="Standard Demo" Command="{prism:NavigateTo '/SharedTransitionNavigationPage/MainPage'}" HorizontalOptions="Center" WidthRequest="300" />
             <Button Text="Tabbed Page Demo" Command="{prism:NavigateTo '/MainTabbedPage'}" HorizontalOptions="Center" WidthRequest="300" Margin="0,10" />
-            <Button Text="Master/Detail Demo" Command="{prism:NavigateTo '/MainTabbedPage'}" HorizontalOptions="Center" WidthRequest="300" />
+            <Button Text="Master/Detail Demo" Command="{prism:NavigateTo '/MainMasterDetailPage'}" HorizontalOptions="Center" WidthRequest="300" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

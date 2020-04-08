@@ -27,8 +27,12 @@ namespace TransitionApp
             //Standard navigationpage
             //await NavigationService.NavigateAsync($"{nameof(SharedTransitionNavigationPage)}/{nameof(MainPage)}");
 
-            //tabbedpage
+            //Tabbed Page
             //await NavigationService.NavigateAsync(nameof(MainTabbedPage));
+
+            //Master-Detail
+            //await NavigationService.NavigateAsync(nameof(MainMasterDetailPage));
+
             await NavigationService.NavigateAsync(nameof(HomePage));
         }
 
@@ -36,7 +40,6 @@ namespace TransitionApp
         {
             containerRegistry.RegisterForNavigation<SharedTransitionNavigationPage>();
             containerRegistry.RegisterForNavigation<DynamicSampleTo2, DynamicSampleToViewModel>();
-
         }
     }
 }
