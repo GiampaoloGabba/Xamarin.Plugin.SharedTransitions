@@ -30,7 +30,8 @@ namespace Plugin.SharedTransitions
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
         /// <param name="view">The Xamarin Forms view associated to this transition.</param>
         /// <param name="nativeViewId">The Native view unique identifier.</param>
-        int AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, int nativeViewId);
+        /// <param name="nativeView">The Native View</param>
+        int AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, int nativeViewId, object nativeView);
 
         /// <summary>
         /// Clear the MapStack from old reference for recycled elements
@@ -66,7 +67,8 @@ namespace Plugin.SharedTransitions
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
         /// <param name="view">The Xamarin Forms view associated to this transition.</param>
         /// <param name="nativeViewId">The Native view unique identifier.</param>
-        TransitionDetail CreateTransition(string transitionName, string transitionGroup, View view, int nativeViewId);
+        /// <param name="nativeView">The Native View</param>
+        TransitionDetail CreateTransition(string transitionName, string transitionGroup, View view, int nativeViewId, object nativeView);
     }
 
     /// <summary>
@@ -108,6 +110,8 @@ namespace Plugin.SharedTransitions
         /// Native View Id (or Tag for iOS) associated with the transitions
         /// </summary>
         public int NativeViewId { get; set; }
+
+        public object NativeView { get; set; }
 
         /// <summary>
         /// Dirty flag, if true this transition will be cleaned at the next mapping check for the page

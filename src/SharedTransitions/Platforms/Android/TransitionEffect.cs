@@ -92,7 +92,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                         Control.Id = AndroidViews.View.GenerateViewId();
 
                     //TransitionName needs to be unique for page to enable transitions between more than 2 pages
-                    Transition.RegisterTransition(element, Control.Id, _currentPage);
+                    Transition.RegisterTransition(element, Control.Id, Control, _currentPage);
                         Control.TransitionName = _currentPage.Id + "_" + transitionName;
 
                 } 
@@ -101,7 +101,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     if (Container.Id == -1)
                         Container.Id = AndroidViews.View.GenerateViewId();
 
-                    Transition.RegisterTransition(element, Container.Id, _currentPage);
+                    Transition.RegisterTransition(element, Container.Id, Container, _currentPage);
                     Container.TransitionName = _currentPage.Id + "_" + transitionName;
                 }
             }

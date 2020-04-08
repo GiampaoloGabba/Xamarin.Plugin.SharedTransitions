@@ -89,7 +89,7 @@ namespace Plugin.SharedTransitions
         /// <param name="nativeViewId">The platform View identifier</param>
         /// <param name="currentPage">The current page where the transition has been added</param>
         /// <returns>The unique Id of the native View</returns>
-        public static int RegisterTransition(View view, int nativeViewId, Page currentPage)
+        public static int RegisterTransition(View view, int nativeViewId, object nativeView, Page currentPage)
         {
             var transitionName  = GetName(view);
             var transitionGroup = GetGroup(view);
@@ -99,11 +99,11 @@ namespace Plugin.SharedTransitions
 
 	            if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
 	            {
-		            return shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId);
+		            return shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId, nativeView);
 	            }
 	            if (currentPage.Parent is ISharedTransitionContainer navPage)
 	            {
-		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId);
+		            return navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeViewId, nativeView);
 	            }
 
 		        throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");

@@ -30,7 +30,7 @@ namespace Plugin.SharedTransitions
                            .FirstOrDefault() ?? new List<TransitionDetail>();
         }
 
-        public int AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, int nativeViewId)
+        public int AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, int nativeViewId, object nativeView)
         {
             var transitionMap = _transitionStack.Value.FirstOrDefault(x => x.Page == page);
 
@@ -43,7 +43,7 @@ namespace Plugin.SharedTransitions
                     new TransitionMap
                     {
                         Page = page,
-                        Transitions   = new List<TransitionDetail> {CreateTransition(transitionName, transitionGroup, view, nativeViewId)}
+                        Transitions   = new List<TransitionDetail> {CreateTransition(transitionName, transitionGroup, view, nativeViewId, nativeView)}
                     }
                 );
 
@@ -57,7 +57,7 @@ namespace Plugin.SharedTransitions
                 if (nativeViewId == 0)
                     nativeViewId = (transitionMap.Transitions.OrderBy(x => x.NativeViewId).LastOrDefault()?.NativeViewId ?? 0) + 1;
 
-                transitionDetail = CreateTransition(transitionName, transitionGroup, view, nativeViewId);
+                transitionDetail = CreateTransition(transitionName, transitionGroup, view, nativeViewId, nativeView);
                 transitionMap.Transitions.Add(transitionDetail);
 
                 ClearMapStackForElementRecycling(transitionMap, transitionDetail);
@@ -116,7 +116,7 @@ namespace Plugin.SharedTransitions
             _transitionStack.Value.Remove(_transitionStack.Value.FirstOrDefault(x => x.Page == page));
         }
 
-        public TransitionDetail CreateTransition(string transitionName,string transitionGroup, View view, int nativeViewId)
+        public TransitionDetail CreateTransition(string transitionName,string transitionGroup, View view, int nativeViewId, object nativeView)
         {
             return new TransitionDetail
             {
@@ -124,7 +124,8 @@ namespace Plugin.SharedTransitions
 	            TransitionGroup = transitionGroup,
 	            View            = view,
 	            NativeViewId    = nativeViewId,
-				IsDirty         = false
+				IsDirty         = false,
+				NativeView      = nativeView
             };
         }
     }
