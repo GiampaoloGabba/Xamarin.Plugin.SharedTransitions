@@ -1,7 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Android.OS;
+using Android.Support.V4.App;
 using Android.Transitions;
 using Android.Support.V7.Widget;
 using Plugin.SharedTransitions;
@@ -12,6 +15,7 @@ using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Context = Android.Content.Context;
 using View = Android.Views.View;
+using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 
@@ -37,6 +41,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         public string SelectedGroup { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
         public ITransitionMapper TransitionMap { get; set; }
+        public bool IsInTabbedPage {get; set; }
 
         /// <summary>
         /// Track the page we need to get the custom properties for the shared transitions
@@ -103,13 +108,30 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         public override void AddView(View child)
         {
+            base.AddView(child);
+
 	        if (!(child is Toolbar) && Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
 	        {
-		        //Set the initial shared transition
-		        SupportFragmentManager.Fragments.Last().SharedElementEnterTransition = InflateTransitionInContext();
+                if (((SharedTransitionNavigationPage) Element).Parent is TabbedPage ||
+                    ((SharedTransitionNavigationPage) Element).Parent is MasterDetailPage)
+                {
+	                IsInTabbedPage = true;
+                    //Find the current fragment hosting this view and attach the shared transition
+	                foreach (var parentFragment in SupportFragmentManager.Fragments)
+                    {
+	                    if (parentFragment.View.FindViewById(child.Id) != null && 
+	                        parentFragment.ChildFragmentManager.Fragments.Count > 0)
+                        {
+	                        parentFragment.ChildFragmentManager.Fragments.Last().SharedElementEnterTransition = InflateTransitionInContext();
+	                        break;
+                        }
+                    }
+                }
+                else
+		        {
+			        SupportFragmentManager.Fragments.Last().SharedElementEnterTransition = InflateTransitionInContext();
+		        }
 	        }
-
-	        base.AddView(child);
         }
 
         protected override async Task<bool> OnPushAsync(Page page, bool animated)

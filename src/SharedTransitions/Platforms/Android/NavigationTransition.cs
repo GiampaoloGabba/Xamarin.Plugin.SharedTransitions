@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using Android.App;
 using Android.OS;
+using Android.Views;
+using Fragment = Android.Support.V4.App.Fragment;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 
 namespace Plugin.SharedTransitions.Platforms.Android
@@ -24,10 +26,14 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
 		public void SetupPageTransition(FragmentTransaction transaction, bool isPush)
 		{
-            //When we are here, the destination page is not yet attached so we dont know if there are transitions
+			//When we are here, the destination page is not yet attached so we dont know if there are transitions
             //We need to setup transitions only for what we know here, starting from sourcepage
-            var fragmentToHide = _renderer.SupportFragmentManager.Fragments.Last();
-            bool animationFound = false;
+            Fragment fragmentToHide = null;
+
+            if (!_renderer.IsInTabbedPage)
+	            fragmentToHide = _renderer.SupportFragmentManager.Fragments.Last();
+
+	        bool animationFound = false;
 
             //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
             //During the override we set the propertiescontainer to the page where the push started
@@ -47,12 +53,27 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //Get the views who need the transitionName, based on the tags in destination page
             foreach (var transitionFromMap in transitionStackFrom)
             {
-	            var fromView = fragmentToHide.View.FindViewById(transitionFromMap.NativeViewId);
-                if (fromView == null)
+	            var fromView = (View) transitionFromMap.NativeView;
+
+	            if (fromView == null)
+	            {
+		            System.Diagnostics.Debug.WriteLine($"The source ViewId for {transitionFromMap.TransitionName} has no corresponding Native Views in tree and has been cleared");
+		            Transition.RemoveTransition(transitionFromMap.View, sourcePage);
+		            continue;
+	            }
+                
+                //fix for tabbedpage and masterdetail
+                //In those cases we have fragments for all the pages, so we need the right fragments containing this view
+                if (fragmentToHide == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"The source ViewId {transitionFromMap.NativeViewId} has no corrisponding Navive Views in tree and has been cleared");
-                    Transition.RemoveTransition(transitionFromMap.View, sourcePage);
-                    continue;
+	                foreach (var fragment in _renderer.SupportFragmentManager.Fragments)
+	                {
+		                if (fragment.View.FindViewById(fromView.Id) != null)
+		                {
+			                fragmentToHide = fragment.ChildFragmentManager.Fragments.Last();
+			                break;
+		                }
+	                }
                 }
 
                 //group management for pop:
@@ -79,7 +100,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
             //This is needed to retain the transition duration for backwards transitions
             //Miss this and they will ignore our custom duration!
-            fragmentToHide.SharedElementEnterTransition = _renderer.InflateTransitionInContext();
+            
+            if (fragmentToHide != null)
+				fragmentToHide.SharedElementEnterTransition = _renderer.InflateTransitionInContext();
 
             AnimateBackground(transaction, isPush);
         }

@@ -7,6 +7,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 	{
 		FragmentManager SupportFragmentManager { get; set; }
 		string SelectedGroup { get; set; }
+		bool IsInTabbedPage { get; set; }
 		BackgroundAnimation BackgroundAnimation { get; set; }
 		Page PropertiesContainer { get; set; }
 		Page LastPageInStack { get; set; }

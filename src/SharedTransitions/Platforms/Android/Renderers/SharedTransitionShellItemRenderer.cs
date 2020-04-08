@@ -17,6 +17,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		public FragmentManager SupportFragmentManager { get; set; }
 		public string SelectedGroup { get; set; }
 		public BackgroundAnimation BackgroundAnimation { get; set; }
+		public bool IsInTabbedPage { get; set; } = false;
 
 		/// <summary>
 		/// Track the page we need to get the custom properties for the shared transitions
