@@ -25,7 +25,7 @@
 
     <PackageProjectUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</RepositoryUrl>
-    <PackageReleaseNotes>Shell support!</PackageReleaseNotes>
+    <PackageReleaseNotes>Shell support and lot of fixes for tabbed pages, master details and more!</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/master/images/icon.png</PackageIconUrl>
     <PackageTags>shared element transitions, shared transition, animation, xamarin transition, plugin transitions, xamarin animation, xamarin, ios, android, xamarin.forms, plugin, SharedTransitions</PackageTags>
     
@@ -38,7 +38,7 @@ A shared element transition determines how elements that are present in two page
     
     <Owners>Giampaolo Gabba</Owners>
     <Authors>Giampaolo Gabba</Authors>
-    <Copyright>Copyright 2019</Copyright>
+    <Copyright>Copyright 2020</Copyright>
   </PropertyGroup>
 
   <PropertyGroup>

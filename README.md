@@ -42,8 +42,9 @@ Add the xmlns namespace in your pages:
 xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
 ```
 
-###Shell
-Strating from 2.1 you can use shared transitions in shell too, just change the standard main `Shell` in AppShell.xaml to `SharedTransitionShell`, for example:
+### Shell
+
+Starting from 2.1 you can use shared transitions in shell too, just change the standard main `Shell` in AppShell.xaml to `SharedTransitionShell`, for example:
 
 ```xml
 <sharedTransitions:SharedTransitionShell xmlns="http://xamarin.com/schemas/2014/forms" 
