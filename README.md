@@ -26,10 +26,7 @@ For example, an image that is displayed on both Page A and Page B, transitions f
 
 ## Please note:
 
-Starting from version 2, attached properties have been renamed to: ```Transition.Name```, ```Transition.Group``` and ```TransitionDuration```.
-**This is a Breaking change!**
-
-The new [sample app](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample/TransitionApp) include everything you need to play with this plugin. 
+The [sample apps](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample) include everything you need to play with this plugin (standard pages, Tabbed, MasterDetail, Shell). 
 Btw, I recommend to read all this page, expecially the few Android limitations.
 
 ## Usage
@@ -41,9 +38,46 @@ MainPage = new SharedTransitionNavigationPage(new Page1());
 ```
 
 Add the xmlns namespace in your pages:
-```xml
+```
 xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
 ```
+
+###Shell
+Strating from 2.1 you can use shared transitions in shell too, just change the standard main `Shell` in AppShell.xaml to `SharedTransitionShell`, for example:
+
+```xml
+<sharedTransitions:SharedTransitionShell xmlns="http://xamarin.com/schemas/2014/forms" 
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+       Title="TransitionShellApp"
+       x:Class="TransitionShellApp.AppShell">
+
+    <!-- Your Pages -->
+    <TabBar>
+        ....
+    </TabBar>
+</sharedTransitions:SharedTransitionShell>
+```
+
+Dont forget to update the AppShell.xaml.cs:
+
+```csharp
+using Plugin.SharedTransitions;
+
+namespace TransitionShellApp
+{
+	public partial class AppShell : SharedTransitionShell
+	{
+		public AppShell()
+		{
+			InitializeComponent();
+		}
+	}
+}
+```
+
+Now you can navigate inside each ShellContent using shared transitions, just follow the instructions below!
+
 
 ### Basic shared transitions with fixed elements
 
@@ -123,9 +157,9 @@ When navigating from the source listview page to the destination, you need to in
 
 if you are using MVVM, you can bind the ```SelectedTransitionGroup``` property directly in XAML with binding:
 ```xml
-<ContentPage .....
-			 .....
-			 SharedTransitionNavigationPage.SelectedGroup={Binding Selectedgroup}
+<ContentPage 
+    .....
+    SharedTransitionNavigationPage.SelectedGroup={Binding Selectedgroup}
 ```
 
 Then, in your VM valorize the ```SelectedGroup``` property before the push. Here a full example using the ```EventToCommandBehaviour``` from [Prism](https://github.com/PrismLibrary/Prism) (you can use whaterver you want to handle the tap in your viewmodel):
@@ -228,7 +262,7 @@ In the destination page, you have to just set the Transition Name property to di
 </StackLayout>
 ```
 
-Everything is in the [sample app](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample/TransitionApp), go take a look at it :)
+Everything is in the [sample apps](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample/), go take a look at it :)
 
 ## Transition attached properties
 
@@ -270,12 +304,13 @@ Everything is in the [sample app](https://github.com/Evolutionlab/Xamarin.Plugin
 ## Android Limitations
 * When animating layouts (frame, stacklayouts....) **i suggest to dont use a background transition other than "Fade" (or "None")**. Android doesnt play well with background animation + shared transitions of layouts
 * **Shape layout transitions are not well supported** (they play well only on pushing Frames). I suppose there is some problem with clipping, maybe we can adjust this making a custom SharedTransition callback and play with shapes & clip, but i didnt find yet a way to do this (playng with shapes & clip i mean, create a custom callback is easy). IF anyone want to help it will be SUPER-welcome!
-* **The Collectionview has a strange behaviour:** when popping to the first item, if the collectionview scroll is zero the transition has some minor glitch. If we make a small scroll (even 1 pixel) everything works fine. This happens ONLY in the first item and ONLY when the scroll is 0. I'm waiting for the final collectionview and if this will persists i'll make a simple customrenderer that will set the minscroll to 1
 
-## New Sample app!
-The sample app has been completely rewritten: you can find examples for images & layouts, as well as dynamic examples (for both listview & collectionview).
+## New Sample apps!
+The sample apps have been completely rewritten: you can find examples for images & layouts, as well as dynamic examples (for both listview with DataTemplateSelector & collectionview).
+Every example is available in standard pages, tabbed, master detail and shell.
 
-The app is made with [Prism](https://github.com/PrismLibrary/Prism) and it sports the superawesome [PancakeView](https://github.com/sthewissen/Xamarin.Forms.PancakeView/) and [FFImageLoading](https://github.com/luberda-molinet/FFImageLoading) plugins!
+
+The main app is made with [Prism](https://github.com/PrismLibrary/Prism) and it sports the superawesome [PancakeView](https://github.com/sthewissen/Xamarin.Forms.PancakeView/) and [FFImageLoading](https://github.com/luberda-molinet/FFImageLoading) plugins!
 
 *Note: Yes my dog is supercute and deserve her sample app :D*
 
@@ -289,12 +324,20 @@ Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) u
 This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
 
 ## Roadmap
-- [ ] Add support to Shell (waiting for [this issue](https://github.com/xamarin/Xamarin.Forms/issues/7197) in Xamarin.Forms repo)
-- [ ] Fix android minor glitch in the Collectionview preview when we pop the first element and the CollectionView scroll is at 0
+
+- [ ] Android X support
 - [ ] Improve Android shape transitions (different corner radius)
 
 
 ## Latest release notes
+
+**2.1**
+* **Shell support**  (issues [#16](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/16), [#17](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/17), [#18](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/18))
+* Tabbed page support (issue [#13](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/13))
+* Master Detail page support (issue [#21](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/21))
+* Fix DataTemplate in ListView (issue [#14](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/14))
+* Improved sample apps (more demos for MasterDetail, TabbedPage & Shell)
+* Code improvement & refactoring for better performance & stability
 
 **2.0.2**
 * Fix issue [#10](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/10) (crash in iOS with non-existant image)
