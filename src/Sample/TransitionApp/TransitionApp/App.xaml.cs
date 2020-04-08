@@ -24,13 +24,19 @@ namespace TransitionApp
         {
             InitializeComponent();
 
-            await NavigationService.NavigateAsync($"{nameof(SharedTransitionNavigationPage)}/{nameof(MainPage)}");
+            //Standard navigationpage
+            //await NavigationService.NavigateAsync($"{nameof(SharedTransitionNavigationPage)}/{nameof(MainPage)}");
+
+            //tabbedpage
+            //await NavigationService.NavigateAsync(nameof(MainTabbedPage));
+            await NavigationService.NavigateAsync(nameof(HomePage));
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<SharedTransitionNavigationPage>();
             containerRegistry.RegisterForNavigation<DynamicSampleTo2, DynamicSampleToViewModel>();
+
         }
     }
 }

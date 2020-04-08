@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:views="clr-namespace:TransitionApp.Views;assembly=TransitionApp"
+             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:effects="clr-namespace:TransitionApp.Effects;assembly=TransitionApp"
+             android:TabbedPage.ToolbarPlacement="Bottom"
+
+             BarBackgroundColor="#2196F3"
+             BarTextColor="White"
+             x:Class="TransitionApp.Views.MainTabbedPage">
+
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="Images" IconImageSource="">
+        <x:Arguments>
+            <views:ImageSampleFrom/>
+        </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="Layouts">
+        <x:Arguments>
+            <views:LayoutSampleFrom/>
+        </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="List">
+      <x:Arguments>
+          <views:DynamicSampleFrom/>
+      </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+
+    <sharedTransitions:SharedTransitionNavigationPage Title="Collection">
+        <x:Arguments>
+            <views:DynamicSampleFrom2/>
+        </x:Arguments>
+    </sharedTransitions:SharedTransitionNavigationPage>
+
+    <views:BlankPage Title="Back to Main" />
+
+    <TabbedPage.Effects>
+        <effects:NoShiftEffect />
+    </TabbedPage.Effects>
+
+</TabbedPage>

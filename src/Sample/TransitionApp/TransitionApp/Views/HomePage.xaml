@@ -1,0 +1,21 @@
+﻿<?xml version="1.0"
+      encoding="utf-8"?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="clr-namespace:Prism.Navigation.Xaml;assembly=Prism.Forms"
+             x:Class="TransitionApp.Views.HomePage">
+    <ContentPage.Content>
+
+        <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+
+            <Label Text="Welcome to the Shared Transition Sample App!"
+                   HorizontalTextAlignment="Center" TextColor="IndianRed"
+                   FontSize="30" FontAttributes="Bold" Margin="0,0,0,30" />
+
+            <Button Text="Standard Demo" Command="{prism:NavigateTo '/SharedTransitionNavigationPage/MainPage'}" HorizontalOptions="Center" WidthRequest="300" />
+            <Button Text="Tabbed Page Demo" Command="{prism:NavigateTo '/MainTabbedPage'}" HorizontalOptions="Center" WidthRequest="300" Margin="0,10" />
+            <Button Text="Master/Detail Demo" Command="{prism:NavigateTo '/MainTabbedPage'}" HorizontalOptions="Center" WidthRequest="300" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -34,7 +34,7 @@
     <ScrollView>
         <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
             
-            <Label Text="Welcome to the Shared Transition Sample App!"
+            <Label Text="Select a demo"
                    HorizontalTextAlignment="Center" TextColor="IndianRed"
                    FontSize="30" FontAttributes="Bold" />
 
@@ -59,6 +59,9 @@
             <Button Text="Listview (simple)" Command="{prism:NavigateTo 'DynamicSampleFrom'}" />
             <Button Text="Collectionview (multiple items)"  Command="{prism:NavigateTo 'DynamicSampleFrom2'}" />
             <Label Text="With FFImageLoading &amp; PancakeView" Style="{StaticResource Info}" />
+
+            <Button Text="Back to Main Home" Command="{prism:NavigateTo '/HomePage'}" />
+
         </StackLayout>
     </ScrollView>
 </ContentPage>

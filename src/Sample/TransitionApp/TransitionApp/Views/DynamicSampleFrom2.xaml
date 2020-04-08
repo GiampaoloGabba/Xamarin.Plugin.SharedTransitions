@@ -21,7 +21,7 @@
                            sharedTransitions:Transition.Group="{Binding Id}">
                         
                         <yummy:PancakeView.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.NavigateDogCommand, Source={x:Reference DogList}, Path=BindingContext }"
+                            <TapGestureRecognizer Command="{Binding BindingContext.NavigateDogCommand, Source={x:Reference DogList}}"
                                                   CommandParameter="{Binding .}"/>
                         </yummy:PancakeView.GestureRecognizers>
 
