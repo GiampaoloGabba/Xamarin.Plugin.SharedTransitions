@@ -5,7 +5,7 @@
 * Fix DataTemplate in ListView (issue [#14](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/14))
 * Improved sample apps (more demos for MasterDetail, TabbedPage & Shell)
 * Code improvement & refactoring for better performance & stability
-
+* Xamarin.Forms 4.3+ is required
 
 
 ## 2.0.2
