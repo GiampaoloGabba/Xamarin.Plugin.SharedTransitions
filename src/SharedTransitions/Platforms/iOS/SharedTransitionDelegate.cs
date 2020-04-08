@@ -64,7 +64,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 					//With this, we are sure to dont start transitions with no mathing transitions in destination
 					foreach (var transitionToMap in transitionStackTo)
 					{
-						var toView = toViewController.View.ViewWithTag(transitionToMap.NativeViewId);
+						//var toView = toViewController.View.ViewWithTag(transitionToMap.NativeViewId);
+						var toView = (UIView) transitionToMap.NativeView;
 						if (toView != null)
 						{
 							//Using LastOrDefault because the CollectionView created the first element twice
@@ -77,7 +78,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 								continue;
 							}
 
-							var fromNativeView = fromViewController.View.ViewWithTag(fromView.NativeViewId);
+							//var fromNativeView = fromViewController.View.ViewWithTag(fromView.NativeViewId);
+							var fromNativeView = (UIView) fromView.NativeView;
 							if (fromNativeView != null)
 							{
 								viewsToAnimate.Add((toView, fromNativeView));

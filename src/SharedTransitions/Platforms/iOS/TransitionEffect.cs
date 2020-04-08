@@ -11,13 +11,47 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     public class TransitionEffect : PlatformEffect
     {
         private Page _currentPage;
+        private Element _currentElement;
+
         protected override void OnAttached()
         {
-            _currentPage = Application.Current.MainPage.GetCurrentPage();
-            if (_currentPage == null)
-                throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a SharedNavigationPage or SharedTransitionShell");
+	        if (Application.Current.MainPage is Shell appShell)
+	        {
+		        _currentPage = appShell.GetCurrentShellPage();
+		        UpdateTag();
+	        }
+	        else
+	        {
+		        FindContainerPageAndUpdateTag(Element);
+	        }
+        }
 
-            UpdateTag();
+        private void FindContainerPageAndUpdateTag(Element element)
+        {
+	        _currentElement = element;
+	        var parent = _currentElement.Parent;
+	        if (parent != null && parent is Page page)
+	        {
+		        _currentPage = page;
+		        UpdateTag();
+	        }
+	        else if (parent != null)
+	        {
+		        FindContainerPageAndUpdateTag(parent);
+	        }
+	        else if (_currentPage == null)
+	        {
+		        _currentElement.PropertyChanged += CurrentElementOnPropertyChanged;
+	        }
+        }
+
+        protected void CurrentElementOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+	        if (args.PropertyName == "Parent")
+	        {
+		        _currentElement.PropertyChanged -= CurrentElementOnPropertyChanged;
+		        FindContainerPageAndUpdateTag(_currentElement);
+	        }
         }
 
         protected override void OnDetached()
@@ -33,9 +67,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 	        {
 		        UpdateTag();
 	        }
-                
 
-            base.OnElementPropertyChanged(args);
+	        base.OnElementPropertyChanged(args);
         }
 
         /// <summary>
@@ -43,15 +76,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         /// </summary>
         void UpdateTag()
         {
-            if (Element is View element)
+            if (Element is View element && _currentPage != null)
             {
                 if (Control != null)
                 {
-                    Control.Tag = Transition.RegisterTransition(element, (int)Control.Tag, _currentPage);
+                    Control.Tag = Transition.RegisterTransition(element, (int)Control.Tag, Control, _currentPage);
                 } 
                 else if (Container != null)
                 {
-                    Container.Tag = Transition.RegisterTransition(element, (int)Container.Tag, _currentPage);
+                    Container.Tag = Transition.RegisterTransition(element, (int)Container.Tag, Container, _currentPage);
                 }
             }
         }
