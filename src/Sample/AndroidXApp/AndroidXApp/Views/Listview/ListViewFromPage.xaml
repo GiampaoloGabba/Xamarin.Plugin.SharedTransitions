@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             xmlns:viewModels="clr-namespace:AndroidXApp.ViewModels;assembly=AndroidXApp"
+             xmlns:models="clr-namespace:AndroidXApp.Models;assembly=AndroidXApp"
+             Padding="0"
+             x:Class="AndroidXApp.Views.Listview.ListViewFromPage" Title="Listview sample"
+             sharedTransitions:SharedTransitionShell.TransitionDuration="{Binding Source={x:Reference SliderDuration}, Path=Value}"
+             sharedTransitions:SharedTransitionShell.TransitionSelectedGroup="{Binding SelectedDog.Id }"
+             x:DataType="viewModels:ListViewFromPageViewModel">
+
+    <StackLayout Padding="10" Spacing="20">
+        <Label Text="Tap the Dog!" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Large" />
+        <ListView x:Name="ItemsListView"
+                  ItemsSource="{Binding Dogs}"
+                  VerticalOptions="FillAndExpand"
+                  HasUnevenRows="true"
+                  RefreshCommand="{Binding LoadDogsCommand}"
+                  IsPullToRefreshEnabled="true"
+                  IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                  CachingStrategy="RecycleElement"
+                  ItemSelected="OnItemSelected"
+                  Footer=""
+                  ios:ListView.SeparatorStyle="FullWidth">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:DogModel">
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <Image Source="{Binding Image}" WidthRequest="100" Margin="0,8"
+                                   sharedTransitions:Transition.Name="DogImage"
+                                   sharedTransitions:Transition.Group="{Binding Id}"/>
+                            <Label Text="{Binding Title}" VerticalOptions="Center" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Label Text="{Binding Source={x:Reference SliderDuration}, Path=Value, StringFormat='Transition duration: {0}'}" />
+        <Slider x:Name="SliderDuration" Maximum="5000" Value="300" Margin="20,0,20,30" MinimumTrackColor="Blue" MaximumTrackColor="#757575" />
+
+    </StackLayout>
+
+</ContentPage>

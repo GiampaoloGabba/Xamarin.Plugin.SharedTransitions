@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+             Padding="0"
+             x:Class="AndroidXApp.Views.Listview.ListviewToPage" Title="Listview sample">
+
+    <ScrollView>
+        <StackLayout Spacing="20" Padding="10">
+            <Image Source="{Binding SelectedDog.Image}" sharedTransitions:Transition.Name="DogImage"  />
+            <Label Text="{Binding SelectedDog.Title}" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Large" />
+            <Label Text="{Binding SelectedDog.Description}" />
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>
