@@ -1,12 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Android.OS;
-using Android.Support.V4.App;
 using Android.Transitions;
-using Android.Support.V7.Widget;
 using Plugin.SharedTransitions;
 using Plugin.SharedTransitions.Platforms.Android;
 using Xamarin.Forms;
@@ -15,9 +11,17 @@ using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Context = Android.Content.Context;
 using View = Android.Views.View;
-using Fragment = Android.Support.V4.App.Fragment;
+
+#if __ANDROID_29__
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
+#else
+using Android.Support.V7.Widget;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+#endif
+
 
 [assembly: ExportRenderer(typeof(SharedTransitionNavigationPage), typeof(SharedTransitionNavigationPageRenderer))]
 namespace Plugin.SharedTransitions.Platforms.Android

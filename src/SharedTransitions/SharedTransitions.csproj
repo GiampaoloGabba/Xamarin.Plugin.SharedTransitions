@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--Work around so the conditions work below-->
-      <TargetFrameworks>netstandard2.0;MonoAndroid81;MonoAndroid90;Xamarin.iOS10;</TargetFrameworks>
+      <TargetFrameworks>netstandard2.0;MonoAndroid90;MonoAndroid10.0;Xamarin.iOS10;</TargetFrameworks>
 
     <AssemblyName>Plugin.SharedTransitions</AssemblyName>
     <RootNamespace>Plugin.SharedTransitions</RootNamespace>
@@ -69,6 +69,12 @@ A shared element transition determines how elements that are present in two page
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid10.0'">
+    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.1.0" />
+    <PackageReference Include="Xamarin.Forms" Version="4.5.0.356" />
+    <PackageReference Include="Xamarin.AndroidX.Fragment" Version="1.2.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">     
