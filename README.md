@@ -342,7 +342,7 @@ This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-Ne
 ## Latest release notes
 
 **2.1.1 beta**
-* **Shell support**  (issues [#23](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/23)
+* **Android X support**  (issues [#23](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/23)
 
 **2.1**
 * **Shell support**  (issues [#16](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/16), [#17](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/17), [#18](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/18))
