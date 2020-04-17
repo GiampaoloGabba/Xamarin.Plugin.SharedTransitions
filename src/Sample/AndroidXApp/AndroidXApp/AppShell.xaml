@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sharedTransitions:SharedTransitionShell xmlns="http://xamarin.com/schemas/2014/forms" 
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:image="clr-namespace:AndroidXApp.Views.Image;assembly=AndroidXApp"
+       xmlns:layout="clr-namespace:AndroidXApp.Views.Layout;assembly=AndroidXApp"
+       xmlns:listview="clr-namespace:AndroidXApp.Views.Listview;assembly=AndroidXApp"
+       xmlns:collectionview="clr-namespace:AndroidXApp.Views.Collectionview;assembly=AndroidXApp"
+
+       xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
+       Title="AndroidXApp"
+       x:Class="AndroidXApp.AppShell">
+
+    <!-- 
+        Styles and Resources 
+    -->
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Color x:Key="NavigationPrimary">#2196F3</Color>
+            <Style x:Key="BaseStyle" TargetType="Element">
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource NavigationPrimary}" />
+                <Setter Property="Shell.ForegroundColor" Value="White" />
+                <Setter Property="Shell.TitleColor" Value="White" />
+                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
+                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource NavigationPrimary}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="White"/>
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF"/>
+                <Setter Property="Shell.TabBarTitleColor" Value="White"/>
+            </Style>
+            <Style TargetType="ShellItem" BasedOn="{StaticResource BaseStyle}" />
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <!-- Your Pages -->
+    <TabBar>
+        <Tab Title="Images">
+            <ShellContent ContentTemplate="{DataTemplate image:ImageFromPage}" />
+        </Tab>
+        <Tab Title="Layouts">
+            <ShellContent ContentTemplate="{DataTemplate layout:LayoutFromPage}" />
+        </Tab>
+        <Tab Title="ListView">
+            <ShellContent ContentTemplate="{DataTemplate listview:ListViewFromPage}" />
+        </Tab>
+        <Tab Title="CollectionView">
+            <ShellContent ContentTemplate="{DataTemplate collectionview:CollectionviewFromPage}" />
+        </Tab>
+    </TabBar>
+
+</sharedTransitions:SharedTransitionShell>

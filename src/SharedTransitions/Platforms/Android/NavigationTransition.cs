@@ -2,8 +2,14 @@
 using Android.App;
 using Android.OS;
 using Android.Views;
+
+#if __ANDROID_29__
+using Fragment = AndroidX.Fragment.App.Fragment;
+using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
+#else
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+#endif
 
 namespace Plugin.SharedTransitions.Platforms.Android
 {

@@ -1,15 +1,18 @@
-﻿using System.Collections.Specialized;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.OS;
 using Android.Transitions;
-using Android.Support.V4.App;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+#else
+using Android.Support.V4.App;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
-
+#endif
 namespace Plugin.SharedTransitions.Platforms.Android
 {
 	public class SharedTransitionShellItemRenderer: ShellItemRenderer, ITransitionRenderer

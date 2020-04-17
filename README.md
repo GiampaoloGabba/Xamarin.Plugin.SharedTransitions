@@ -23,6 +23,7 @@ For example, an image that is displayed on both Page A and Page B, transitions f
 | -------------------  | :------------------: |
 |Xamarin.iOS|iOS 9+|
 |Xamarin.Android|API 21+|
+
 Android X *(pre-release)*|API 29|
 
 ## Please note:
