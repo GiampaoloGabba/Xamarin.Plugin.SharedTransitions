@@ -313,6 +313,7 @@ Everything is in the [sample apps](https://github.com/Evolutionlab/Xamarin.Plugi
 * You can pop the page using a PanGesture on the left side of the screen
 
 ## Android Limitations
+* `TabbedPage` inside `MasterDetailPage` is not currently supported
 * When animating layouts (frame, stacklayouts....) **i suggest to dont use a background transition other than "Fade" (or "None")**. Android doesnt play well with background animation + shared transitions of layouts
 * **Shape layout transitions are not well supported** (they play well only on pushing Frames). I suppose there is some problem with clipping, maybe we can adjust this making a custom SharedTransition callback and play with shapes & clip, but i didnt find yet a way to do this (playng with shapes & clip i mean, create a custom callback is easy). IF anyone want to help it will be SUPER-welcome!
 
