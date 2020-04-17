@@ -23,14 +23,15 @@ For example, an image that is displayed on both Page A and Page B, transitions f
 | -------------------  | :------------------: |
 |Xamarin.iOS|iOS 9+|
 |Xamarin.Android|API 21+|
-Android X (pre-release)|API 29|
+
+Android X *(pre-release)*|API 29|
 
 ## Please note:
 
 The [sample apps](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample) include everything you need to play with this plugin (standard pages, Tabbed, MasterDetail, Shell). 
 Btw, I recommend to read all this page, expecially the few Android limitations.
 
-## Android X (pre-release):
+## Android X *(pre-release)*:
 
 [I have pubblished a pre-release nuget](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/2.1.1-beta) with Android X support.
 
@@ -335,11 +336,14 @@ This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-Ne
 
 ## Roadmap
 
-- [ ] Android X support
+- [x] Android X support
 - [ ] Improve Android shape transitions (different corner radius)
 
 
 ## Latest release notes
+
+**2.1.1 beta**
+* **Android X support**  (issues [#23](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/23)
 
 **2.1**
 * **Shell support**  (issues [#16](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/16), [#17](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/17), [#18](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/18))
