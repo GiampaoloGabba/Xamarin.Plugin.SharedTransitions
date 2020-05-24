@@ -59,7 +59,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //Get the views who need the transitionName, based on the tags in destination page
             foreach (var transitionFromMap in transitionStackFrom)
             {
-	            var fromView = (View) transitionFromMap.NativeView;
+	            var fromView = (View) transitionFromMap.NativeView.Target;
 
 	            if (fromView == null)
 	            {

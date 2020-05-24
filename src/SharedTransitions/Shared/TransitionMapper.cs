@@ -94,7 +94,7 @@ namespace Plugin.SharedTransitions
 	            TransitionGroup = transitionGroup,
 	            View            = view,
 	            IsDirty         = false,
-				NativeView      = nativeView
+				NativeView      = new WeakReference(nativeView, true )
             };
         }
     }

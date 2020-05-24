@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ObjCRuntime;
@@ -42,7 +43,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			{
 				//At this point the property TargetPage refers to the view we are pushing or popping
 				//This view is not yet visible in our app but the variable is already set
-				var viewsToAnimate = new List<(UIView ToView, UIView FromView)>();
+				var viewsToAnimate = new List<(WeakReference ToView, WeakReference FromView)>();
 
 				IReadOnlyList<TransitionDetail> transitionStackTo;
 				IReadOnlyList<TransitionDetail> transitionStackFrom;
@@ -62,43 +63,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 				{
 					//Get all the views with transitions in the destination page
 					//With this, we are sure to dont start transitions with no mathing transitions in destination
-					foreach (var transitionToMap in transitionStackTo)
+					foreach (var toView in transitionStackTo)
 					{
-						if (transitionToMap.NativeView is UIView toView && toView != null)
+						//Using LastOrDefault because the CollectionView created the first element twice
+						//and then hide the first without detaching the effect.
+						var fromView = transitionStackFrom.FirstOrDefault(x => x.TransitionName == toView.TransitionName);
+
+						if (fromView == null)
 						{
-							//Using LastOrDefault because the CollectionView created the first element twice
-							//and then hide the first without detaching the effect.
-							var fromView = transitionStackFrom.FirstOrDefault(x => x.TransitionName == transitionToMap.TransitionName);
-
-							if (fromView == null)
-							{
-								Debug.WriteLine($"The from view for {transitionToMap.TransitionName} does not exists in stack, ignoring the transition");
-								continue;
-							}
-
-							if (fromView.NativeView is UIView fromNativeView && fromNativeView != null)
-							{
-								viewsToAnimate.Add((toView, fromNativeView));
-							}
-							else
-							{
-								Debug.WriteLine($"The native view with for {transitionToMap.TransitionName} does not exists in page and has been removed from the MapStack");
-
-								Transition.RemoveTransition(fromView.View,
-									operation == UINavigationControllerOperation.Push
-										? _self.PropertiesContainer
-										: _self.LastPageInStack);
-							}
+							Debug.WriteLine($"The from view for {toView.TransitionName} does not exists in stack, ignoring the transition");
+							continue;
 						}
-						else
-						{
-							Debug.WriteLine($"The destination View for {transitionToMap.TransitionName} has no corrisponding Navive Views in tree and has been removed from the MapStack");
 
-							Transition.RemoveTransition(transitionToMap.View,
-								operation == UINavigationControllerOperation.Push
-									? _self.LastPageInStack
-									: _self.PropertiesContainer);
-						}
+						viewsToAnimate.Add((toView.NativeView, fromView.NativeView));
 					}
 				}
 

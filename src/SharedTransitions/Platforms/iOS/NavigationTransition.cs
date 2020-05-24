@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +30,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
          */
 
         readonly ITransitionRenderer _navigationPage;
-        readonly List<(UIView ToView, UIView FromView)> _viewsToAnimate;
+        readonly List<(WeakReference ToView, WeakReference FromView)> _viewsToAnimate;
         readonly UINavigationControllerOperation _operation;
         readonly UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
         readonly List<CAShapeLayer> _masksToAnimate;
@@ -39,7 +39,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         UIViewController _toViewController;
         double _transitionDuration;
 
-        public NavigationTransition(List<(UIView ToView, UIView FromView)> viewsToAnimate, UINavigationControllerOperation operation, ITransitionRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
+        public NavigationTransition(List<(WeakReference ToView, WeakReference FromView)> viewsToAnimate, UINavigationControllerOperation operation, ITransitionRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
         {
             _navigationPage        = navigationPage;
             _operation             = operation;
@@ -48,7 +48,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
             //Auto z-index, to avoid mess when animating multiple views, layouts ecc.
             //TODO: Create a property for custom z-index
-            _viewsToAnimate = viewsToAnimate.OrderBy(x => x.FromView is UIControl || x.FromView is UILabel || x.FromView is UIImageView).ToList();
+            _viewsToAnimate = viewsToAnimate.OrderBy(x => x.FromView.Target is UIControl || x.FromView.Target is UILabel || x.FromView.Target is UIImageView).ToList();
         }
 
         /// <summary>
@@ -74,8 +74,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             //2) With dynamic transitions (listview) we dont need to iterate al the tags we dont need
             foreach (var viewToAnimate in _viewsToAnimate)
             {
-                var toView   = viewToAnimate.ToView;
-                var fromView = viewToAnimate.FromView;
+
+                var toView   = (UIView)viewToAnimate.ToView.Target;
+                var fromView = (UIView)viewToAnimate.FromView.Target;
 
                 if (toView == null || fromView == null)
                 {
