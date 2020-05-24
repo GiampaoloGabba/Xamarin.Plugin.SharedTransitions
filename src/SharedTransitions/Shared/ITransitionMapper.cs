@@ -100,7 +100,7 @@ namespace Plugin.SharedTransitions
         /// <summary>
         /// Native View associated to the transition
         /// </summary>
-        public object NativeView { get; set; }
+        public WeakReference NativeView { get; set; }
 
         /// <summary>
         /// Dirty flag, if true this transition will be cleaned at the next mapping check for the page
