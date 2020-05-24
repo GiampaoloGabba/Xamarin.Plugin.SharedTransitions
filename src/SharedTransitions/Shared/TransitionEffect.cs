@@ -109,8 +109,6 @@ namespace Plugin.SharedTransitions
 		            throw new System.InvalidOperationException("Shared transitions effect can be attached only to element in a ISharedTransitionContainer");
 	            }
             }
-
-            Debug.WriteLine($"Trying to attach a TransitionEffect without name or group specified. Nothing done");
         }
 
         /// <summary>
