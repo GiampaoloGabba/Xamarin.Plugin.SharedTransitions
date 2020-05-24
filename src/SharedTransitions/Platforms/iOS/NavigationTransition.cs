@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -174,6 +174,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 UIView.Animate(_transitionDuration,0, UIViewAnimationOptions.CurveEaseInOut|UIViewAnimationOptions.AllowUserInteraction, () =>
                 {
+                    if (fromViewSnapshot is UILabel label && toView is UILabel toLabel)
+                    {
+                        var targetScale = toLabel.Font.PointSize / label.Font.PointSize;
+                        label.Transform = CGAffineTransform.Scale(label.Transform, targetScale, targetScale);
+                    }
+
                     //set the main properties to animate
                     fromViewSnapshot.Frame = toFrame;
                     fromViewSnapshot.Alpha = 1;
