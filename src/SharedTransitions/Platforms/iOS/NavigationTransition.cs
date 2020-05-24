@@ -151,11 +151,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 toView.Hidden           = true;
                 fromView.Hidden         = true;
 
-                CGRect toFrame;
-                if (toView is UIImageView toImageView)
-                    toFrame = toImageView.ConvertRectToView(toImageView.GetImageFrame(), containerView);
-                else
-                    toFrame = toView.ConvertRectToView(toView.Bounds, containerView);
+                var toFrame = toView is UIImageView toImageView
+                                  ? toImageView.ConvertRectToView(toImageView.GetImageFrame(), containerView)
+                                  : toView.ConvertRectToView(toView.Bounds, containerView);
 
                 //Mask animation (for shape/corner radius)
                 var toMask = toView.Layer.GetMask(toView.Bounds);
@@ -265,25 +263,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             var backgroundAnimation = _navigationPage.BackgroundAnimation;
 
             //fix animation for push & pop
-            //TODO rework this, I dont have time now :P
             if (_operation == UINavigationControllerOperation.Pop)
             {
-                if (backgroundAnimation == BackgroundAnimation.SlideFromBottom)
+                backgroundAnimation = backgroundAnimation switch
                 {
-                    backgroundAnimation = BackgroundAnimation.SlideFromTop;
-                } 
-                else if (backgroundAnimation == BackgroundAnimation.SlideFromTop)
-                {
-                    backgroundAnimation = BackgroundAnimation.SlideFromBottom;
-                } 
-                else if (backgroundAnimation == BackgroundAnimation.SlideFromRight)
-                {
-                    backgroundAnimation = BackgroundAnimation.SlideFromLeft;
-                } 
-                else if (backgroundAnimation == BackgroundAnimation.SlideFromLeft)
-                {
-                    backgroundAnimation = BackgroundAnimation.SlideFromRight;
-                }
+                    BackgroundAnimation.SlideFromBottom => BackgroundAnimation.SlideFromTop,
+                    BackgroundAnimation.SlideFromTop => BackgroundAnimation.SlideFromBottom,
+                    BackgroundAnimation.SlideFromRight => BackgroundAnimation.SlideFromLeft,
+                    BackgroundAnimation.SlideFromLeft => BackgroundAnimation.SlideFromRight,
+                    _ => backgroundAnimation
+                };
             }
 
             switch (backgroundAnimation)
