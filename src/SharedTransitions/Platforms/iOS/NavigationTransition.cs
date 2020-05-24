@@ -192,7 +192,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     //tldr: it get immediatly disposed after the animation!
                     try
                     {
-                        fromView.Hidden = false;
+                        if (viewToAnimate.FromView.IsAlive)
+                            fromView.Hidden = false;
                     }
                     catch (Exception e)
                     {
@@ -285,10 +286,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 case BackgroundAnimation.None:
 
-                    /*var delay = _operation == UINavigationControllerOperation.Push
+                    //Needed to avoid occasional flickering!
+                    var delay = _operation == UINavigationControllerOperation.Push
                         ? _transitionDuration
-                        : 0;*/
-                    UIView.Animate(0, 0, UIViewAnimationOptions.TransitionNone, () =>
+                        : 0;
+                    UIView.Animate(0, delay, UIViewAnimationOptions.TransitionNone, () =>
                     {
                         _toViewController.View.Alpha = 1;
                         //_fromViewController.View.Alpha = 0;
