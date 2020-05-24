@@ -11,6 +11,7 @@ using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Context = Android.Content.Context;
 using View = Android.Views.View;
+using Plugin.SharedTransitions.Platforms.Android.Extensions;
 
 #if __ANDROID_29__
 using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
@@ -94,6 +95,9 @@ namespace Plugin.SharedTransitions.Platforms.Android
         public SharedTransitionNavigationPageRenderer(Context context) : base(context)
         {
             SupportFragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager;
+
+            //We need the last FragmentManager in Hyerarchi (for tabbed/masterpage)
+
             _navigationTransition = new NavigationTransition(this);
         }
 
@@ -120,16 +124,10 @@ namespace Plugin.SharedTransitions.Platforms.Android
                     ((SharedTransitionNavigationPage) Element).Parent is MasterDetailPage)
                 {
 	                IsInTabbedPage = true;
-                    //Find the current fragment hosting this view and attach the shared transition
-	                foreach (var parentFragment in SupportFragmentManager.Fragments)
-                    {
-	                    if (parentFragment.View.FindViewById(child.Id) != null && 
-	                        parentFragment.ChildFragmentManager.Fragments.Count > 0)
-                        {
-	                        parentFragment.ChildFragmentManager.Fragments.Last().SharedElementEnterTransition = InflateTransitionInContext();
-	                        break;
-                        }
-                    }
+                    var fragment = child.ParentFragment(SupportFragmentManager);
+
+                    if (fragment != null)
+                        fragment.SharedElementEnterTransition = InflateTransitionInContext();
                 }
                 else
 		        {

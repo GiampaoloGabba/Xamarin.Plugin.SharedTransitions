@@ -2,6 +2,7 @@
 using Android.App;
 using Android.OS;
 using Android.Views;
+using Plugin.SharedTransitions.Platforms.Android.Extensions;
 
 #if __ANDROID_29__
 using Fragment = AndroidX.Fragment.App.Fragment;
@@ -71,16 +72,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 //fix for tabbedpage and masterdetail
                 //In those cases we have fragments for all the pages, so we need the right fragments containing this view
                 if (fragmentToHide == null)
-                {
-	                foreach (var fragment in _renderer.SupportFragmentManager.Fragments)
-	                {
-		                if (fragment.View.FindViewById(fromView.Id) != null)
-		                {
-			                fragmentToHide = fragment.ChildFragmentManager.Fragments.Last();
-			                break;
-		                }
-	                }
-                }
+                    fragmentToHide = fromView.ParentFragment(_renderer.SupportFragmentManager);
 
                 //group management for pop:
                 //TODO: Rethink this mess... it works but is superduper ugly 
