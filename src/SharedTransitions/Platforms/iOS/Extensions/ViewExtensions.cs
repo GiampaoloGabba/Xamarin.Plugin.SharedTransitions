@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Foundation;
 using UIKit;
 using CoreGraphics;
@@ -84,9 +84,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
             if (!softCopy)
             {
-                //Fix for collectionview item selection inside shell
-	            if (fromView is UIImageView image)
-                    image.Highlighted = false;
+                //Fix for UIImageView and Unarchiver
+                //https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/31
+                if (fromView is UIImageView image)
+                {
+                    return new UIImageView(image.Image)
+                    {
+                        Highlighted = false,
+                        Frame = image.Frame,
+                        ContentMode = image.ContentMode,
+                        ClipsToBounds = image.ClipsToBounds,
+                        Alpha = fromView.Alpha,
+                    };
+                }
 
                 return (UIView) NSKeyedUnarchiver.UnarchiveObject(NSKeyedArchiver.ArchivedDataWithRootObject(fromView));
             }
