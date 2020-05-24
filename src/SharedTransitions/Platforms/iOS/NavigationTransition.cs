@@ -66,7 +66,16 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
             // This needs to be added to the view hierarchy for the destination frame to be correct,
             // but we don't want it visible yet.
-            containerView.InsertSubview(_toViewController.View, 0);
+            if (_toViewController?.View == null)
+                return;
+
+            // Fox for pop + flip animation
+            var levelSubView = 1;
+            if (_operation == UINavigationControllerOperation.Pop &&
+                _navigationPage.BackgroundAnimation == BackgroundAnimation.Flip)
+                levelSubView = 0;
+
+            containerView.InsertSubview(_toViewController.View, levelSubView);
             _toViewController.View.Alpha = 0;
 
             //iterate the destination views, this has two benefits:
@@ -281,42 +290,33 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             {
                 case BackgroundAnimation.None:
 
-                    var delay = _operation == UINavigationControllerOperation.Push
+                    /*var delay = _operation == UINavigationControllerOperation.Push
                         ? _transitionDuration
-                        : 0;
-
-                    UIView.Animate(0, delay, UIViewAnimationOptions.TransitionNone, () =>
+                        : 0;*/
+                    UIView.Animate(0, 0, UIViewAnimationOptions.TransitionNone, () =>
                     {
                         _toViewController.View.Alpha = 1;
+                        //_fromViewController.View.Alpha = 0;
                     }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.Fade:
+                    //Fix for shell
+                    _toViewController.View.Alpha = 0;
                     UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveLinear, () =>
                     {
                         _toViewController.View.Alpha = 1;
-                        _fromViewController.View.Alpha = 0;
+                        //_fromViewController.View.Alpha = 0;
                     }, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.Flip:
-                    var m34 = (nfloat)(-1 * 0.001);
-                    var initialTransform = CATransform3D.Identity;
-                    initialTransform.m34 = m34;
-                    initialTransform = initialTransform.Rotate((nfloat)(1 * Math.PI * 0.5), 0.0f, 1.0f, 0.0f);
 
+                    _toViewController.View.Alpha = 1;
                     _fromViewController.View.Alpha = 0;
-                    _toViewController.View.Alpha = 0;
-                    _toViewController.View.Layer.Transform = initialTransform;
-                    UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveEaseInOut,
-                        () =>
-                        {
-                            _toViewController.View.Layer.AnchorPoint = new CGPoint((nfloat)0.5, 0.5f);
-                            var newTransform = CATransform3D.Identity;
-                            newTransform.m34 = m34;
-                            _toViewController.View.Layer.Transform = newTransform;
-                            _toViewController.View.Alpha = 1;
-                        }, FixCompletionForSwipeAndPopToRoot);
+
+                    UIView.Transition(_fromViewController.View, _transitionDuration, UIViewAnimationOptions.TransitionFlipFromRight, null, null);
+                    UIView.Transition(_toViewController.View, _transitionDuration, UIViewAnimationOptions.TransitionFlipFromRight, null, FixCompletionForSwipeAndPopToRoot);
                     break;
 
                 case BackgroundAnimation.SlideFromBottom:
