@@ -1,3 +1,12 @@
+## 2.2
+* **AndroidX support**  (issues [#23](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/23)
+* Fix IOS "Failed to lookup the required marshalling information" (issue [#31](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/31))
+* Fix Tabbed page inside MasterDetail (issue [#30](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/30))
+* Fontsize transition for label in iOS
+* Improve Flip background animation in iOS
+* Improve transition in iOS removing occasional flickering  
+* TransitionStack improvement using Weakdelegates
+
 ## 2.1
 * **Shell support**  (issues [#16](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/16), [#17](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/17), [#18](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/18))
 * Tabbed page support (issue [#13](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/13))

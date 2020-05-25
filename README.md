@@ -31,14 +31,6 @@ Android X *(pre-release)*|API 29|
 The [sample apps](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/tree/master/src/Sample) include everything you need to play with this plugin (standard pages, Tabbed, MasterDetail, Shell). 
 Btw, I recommend to read all this page, expecially the few Android limitations.
 
-## Android X *(pre-release)*:
-
-[I have pubblished a pre-release nuget](https://www.nuget.org/packages/Xamarin.Plugin.SharedTransitions/2.1.1-beta) with Android X support.
-
-To enable AndroidX support, use Xamarin.Forms 4.5+ and target API 29.
-
-I will leave it in pre-release for a few days, considering that the new version will still support Xamarin.Forms 4.3 with old Android api (without AndroidX support, of course). I have to be sure that both functionalities (with Android X and without) are the same.
-
 ## Usage
 
 
@@ -312,6 +304,9 @@ Everything is in the [sample apps](https://github.com/Evolutionlab/Xamarin.Plugi
 * Full shape layout transition is supported (eg: different corner radius between starting and ending views)
 * You can pop the page using a PanGesture on the left side of the screen
 
+## Android X:
+To enable AndroidX support, use Xamarin.Forms 4.5+ and target API 29.
+
 ## Android Limitations
 * `TabbedPage` inside `MasterDetailPage` is not currently supported
 * When animating layouts (frame, stacklayouts....) **i suggest to dont use a background transition other than "Fade" (or "None")**. Android doesnt play well with background animation + shared transitions of layouts
@@ -327,24 +322,21 @@ The main app is made with [Prism](https://github.com/PrismLibrary/Prism) and it 
 *Note: Yes my dog is supercute and deserve her sample app :D*
 
 
-## More samples!
-
-Xamarin.Forms good looking UI [sample](https://github.com/jsuarezruiz/ArtNews) using BindableLayout and CollectionView. 
-
-<img src="images/artnews.gif" Height="500" />
-
-This sample is based on [Art News App](https://dribbble.com/shots/6282441-Art-News-App) designed by [Shirley Yao](https://dribbble.com/shirleyyao).
-
 ## Roadmap
 
-- [x] Android X support
 - [ ] Improve Android shape transitions (different corner radius)
 
 
 ## Latest release notes
 
-**2.1.1 beta**
-* **Android X support**  (issues [#23](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/23)
+**2.2**
+* **AndroidX support**  (issues [#23](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/23)
+* Fix IOS "Failed to lookup the required marshalling information" (issue [#31](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/31))
+* Fix Tabbed page inside MasterDetail (issue [#30](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/30))
+* Fontsize transition for label in iOS
+* Improve Flip background animation in iOS
+* Improve transition in iOS removing occasional flickering  
+* TransitionStack improvement using Weakdelegates
 
 **2.1**
 * **Shell support**  (issues [#16](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/16), [#17](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/17), [#18](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/18))
