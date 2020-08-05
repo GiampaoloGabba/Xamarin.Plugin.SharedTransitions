@@ -64,8 +64,7 @@ A shared element transition determines how elements that are present in two page
     <!--<PackageReference Include="MSBuild.Sdk.Extras" Version="1.6.47" PrivateAssets="All" />-->
     <PackageReference Include="Xamarin.Forms" Version="4.3.0.991250" />
     <Compile Include="**\Shared\*.cs" />
-      <!-- This is here so that the conditionally included files below are all visible in VS -->
-      <None Include="Platforms\**\*.cs" Exclude="obj\**\*.*;bin\**\*.*;bin;obj" />
+
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
