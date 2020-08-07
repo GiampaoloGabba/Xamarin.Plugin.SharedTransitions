@@ -117,18 +117,21 @@ namespace Plugin.SharedTransitions
         public void SendTransitionStarted()
         {
             TransitionStarted?.Invoke(this, null);
+            OnTransitionStarted();
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SendTransitionEnded()
         {
             TransitionEnded?.Invoke(this, null);
+            OnTransitionEnded();
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SendTransitionCancelled()
         {
             TransitionCancelled?.Invoke(this, null);
+            OnTransitionCancelled();
         }
 
         protected override void OnChildRemoved(Element child)
