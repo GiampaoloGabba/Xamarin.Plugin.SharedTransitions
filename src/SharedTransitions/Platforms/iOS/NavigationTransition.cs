@@ -204,16 +204,33 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 });
             }
 
+            Debug.WriteLine($"{DateTime.Now} - SHARED: Transition started");
+            _navigationPage.SharedTransitionStarted();
+
             if (_masksToAnimate.Any())
-                _navigationPage.EdgeGesturePanned += NavigationPageOnEdgeGesturePanned;
+                _navigationPage.OnEdgeGesturePanned += NavigationPageOnEdgeGesturePanned;
 
             AnimateBackground();
+        }
+
+        public override void AnimationEnded(bool transitionCompleted)
+        {
+            if (transitionCompleted)
+            {
+                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
+                _navigationPage.SharedTransitionEnded();
+            }
+            else
+            {
+                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
+                _navigationPage.SharedTransitionCancelled();
+            }
         }
 
         /// <summary>
         /// Handle the main EdgePanGesture on the NavigationPage used to swipe back
         /// </summary>
-        private void NavigationPageOnEdgeGesturePanned(object sender, EdgeGesturePannedArgs args)
+        void NavigationPageOnEdgeGesturePanned(object sender, EdgeGesturePannedArgs args)
         {
             //Control the animation on the upper mask layer
             double offset = _transitionDuration * args.Percent;
@@ -237,7 +254,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 args.State == UIGestureRecognizerState.Cancelled ||
                 args.State == UIGestureRecognizerState.Failed)
             {
-                _navigationPage.EdgeGesturePanned -= NavigationPageOnEdgeGesturePanned;
+                _navigationPage.OnEdgeGesturePanned -= NavigationPageOnEdgeGesturePanned;
             }
         }
 

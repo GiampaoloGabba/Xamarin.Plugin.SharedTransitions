@@ -22,7 +22,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 	/// </summary>
 	public sealed class SharedTransitionShellSectionRenderer : ShellSectionRenderer, ITransitionRenderer
 	{
-		public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
 		public double TransitionDuration { get; set; }
 		public BackgroundAnimation BackgroundAnimation { get; set; }
 
@@ -61,6 +60,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		public string SelectedGroup { get; set; }
 		public ITransitionMapper TransitionMap { get; set; }
 		public UIPercentDrivenInteractiveTransition PercentDrivenInteractiveTransition { get; set; }
+		public event EventHandler<EdgeGesturePannedArgs> OnEdgeGesturePanned;
+		public event EventHandler OnSharedTransitionStarted;
+		public event EventHandler OnSharedTransitionEnded;
+		public event EventHandler OnSharedTransitionCancelled;
 
 		private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
 
@@ -128,16 +131,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		}
 
 		/// <summary>
-		/// Event fired when the EdgeGesture is working.
-		/// Useful to commanding additional animations attached to the transition
-		/// </summary>
-		public void OnEdgeGesturePanned(EdgeGesturePannedArgs e)
-		{
-			EventHandler<EdgeGesturePannedArgs> handler = EdgeGesturePanned;
-			handler?.Invoke(this, e);
-		}
-
-		/// <summary>
 		/// Set the page we are using to read transition properties
 		/// </summary>
 		void UpdatePropertyContainer()
@@ -175,6 +168,40 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		void UpdateSelectedGroup()
 		{
 			SelectedGroup = SharedTransitionShell.GetTransitionSelectedGroup(PropertiesContainer);
+		}
+
+		/// <summary>
+		/// Event fired when the EdgeGesture is working.
+		/// Useful to commanding additional animations attached to the transition
+		/// </summary>
+		public void EdgeGesturePanned(EdgeGesturePannedArgs e)
+		{
+			EventHandler<EdgeGesturePannedArgs> handler = OnEdgeGesturePanned;
+			handler?.Invoke(this, e);
+		}
+
+		/// <summary>
+		/// Fired when the Shared Transition starts
+		/// </summary>
+		public void SharedTransitionStarted()
+		{
+			OnSharedTransitionStarted?.Invoke(this, null);
+		}
+
+		/// <summary>
+		/// Fired when the Shared Transition ends
+		/// </summary>
+		public void SharedTransitionEnded()
+		{
+			OnSharedTransitionEnded?.Invoke(this, null);
+		}
+
+		/// <summary>
+		/// Fired when the Shared Transition is cancelled
+		/// </summary>
+		public void SharedTransitionCancelled()
+		{
+			OnSharedTransitionCancelled?.Invoke(this, null);
 		}
 	}
 }

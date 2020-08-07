@@ -26,8 +26,14 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		/// </summary>
 		void RemoveInteractiveTransitionRecognizer();
 
-		void OnEdgeGesturePanned(EdgeGesturePannedArgs e);
+		event EventHandler<EdgeGesturePannedArgs> OnEdgeGesturePanned;
+		event EventHandler OnSharedTransitionStarted;
+		event EventHandler OnSharedTransitionEnded;
+		event EventHandler OnSharedTransitionCancelled;
 
-		event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
+		void EdgeGesturePanned(EdgeGesturePannedArgs e);
+		void SharedTransitionStarted();
+		void SharedTransitionEnded();
+		void SharedTransitionCancelled();
 	}
 }

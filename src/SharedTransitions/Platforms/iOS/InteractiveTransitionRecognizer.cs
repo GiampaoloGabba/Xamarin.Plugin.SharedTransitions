@@ -62,7 +62,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             var percent = sender.TranslationInView(sender.View).X / sender.View.Frame.Width;
             var finishTransitionOnEnd = percent > 0.5 || sender.VelocityInView(sender.View).X > 300;
 
-            _renderer.OnEdgeGesturePanned(new EdgeGesturePannedArgs
+            _renderer.EdgeGesturePanned(new EdgeGesturePannedArgs
             {
                 State = sender.State,
                 Percent = percent,

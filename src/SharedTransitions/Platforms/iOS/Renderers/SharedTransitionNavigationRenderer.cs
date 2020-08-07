@@ -27,7 +27,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
     [Preserve(AllMembers = true)]
     public class SharedTransitionNavigationRenderer : NavigationRenderer, ITransitionRenderer
     {
-	    public event EventHandler<EdgeGesturePannedArgs> EdgeGesturePanned;
         public double TransitionDuration  { get; set; }
         public BackgroundAnimation BackgroundAnimation { get; set; }
 
@@ -63,6 +62,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public UIScreenEdgePanGestureRecognizer EdgeGestureRecognizer { get; set; }
         public UIPercentDrivenInteractiveTransition PercentDrivenInteractiveTransition { get; set; }
         public bool DisableTransition { get; set; }
+        public event EventHandler<EdgeGesturePannedArgs> OnEdgeGesturePanned;
+        public event EventHandler OnSharedTransitionStarted;
+        public event EventHandler OnSharedTransitionEnded;
+        public event EventHandler OnSharedTransitionCancelled;
+
         public string SelectedGroup { get; set; }
 
         private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
@@ -143,13 +147,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         {
 	        _interactiveTransitionRecognizer.RemoveInteractiveTransitionRecognizer();
         }
-
-        public void OnEdgeGesturePanned(EdgeGesturePannedArgs e)
-        {
-	        EventHandler<EdgeGesturePannedArgs> handler = EdgeGesturePanned;
-	        handler?.Invoke(this, e);
-        }
-
         void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == SharedTransitionNavigationPage.BackgroundAnimationProperty.PropertyName)
@@ -191,6 +188,36 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         void UpdateSelectedGroup()
         {
             SelectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(PropertiesContainer);
+        }
+
+        public void EdgeGesturePanned(EdgeGesturePannedArgs e)
+        {
+            EventHandler<EdgeGesturePannedArgs> handler = OnEdgeGesturePanned;
+            handler?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Fired when the Shared Transition starts
+        /// </summary>
+        public void SharedTransitionStarted()
+        {
+            OnSharedTransitionStarted?.Invoke(this, null);
+        }
+
+        /// <summary>
+        /// Fired when the Shared Transition ends
+        /// </summary>
+        public void SharedTransitionEnded()
+        {
+            OnSharedTransitionEnded?.Invoke(this, null);
+        }
+
+        /// <summary>
+        /// Fired when the Shared Transition is cancelled
+        /// </summary>
+        public void SharedTransitionCancelled()
+        {
+            OnSharedTransitionCancelled?.Invoke(this, null);
         }
     }
 }
