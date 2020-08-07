@@ -40,7 +40,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             if (!_renderer.IsInTabbedPage)
 	            fragmentToHide = _renderer.SupportFragmentManager.Fragments.Last();
 
-	        bool animationFound = false;
+	        var animationFound = false;
 
             //When we PUSH a page, we arrive here that the destination is already the current page in NavPage
             //During the override we set the propertiescontainer to the page where the push started
@@ -71,8 +71,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 
                 //fix for tabbedpage and masterdetail
                 //In those cases we have fragments for all the pages, so we need the right fragments containing this view
-                if (fragmentToHide == null)
-                    fragmentToHide = fromView.ParentFragment(_renderer.SupportFragmentManager);
+                fragmentToHide ??= fromView.ParentFragment(_renderer.SupportFragmentManager);
 
                 //group management for pop:
                 //TODO: Rethink this mess... it works but is superduper ugly 
