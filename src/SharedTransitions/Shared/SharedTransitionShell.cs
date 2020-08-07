@@ -108,6 +108,11 @@ namespace Plugin.SharedTransitions
             page.SetValue(TransitionDurationProperty, value);
         }
 
+        public virtual void OnTransitionStarted(){ }
+        public virtual void OnTransitionEnded(){ }
+        public virtual void OnTransitionCancelled(){ }
+
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SendTransitionStarted()
         {
