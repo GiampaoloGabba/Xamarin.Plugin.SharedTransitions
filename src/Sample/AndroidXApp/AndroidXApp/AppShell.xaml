@@ -8,7 +8,10 @@
 
        xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
        Title="AndroidXApp"
-       x:Class="AndroidXApp.AppShell">
+       x:Class="AndroidXApp.AppShell"
+       TransitionStarted="AppShell_OnTransitionStarted"
+       TransitionEnded="AppShell_OnTransitionEnded"
+       TransitionCancelled="AppShell_OnTransitionCancelled">
 
     <!-- 
         Styles and Resources 

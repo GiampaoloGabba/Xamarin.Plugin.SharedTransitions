@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sharedTransitions:SharedTransitionShell xmlns="http://xamarin.com/schemas/2014/forms" 
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:image="clr-namespace:TransitionShellApp.Views.Image;assembly=TransitionShellApp"
+       xmlns:layout="clr-namespace:TransitionShellApp.Views.Layout;assembly=TransitionShellApp"
+       xmlns:listview="clr-namespace:TransitionShellApp.Views.Listview;assembly=TransitionShellApp"
+       xmlns:collectionview="clr-namespace:TransitionShellApp.Views.Collectionview;assembly=TransitionShellApp"
+
        xmlns:sharedTransitions="clr-namespace:Plugin.SharedTransitions;assembly=Plugin.SharedTransitions"
        Title="TransitionShellApp"
        x:Class="TransitionShellApp.AppShell"
