@@ -18,9 +18,6 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		Page LastPageInStack { get; set; }
 		ITransitionMapper TransitionMap { get; set; }
 		global::Android.Transitions.Transition InflateTransitionInContext();
-		event EventHandler OnSharedTransitionStarted;
-		event EventHandler OnSharedTransitionEnded;
-		event EventHandler OnSharedTransitionCancelled;
 		void SharedTransitionStarted();
 		void SharedTransitionEnded();
 		void SharedTransitionCancelled();

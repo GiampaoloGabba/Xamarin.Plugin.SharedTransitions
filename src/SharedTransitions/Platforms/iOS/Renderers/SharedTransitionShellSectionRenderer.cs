@@ -61,16 +61,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		public ITransitionMapper TransitionMap { get; set; }
 		public UIPercentDrivenInteractiveTransition PercentDrivenInteractiveTransition { get; set; }
 		public event EventHandler<EdgeGesturePannedArgs> OnEdgeGesturePanned;
-		public event EventHandler OnSharedTransitionStarted;
-		public event EventHandler OnSharedTransitionEnded;
-		public event EventHandler OnSharedTransitionCancelled;
 
-		private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
+		readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
+		readonly IShellContext _shellContext;
 
-		public SharedTransitionShellSectionRenderer(IShellContext context) : base(context)
+		public SharedTransitionShellSectionRenderer(IShellContext shellContext) : base(shellContext)
 		{
+			_shellContext = shellContext;
 			Delegate = new SharedTransitionDelegate(Delegate, this);
-			TransitionMap = ((ISharedTransitionContainer) context.Shell).TransitionMap;
+			TransitionMap = ((ISharedTransitionContainer) shellContext.Shell).TransitionMap;
 			_interactiveTransitionRecognizer = new InteractiveTransitionRecognizer(this);
 		}
 
@@ -180,28 +179,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			handler?.Invoke(this, e);
 		}
 
-		/// <summary>
-		/// Fired when the Shared Transition starts
-		/// </summary>
 		public void SharedTransitionStarted()
 		{
-			OnSharedTransitionStarted?.Invoke(this, null);
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionStarted();
 		}
 
-		/// <summary>
-		/// Fired when the Shared Transition ends
-		/// </summary>
 		public void SharedTransitionEnded()
 		{
-			OnSharedTransitionEnded?.Invoke(this, null);
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionEnded();
 		}
 
-		/// <summary>
-		/// Fired when the Shared Transition is cancelled
-		/// </summary>
 		public void SharedTransitionCancelled()
 		{
-			OnSharedTransitionCancelled?.Invoke(this, null);
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionCancelled();
 		}
 	}
 }

@@ -89,13 +89,10 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		        .SetDuration(_transitionDuration)
                 .AddListener(new NavigationTransitionListener(this));
         }
-        public event EventHandler OnSharedTransitionStarted;
-        public event EventHandler OnSharedTransitionEnded;
-        public event EventHandler OnSharedTransitionCancelled;
 
         bool _popToRoot;
         int _transitionDuration;
-        private readonly NavigationTransition _navigationTransition;
+        readonly NavigationTransition _navigationTransition;
 
         public SharedTransitionNavigationPageRenderer(Context context) : base(context)
         {
@@ -232,28 +229,19 @@ namespace Plugin.SharedTransitions.Platforms.Android
             SelectedGroup = SharedTransitionNavigationPage.GetTransitionSelectedGroup(PropertiesContainer);
         }
 
-        /// <summary>
-        /// Fired when the Shared Transition starts
-        /// </summary>
         public void SharedTransitionStarted()
         {
-            OnSharedTransitionStarted?.Invoke(this, null);
+            ((ISharedTransitionContainer) Element).SendTransitionStarted();
         }
 
-        /// <summary>
-        /// Fired when the Shared Transition ends
-        /// </summary>
         public void SharedTransitionEnded()
         {
-            OnSharedTransitionEnded?.Invoke(this, null);
+            ((ISharedTransitionContainer) Element).SendTransitionEnded();
         }
 
-        /// <summary>
-        /// Fired when the Shared Transition is cancelled
-        /// </summary>
         public void SharedTransitionCancelled()
         {
-            OnSharedTransitionCancelled?.Invoke(this, null);
+            ((ISharedTransitionContainer) Element).SendTransitionCancelled();
         }
     }
 }

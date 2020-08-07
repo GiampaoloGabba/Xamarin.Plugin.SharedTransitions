@@ -67,16 +67,14 @@ namespace Plugin.SharedTransitions.Platforms.Android
 				.SetDuration(_transitionDuration)
 				.AddListener(new NavigationTransitionListener(this));
 		}
-		public event EventHandler OnSharedTransitionStarted;
-		public event EventHandler OnSharedTransitionEnded;
-		public event EventHandler OnSharedTransitionCancelled;
 
 		bool _popToRoot;
-		
-		private readonly NavigationTransition _navigationTransition;
+		NavigationTransition _navigationTransition;
+		readonly IShellContext _shellContext;
 
 		public SharedTransitionShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
+			_shellContext = shellContext;
 			TransitionMap = ((ISharedTransitionContainer) shellContext.Shell).TransitionMap;
 			_navigationTransition = new NavigationTransition(this);
 		}
@@ -178,28 +176,19 @@ namespace Plugin.SharedTransitions.Platforms.Android
 			SelectedGroup = SharedTransitionShell.GetTransitionSelectedGroup(PropertiesContainer);
 		}
 
-		/// <summary>
-		/// Fired when the Shared Transition starts
-		/// </summary>
 		public void SharedTransitionStarted()
 		{
-			OnSharedTransitionStarted?.Invoke(this, null);
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionStarted();
 		}
 
-		/// <summary>
-		/// Fired when the Shared Transition ends
-		/// </summary>
 		public void SharedTransitionEnded()
 		{
-			OnSharedTransitionEnded?.Invoke(this, null);
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionEnded();
 		}
 
-		/// <summary>
-		/// Fired when the Shared Transition is cancelled
-		/// </summary>
 		public void SharedTransitionCancelled()
 		{
-			OnSharedTransitionCancelled?.Invoke(this, null);
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionCancelled();
 		}
 	}
 }

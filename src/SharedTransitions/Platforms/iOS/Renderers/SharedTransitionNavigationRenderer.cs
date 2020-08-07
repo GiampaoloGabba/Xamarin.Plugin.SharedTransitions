@@ -63,10 +63,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public UIPercentDrivenInteractiveTransition PercentDrivenInteractiveTransition { get; set; }
         public bool DisableTransition { get; set; }
         public event EventHandler<EdgeGesturePannedArgs> OnEdgeGesturePanned;
-        public event EventHandler OnSharedTransitionStarted;
-        public event EventHandler OnSharedTransitionEnded;
-        public event EventHandler OnSharedTransitionCancelled;
-
         public string SelectedGroup { get; set; }
 
         private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
@@ -196,28 +192,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             handler?.Invoke(this, e);
         }
 
-        /// <summary>
-        /// Fired when the Shared Transition starts
-        /// </summary>
         public void SharedTransitionStarted()
         {
-            OnSharedTransitionStarted?.Invoke(this, null);
+            ((ISharedTransitionContainer) Element).SendTransitionStarted();
         }
 
-        /// <summary>
-        /// Fired when the Shared Transition ends
-        /// </summary>
         public void SharedTransitionEnded()
         {
-            OnSharedTransitionEnded?.Invoke(this, null);
+            ((ISharedTransitionContainer) Element).SendTransitionEnded();
         }
 
-        /// <summary>
-        /// Fired when the Shared Transition is cancelled
-        /// </summary>
         public void SharedTransitionCancelled()
         {
-            OnSharedTransitionCancelled?.Invoke(this, null);
+            ((ISharedTransitionContainer) Element).SendTransitionCancelled();
         }
     }
 }

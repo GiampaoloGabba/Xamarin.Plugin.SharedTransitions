@@ -1,4 +1,6 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using System.ComponentModel;
+using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions
 {
@@ -33,6 +35,10 @@ namespace Plugin.SharedTransitions
         /// </summary>
         public static readonly BindableProperty TransitionDurationProperty =
             BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionShell), (long)300);
+
+        public event EventHandler TransitionStarted;
+        public event EventHandler TransitionEnded;
+        public event EventHandler TransitionCancelled;
 
         internal ITransitionMapper TransitionMap
         {
@@ -100,6 +106,24 @@ namespace Plugin.SharedTransitions
         public static void SetTransitionDuration(Page page, long value)
         {
             page.SetValue(TransitionDurationProperty, value);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SendTransitionStarted()
+        {
+            TransitionStarted?.Invoke(this, null);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SendTransitionEnded()
+        {
+            TransitionEnded?.Invoke(this, null);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SendTransitionCancelled()
+        {
+            TransitionCancelled?.Invoke(this, null);
         }
 
         protected override void OnChildRemoved(Element child)
