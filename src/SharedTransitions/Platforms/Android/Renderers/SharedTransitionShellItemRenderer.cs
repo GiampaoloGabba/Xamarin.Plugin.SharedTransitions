@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.OS;
@@ -63,8 +64,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		{
 			return TransitionInflater.From(Context)
 				.InflateTransition(Resource.Transition.navigation_transition)
-				.SetDuration(_transitionDuration);
+				.SetDuration(_transitionDuration)
+				.AddListener(new NavigationTransitionListener(this));
 		}
+		public event EventHandler OnSharedTransitionStarted;
+		public event EventHandler OnSharedTransitionEnded;
+		public event EventHandler OnSharedTransitionCancelled;
 
 		bool _popToRoot;
 		
@@ -171,6 +176,30 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		void UpdateSelectedGroup()
 		{
 			SelectedGroup = SharedTransitionShell.GetTransitionSelectedGroup(PropertiesContainer);
+		}
+
+		/// <summary>
+		/// Fired when the Shared Transition starts
+		/// </summary>
+		public void SharedTransitionStarted()
+		{
+			OnSharedTransitionStarted?.Invoke(this, null);
+		}
+
+		/// <summary>
+		/// Fired when the Shared Transition ends
+		/// </summary>
+		public void SharedTransitionEnded()
+		{
+			OnSharedTransitionEnded?.Invoke(this, null);
+		}
+
+		/// <summary>
+		/// Fired when the Shared Transition is cancelled
+		/// </summary>
+		public void SharedTransitionCancelled()
+		{
+			OnSharedTransitionCancelled?.Invoke(this, null);
 		}
 	}
 }
