@@ -210,28 +210,36 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 });
             }
 
-            Debug.WriteLine($"{DateTime.Now} - SHARED: Transition started");
-            _navigationPage.SharedTransitionStarted();
-
             if (_masksToAnimate.Any())
                 _navigationPage.OnEdgeGesturePanned += NavigationPageOnEdgeGesturePanned;
 
             AnimateBackground();
+
+            //This is needed, otherwise the animation is choppy and will starts late!
+            await Task.Run(() =>
+            {
+                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition started");
+                _navigationPage.SharedTransitionStarted();
+            }).ConfigureAwait(false);
         }
 
-        public override void AnimationEnded(bool transitionCompleted)
+        public override async void AnimationEnded(bool transitionCompleted)
         {
-            if (transitionCompleted)
+            //This is needed, otherwise the animation is choppy and will ends late!
+            await Task.Run(() =>
             {
-                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
-                _navigationPage.SharedTransitionEnded();
+                if (transitionCompleted)
+                {
+                    Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
+                    _navigationPage.SharedTransitionEnded();
+                }
+                else
+                {
+                    Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
+                    _navigationPage.SharedTransitionCancelled();
+                }
+            }).ConfigureAwait(false);
             }
-            else
-            {
-                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
-                _navigationPage.SharedTransitionCancelled();
-            }
-        }
 
         /// <summary>
         /// Handle the main EdgePanGesture on the NavigationPage used to swipe back
