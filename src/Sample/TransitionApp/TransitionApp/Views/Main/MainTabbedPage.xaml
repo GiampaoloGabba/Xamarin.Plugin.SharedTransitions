@@ -16,26 +16,38 @@
              x:Class="TransitionApp.Views.Main.MainTabbedPage">
 
 
-    <sharedTransitions:SharedTransitionNavigationPage Title="Images" IconImageSource="">
+    <sharedTransitions:SharedTransitionNavigationPage Title="Images" IconImageSource=""
+                                                      TransitionStarted="SharedTransitionNavigationPage_OnTransitionStarted"
+                                                      TransitionEnded="SharedTransitionNavigationPage_OnTransitionEnded"
+                                                      TransitionCancelled="SharedTransitionNavigationPage_OnTransitionCancelled">
         <x:Arguments>
             <image:ImageFromPage/>
         </x:Arguments>
     </sharedTransitions:SharedTransitionNavigationPage>
 
-    <sharedTransitions:SharedTransitionNavigationPage Title="Layouts">
+    <sharedTransitions:SharedTransitionNavigationPage Title="Layouts"
+                                                      TransitionStarted="SharedTransitionNavigationPage_OnTransitionStarted"
+                                                      TransitionEnded="SharedTransitionNavigationPage_OnTransitionEnded"
+                                                      TransitionCancelled="SharedTransitionNavigationPage_OnTransitionCancelled">
         <x:Arguments>
             <layout:LayoutFromPage/>
         </x:Arguments>
     </sharedTransitions:SharedTransitionNavigationPage>
 
-    <sharedTransitions:SharedTransitionNavigationPage Title="List">
+    <sharedTransitions:SharedTransitionNavigationPage Title="List"
+                                                      TransitionStarted="SharedTransitionNavigationPage_OnTransitionStarted"
+                                                      TransitionEnded="SharedTransitionNavigationPage_OnTransitionEnded"
+                                                      TransitionCancelled="SharedTransitionNavigationPage_OnTransitionCancelled">
       <x:Arguments>
           <listview:ListViewFromPage/>
       </x:Arguments>
     </sharedTransitions:SharedTransitionNavigationPage>
 
 
-    <sharedTransitions:SharedTransitionNavigationPage Title="Collection">
+    <sharedTransitions:SharedTransitionNavigationPage Title="Collection"
+                                                      TransitionStarted="SharedTransitionNavigationPage_OnTransitionStarted"
+                                                      TransitionEnded="SharedTransitionNavigationPage_OnTransitionEnded"
+                                                      TransitionCancelled="SharedTransitionNavigationPage_OnTransitionCancelled">
         <x:Arguments>
             <collectionview:CollectionviewFromPage/>
         </x:Arguments>

@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using Plugin.SharedTransitions;
+using Xamarin.Forms;
 
 namespace TransitionApp.Views.Main
 {
