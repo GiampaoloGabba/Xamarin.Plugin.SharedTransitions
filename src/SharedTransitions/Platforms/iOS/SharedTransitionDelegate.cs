@@ -43,7 +43,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			{
 				//At this point the property TargetPage refers to the view we are pushing or popping
 				//This view is not yet visible in our app but the variable is already set
-				var viewsToAnimate = new List<(WeakReference ToView, WeakReference FromView)>();
+				var viewsToAnimate = new List<(WeakReference ToView, WeakReference FromView, bool IsLightsnapshot)>();
 
 				IReadOnlyList<TransitionDetail> transitionStackTo;
 				IReadOnlyList<TransitionDetail> transitionStackFrom;
@@ -75,7 +75,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 							continue;
 						}
 
-						viewsToAnimate.Add((toView.NativeView, fromView.NativeView));
+						viewsToAnimate.Add((toView.NativeView, fromView.NativeView, fromView.IsLightSnapshot));
 					}
 				}
 

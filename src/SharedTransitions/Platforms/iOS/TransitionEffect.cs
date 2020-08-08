@@ -62,8 +62,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
         {
+	        //Always check the LightSnapshopProperty in case it gets changed later by a binding
 	        if ((args.PropertyName == Transition.NameProperty.PropertyName && Transition.GetName(Element) != null) ||
-	            (args.PropertyName == Transition.GroupProperty.PropertyName && Transition.GetGroup(Element) != null))
+	            (args.PropertyName == Transition.GroupProperty.PropertyName && Transition.GetGroup(Element) != null) ||
+	            (args.PropertyName == Transition.LightSnapshotProperty.PropertyName && Transition.GetLightSnapshot(Element) != null))
 	        {
 		        UpdateTag();
 	        }

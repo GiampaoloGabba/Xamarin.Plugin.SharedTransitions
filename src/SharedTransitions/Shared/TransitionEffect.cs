@@ -44,6 +44,14 @@ namespace Plugin.SharedTransitions
             null,
             propertyChanged: OnPropertyChanged);
 
+        public static readonly BindableProperty LightSnapshotProperty = BindableProperty.CreateAttached(
+            "LightSnapshot",
+            typeof(bool),
+            typeof(SharedTransitionNavigationPage),
+            false,
+            propertyChanged: OnPropertyChanged);
+
+
         /// <summary>
         /// Gets the shared transition name for the element
         /// </summary>
@@ -60,6 +68,18 @@ namespace Plugin.SharedTransitions
         public static string GetGroup(BindableObject bindable)
         {
             return (string)bindable.GetValue(GroupProperty);
+        }
+
+        /// <summary>
+        /// Performs a "Light" snapshot on iOS, rasterizing a copy of the current view to use during the transition.
+        /// This method is faster but doesnt play well with transformations (size, borders, ecc...).
+        /// Use it only when animating the element position!
+        /// Does nothing on Anddroid
+        /// </summary>
+        /// <param name="bindable">Xamarin Forms Element</param>
+        public static bool GetLightSnapshot(BindableObject bindable)
+        {
+            return (bool)bindable.GetValue(LightSnapshotProperty);
         }
 
         /// <summary>
@@ -83,6 +103,20 @@ namespace Plugin.SharedTransitions
         }
 
         /// <summary>
+        /// Performs a "Light" snapshot on iOS, rasterizing a copy of the current view to use during the transition.
+        /// This method is faster but doesnt play well with transformations (size, borders, ecc...).
+        /// Use it only when animating the element position!
+        /// Does nothing on Anddroid
+        /// </summary>
+        /// <param name="bindable">Xamarin Forms Element</param>
+        /// <param name="value">The shared transition name</param>
+        public static void SetLightSnapshot(BindableObject bindable, bool value)
+        {
+            bindable.SetValue(LightSnapshotProperty, value);
+        }
+
+
+        /// <summary>
         /// Registers the transition element in the TransitionStack
         /// </summary>
         /// <param name="view">Xamarin Forms View</param>
@@ -96,13 +130,15 @@ namespace Plugin.SharedTransitions
 
             if ((!string.IsNullOrEmpty(transitionName) || !string.IsNullOrEmpty(transitionGroup)))
             {
+                var lightTransition = GetLightSnapshot(view);
+
 	            if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
 	            {
-		            shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeView);
+		            shellPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, lightTransition, view, nativeView);
 	            }
 	            else if (currentPage.Parent is ISharedTransitionContainer navPage)
 	            {
-		            navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, view, nativeView);
+		            navPage.TransitionMap.AddOrUpdate(currentPage, transitionName, transitionGroup, lightTransition,view, nativeView);
 	            }
 	            else
 	            {
@@ -133,11 +169,11 @@ namespace Plugin.SharedTransitions
         {
             if (bindable == null)
             {
-                Debug.WriteLine($"BindableObject should not be null at this point (Attached Property changed)");
+                Debug.WriteLine("BindableObject should not be null at this point (Attached Property changed)");
                 return;
             }
 
-            Debug.WriteLine($"===== SAHARED: update property for {bindable}: {oldValue} - {newValue}");
+            Debug.WriteLine($"===== SHARED: update transition property for {bindable}: {oldValue} - {newValue}");
 
             var element = (View)bindable;
             var existing = element.Effects.FirstOrDefault(x => x is TransitionEffect);

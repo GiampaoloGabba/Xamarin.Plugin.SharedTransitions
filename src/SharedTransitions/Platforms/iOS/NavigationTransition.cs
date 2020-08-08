@@ -30,7 +30,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
          */
 
         readonly ITransitionRenderer _navigationPage;
-        readonly List<(WeakReference ToView, WeakReference FromView)> _viewsToAnimate;
+        readonly List<(WeakReference ToView, WeakReference FromView, bool IsLightsnapshot)> _viewsToAnimate;
         readonly UINavigationControllerOperation _operation;
         readonly UIScreenEdgePanGestureRecognizer _edgeGestureRecognizer;
         readonly List<CAShapeLayer> _masksToAnimate;
@@ -39,7 +39,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         UIViewController _toViewController;
         double _transitionDuration;
 
-        public NavigationTransition(List<(WeakReference ToView, WeakReference FromView)> viewsToAnimate, UINavigationControllerOperation operation, ITransitionRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
+        public NavigationTransition(List<(WeakReference ToView, WeakReference FromView, bool IsLightsnapshot)> viewsToAnimate, UINavigationControllerOperation operation, ITransitionRenderer navigationPage, UIScreenEdgePanGestureRecognizer edgeGestureRecognizer)
         {
             _navigationPage        = navigationPage;
             _operation             = operation;
@@ -96,38 +96,45 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 UIView fromViewSnapshot;
                 CGRect fromViewFrame;
 
-                if (fromView is UIControl || fromView is UILabel )
+                if (viewToAnimate.IsLightsnapshot)
                 {
-                    //For buttons and labels just copy the view to preserve a good transition
-                    //Using normal snapshot with labels and buttons may cause streched and deformed images
-                    fromViewFrame    = fromView.Frame;
-                    fromViewSnapshot = fromView.CopyView();
-                }
-                else if (fromView is UIImageView fromImageView)
-                {
-                    if (fromImageView.ContentMode == UIViewContentMode.ScaleAspectFit)
-                    {
-                        //Take a simple snapshot, saving resources, only of the visible frame, 
-                        fromViewFrame    = fromImageView.GetImageFrame();
-                        fromViewSnapshot = fromView.ResizableSnapshotView(fromViewFrame, false, UIEdgeInsets.Zero);
-                    }
-                    else
-                    {
-                        //The only way to do good transitions with *Fit aspect is just to copy the view and animate the frame/image
-                        fromViewFrame    = fromView.Frame;
-                        fromViewSnapshot = fromView.CopyView();
-                    }
+                    fromViewFrame = fromView.Frame;
+                    fromViewSnapshot = fromView.SnapshotView(false);
                 }
                 else
                 {
-                    /*
-                     * IMPORTANT
-                     *
-                     * DAMNIT! this little things made me lost a LOT of time. Me n00b.
-                     * So.. dont use fromView.Frame here or layout will go crazy!
-                     */
-                    fromViewFrame    = fromView.Bounds;
-                    fromViewSnapshot = fromView.CopyView(softCopy: true);
+                    if (fromView is UIControl || fromView is UILabel )
+                    {
+                        //For buttons and labels just copy the view to preserve a good transition
+                        //Using normal snapshot with labels and buttons may cause streched and deformed images
+                        fromViewFrame    = fromView.Frame;
+                        fromViewSnapshot = fromView.CopyView();
+                    }
+                    else if (fromView is UIImageView fromImageView)
+                    {
+                        if (fromImageView.ContentMode == UIViewContentMode.ScaleAspectFit)
+                        {
+                            //Take a simple snapshot, saving resources, only of the visible frame,
+                            fromViewFrame    = fromImageView.GetImageFrame();
+                            fromViewSnapshot = fromView.ResizableSnapshotView(fromViewFrame, false, UIEdgeInsets.Zero);
+                        }
+                        else
+                        {
+                            //The only way to do good transitions with *Fit aspect is just to copy the view and animate the frame/image
+                            fromViewFrame    = fromView.Frame;
+                            fromViewSnapshot = fromView.CopyView();
+                        }
+                    }
+                    else
+                    {
+                        /*
+                         * IMPORTANT
+                         * DAMNIT! this little things made me lost a LOT of time. Me n00b.
+                         * So.. dont use fromView.Frame here or layout will go crazy!
+                         */
+                        fromViewFrame    = fromView.Bounds;
+                        fromViewSnapshot = fromView.CopyView(softCopy: true);
+                    }
                 }
 
                 containerView.AddSubview(fromViewSnapshot);
@@ -139,7 +146,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                  * before the transition starts. Needed only on push, dont try this in pop
                  * or the custom edge gesture will not work!
                  */
-
                 if (_operation == UINavigationControllerOperation.Push)
                 {
                     //without this flickering could occour

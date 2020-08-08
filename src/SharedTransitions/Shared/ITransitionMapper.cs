@@ -28,9 +28,10 @@ namespace Plugin.SharedTransitions
         /// <param name="page">The page.</param>
         /// <param name="transitionName">The name of the shared transition.</param>
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
+        /// <param name="isLightSnapshot">if true, rasterize the snapshot in iOS</param>
         /// <param name="view">The Xamarin Forms view associated to this transition.</param>
         /// <param name="nativeView">The Native View</param>
-        void AddOrUpdate(Page page, string transitionName, string transitionGroup, View view, object nativeView);
+        void AddOrUpdate(Page page, string transitionName, string transitionGroup, bool isLightSnapshot, View view, object nativeView);
 
         /// <summary>
         /// Clear the MapStack from old reference for recycled elements
@@ -57,9 +58,10 @@ namespace Plugin.SharedTransitions
         /// </summary>
         /// <param name="transitionName">The name of the shared transition.</param>
         /// <param name="transitionGroup">The transition group for dynamic transitions.</param>
+        /// <param name="isLightSnapshot">if true, rasterize the snapshot in iOS</param>
         /// <param name="view">The Xamarin Forms view associated to this transition.</param>
         /// <param name="nativeView">The Native View</param>
-        TransitionDetail CreateTransition(string transitionName, string transitionGroup, View view, object nativeView);
+        TransitionDetail CreateTransition(string transitionName, string transitionGroup, bool isLightSnapshot, View view, object nativeView);
     }
 
     /// <summary>
@@ -106,5 +108,10 @@ namespace Plugin.SharedTransitions
         /// Dirty flag, if true this transition will be cleaned at the next mapping check for the page
         /// </summary>
         public bool IsDirty { get; set; }
+
+        /// <summary>
+        /// Light snapshot, if true the snapshot view will be rasterized in iOS
+        /// </summary>
+        public bool IsLightSnapshot { get; set; }
     }
 }
