@@ -5,16 +5,16 @@ using Xamarin.Forms;
 namespace Plugin.SharedTransitions
 {
     /// <summary>
-    /// Shell with support for shared transitions
+    /// Navigation Page with support for shared transitions
     /// </summary>
-    /// <seealso cref="Xamarin.Forms.Shell" />
-    public class SharedTransitionShell : Shell, ISharedTransitionContainer
+    /// <seealso cref="Xamarin.Forms.NavigationPage" />
+    public class SharedTransitionNavigationPage : NavigationPage, ISharedTransitionContainer
     {
         /// <summary>
-        /// Map for all transitions (and support properties) associated with this SharedTransitionShell
+        /// Map for all transitions (and support properties) associated with this SharedTransitionNavigationPage
         /// </summary>
         internal static readonly BindablePropertyKey TransitionMapPropertyKey =
-            BindableProperty.CreateReadOnly("TransitionMap", typeof(ITransitionMapper), typeof(SharedTransitionShell), default(ITransitionMapper));
+            BindableProperty.CreateReadOnly("TransitionMap", typeof(ITransitionMapper), typeof(SharedTransitionNavigationPage), default(ITransitionMapper));
 
         public static readonly BindableProperty TransitionMapProperty = TransitionMapPropertyKey.BindableProperty;
 
@@ -22,29 +22,23 @@ namespace Plugin.SharedTransitions
         /// The shared transition selected group for dynamic transitions
         /// </summary>
         public static readonly BindableProperty TransitionSelectedGroupProperty =
-            BindableProperty.CreateAttached("TransitionSelectedGroup", typeof(string), typeof(SharedTransitionShell), null);
+            BindableProperty.CreateAttached("TransitionSelectedGroup", typeof(string), typeof(SharedTransitionNavigationPage), null);
 
         /// <summary>
         /// The background animation associated with the current page in stack
         /// </summary>
         public static readonly BindableProperty BackgroundAnimationProperty =
-            BindableProperty.CreateAttached("BackgroundAnimation", typeof(BackgroundAnimation), typeof(SharedTransitionShell), BackgroundAnimation.None);
+            BindableProperty.CreateAttached("BackgroundAnimation", typeof(BackgroundAnimation), typeof(SharedTransitionNavigationPage), BackgroundAnimation.Fade);
 
         /// <summary>
         /// The shared transition duration (in ms) associated with the current page in stack
         /// </summary>
         public static readonly BindableProperty TransitionDurationProperty =
-            BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionShell), (long)300);
+            BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionNavigationPage), (long)300);
 
-        public event EventHandler TransitionStarted;
-        public event EventHandler TransitionEnded;
-        public event EventHandler TransitionCancelled;
-
-        internal ITransitionMapper TransitionMap
-        {
-	        get => (ITransitionMapper)GetValue(TransitionMapProperty);
-	        set => SetValue(TransitionMapPropertyKey, value);
-        }
+        public event EventHandler<SharedTransitionEventArgs> TransitionStarted;
+        public event EventHandler<SharedTransitionEventArgs> TransitionEnded;
+        public event EventHandler<SharedTransitionEventArgs> TransitionCancelled;
 
         /// <summary>
         /// Gets the transition map
@@ -52,13 +46,21 @@ namespace Plugin.SharedTransitions
         /// <value>
         /// The transition map
         /// </value>
+        internal ITransitionMapper TransitionMap
+        {
+	        get => (ITransitionMapper)GetValue(TransitionMapProperty);
+	        set => SetValue(TransitionMapPropertyKey, value);
+        }
+
         ITransitionMapper ISharedTransitionContainer.TransitionMap
         {
 	        get => TransitionMap;
 	        set => TransitionMap = value;
         }
 
-        public SharedTransitionShell() => TransitionMap = new TransitionMapper();
+        public SharedTransitionNavigationPage() : base() => TransitionMap = new TransitionMapper();
+
+        public SharedTransitionNavigationPage(Page root) : base(root) => TransitionMap = new TransitionMapper();
 
         /// <summary>
         /// Gets the transition selected group
@@ -108,35 +110,30 @@ namespace Plugin.SharedTransitions
             page.SetValue(TransitionDurationProperty, value);
         }
 
-        public virtual void OnTransitionStarted(){ }
-        public virtual void OnTransitionEnded(){ }
-        public virtual void OnTransitionCancelled(){ }
+        public virtual void OnTransitionStarted(Page pageFrom, Page pageTo, NavOperation navOperation){ }
+        public virtual void OnTransitionEnded(Page pageFrom, Page pageTo, NavOperation navOperation){ }
+        public virtual void OnTransitionCancelled(Page pageFrom, Page pageTo, NavOperation navOperation){ }
 
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendTransitionStarted()
+        public void SendTransitionStarted(SharedTransitionEventArgs eventArgs)
         {
-            TransitionStarted?.Invoke(this, null);
-            OnTransitionStarted();
+            TransitionStarted?.Invoke(this, eventArgs);
+            OnTransitionStarted(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendTransitionEnded()
+        public void SendTransitionEnded(SharedTransitionEventArgs eventArgs)
         {
-            TransitionEnded?.Invoke(this, null);
-            OnTransitionEnded();
+            TransitionEnded?.Invoke(this, eventArgs);
+            OnTransitionEnded(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendTransitionCancelled()
+        public void SendTransitionCancelled(SharedTransitionEventArgs eventArgs)
         {
-            TransitionCancelled?.Invoke(this, null);
-            OnTransitionCancelled();
-        }
-
-        protected override void OnChildRemoved(Element child)
-        {
-            TransitionMap.RemoveFromPage((Page)child);
+            TransitionCancelled?.Invoke(this, eventArgs);
+            OnTransitionCancelled(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
         }
     }
 }

@@ -90,6 +90,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
                 .AddListener(new NavigationTransitionListener(this));
         }
 
+        bool _isPush;
         bool _popToRoot;
         int _transitionDuration;
         readonly NavigationTransition _navigationTransition;
@@ -140,6 +141,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override async Task<bool> OnPushAsync(Page page, bool animated)
         {
+            _isPush = true;
+
             //At the very start of the navigationpage push occour inflating the first view
             //We save it immediately so we can access the Navigation options needed for the first transaction
             PropertiesContainer = Element.Navigation.NavigationStack.Count == 1
@@ -164,6 +167,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         protected override async Task<bool> OnPopViewAsync(Page page, bool animated)
         {
+            _isPush = false;
+
             //We need to take the transition configuration from the destination page
             //At this point the pop is not started so we need to go back in the stack
             PropertiesContainer = ((INavigationPageController)Element).Peek(1);
@@ -174,6 +179,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
         //During PopToRoot we skip everything and make the default animation
         protected override async Task<bool> OnPopToRootAsync(Page page, bool animated)
         {
+            _isPush = false;
+
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
 	            _navigationTransition.HandlePopToRoot();
 
@@ -231,17 +238,37 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
         public void SharedTransitionStarted()
         {
-            ((ISharedTransitionContainer) Element).SendTransitionStarted();
+            ((ISharedTransitionContainer) Element).SendTransitionStarted(TransitionArgs());
         }
 
         public void SharedTransitionEnded()
         {
-            ((ISharedTransitionContainer) Element).SendTransitionEnded();
+            ((ISharedTransitionContainer) Element).SendTransitionEnded(TransitionArgs());
         }
 
         public void SharedTransitionCancelled()
         {
-            ((ISharedTransitionContainer) Element).SendTransitionCancelled();
+            ((ISharedTransitionContainer) Element).SendTransitionCancelled(TransitionArgs());
+        }
+
+        SharedTransitionEventArgs TransitionArgs()
+        {
+            if (_isPush)
+            {
+                return new SharedTransitionEventArgs
+                {
+                    PageFrom     = PropertiesContainer,
+                    PageTo       = LastPageInStack,
+                    NavOperation = NavOperation.Push
+                };
+            }
+
+            return new SharedTransitionEventArgs
+            {
+                PageFrom     = LastPageInStack,
+                PageTo       = PropertiesContainer,
+                NavOperation = NavOperation.Pop
+            };
         }
     }
 }

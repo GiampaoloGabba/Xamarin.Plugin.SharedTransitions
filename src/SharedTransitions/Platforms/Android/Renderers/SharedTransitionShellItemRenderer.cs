@@ -27,6 +27,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		/// Track the page we need to get the custom properties for the shared transitions
 		/// </summary>
 		Page _propertiesContainer;
+		bool _isPush;
 		public Page PropertiesContainer
 		{
 			get => _propertiesContainer;
@@ -111,6 +112,8 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
 		protected override async void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
+			_isPush = e.RequestType == NavigationRequestType.Push;
+
 			if (SupportFragmentManager == null)
 				SupportFragmentManager = ChildFragmentManager;
 
@@ -178,17 +181,37 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
 		public void SharedTransitionStarted()
 		{
-			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionStarted();
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionStarted(TransitionArgs());
 		}
 
 		public void SharedTransitionEnded()
 		{
-			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionEnded();
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionEnded(TransitionArgs());
 		}
 
 		public void SharedTransitionCancelled()
 		{
-			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionCancelled();
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionCancelled(TransitionArgs());
+		}
+
+		SharedTransitionEventArgs TransitionArgs()
+		{
+			if (_isPush)
+			{
+				return new SharedTransitionEventArgs
+				{
+					PageFrom     = PropertiesContainer,
+					PageTo       = LastPageInStack,
+					NavOperation = NavOperation.Push
+				};
+			}
+
+			return new SharedTransitionEventArgs
+			{
+				PageFrom     = LastPageInStack,
+				PageTo       = PropertiesContainer,
+				NavOperation = NavOperation.Pop
+			};
 		}
 	}
 }

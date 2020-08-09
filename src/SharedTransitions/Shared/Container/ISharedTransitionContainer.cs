@@ -1,5 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
+using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions
 {
@@ -19,20 +19,20 @@ namespace Plugin.SharedTransitions
 		/// <summary>
 		/// Fired when the Shared Transition starts
 		/// </summary>
-		event EventHandler TransitionStarted;
+		event EventHandler<SharedTransitionEventArgs> TransitionStarted;
 
 		/// <summary>
 		/// Fired when the Shared Transition ends
 		/// </summary>
-		event EventHandler TransitionEnded;
+		event EventHandler<SharedTransitionEventArgs> TransitionEnded;
 
 		/// <summary>
 		/// Fired when the Shared Transition is cancelled
 		/// </summary>
-		event EventHandler TransitionCancelled;
+		event EventHandler<SharedTransitionEventArgs> TransitionCancelled;
 
-		void SendTransitionStarted();
-		void SendTransitionEnded();
-		void SendTransitionCancelled();
+		void SendTransitionStarted(SharedTransitionEventArgs eventArgs);
+		void SendTransitionEnded(SharedTransitionEventArgs eventArgs);
+		void SendTransitionCancelled(SharedTransitionEventArgs eventArgs);
 	}
 }

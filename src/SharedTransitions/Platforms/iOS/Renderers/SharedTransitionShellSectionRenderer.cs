@@ -64,6 +64,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
 		readonly IShellContext _shellContext;
+		bool _isPush;
 
 		public SharedTransitionShellSectionRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -76,6 +77,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		//During PopToRoot we skip everything and make the default animation
 		protected override void OnPopToRootRequested(NavigationRequestedEventArgs e)
 		{
+			_isPush = false;
 			DisableTransition = true;
 			base.OnPopToRootRequested(e);
 			DisableTransition = false;
@@ -83,6 +85,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		public override UIViewController PopViewController(bool animated)
 		{
+			_isPush = false;
 			//at this point, currentitem is already set to the new page, wich contains our properties
 			if (ShellSection != null)
 				UpdatePropertyContainer();
@@ -92,6 +95,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		public override async void PushViewController(UIViewController viewController, bool animated)
 		{
+			_isPush = true;
 			UpdatePropertyContainer();
 
 			/*
@@ -181,17 +185,37 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
 		public void SharedTransitionStarted()
 		{
-			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionStarted();
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionStarted(TransitionArgs());
 		}
 
 		public void SharedTransitionEnded()
 		{
-			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionEnded();
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionEnded(TransitionArgs());
 		}
 
 		public void SharedTransitionCancelled()
 		{
-			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionCancelled();
+			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionCancelled(TransitionArgs());
+		}
+
+		SharedTransitionEventArgs TransitionArgs()
+		{
+			if (_isPush)
+			{
+				return new SharedTransitionEventArgs
+				{
+					PageFrom     = PropertiesContainer,
+					PageTo       = LastPageInStack,
+					NavOperation = NavOperation.Push
+				};
+			}
+
+			return new SharedTransitionEventArgs
+			{
+				PageFrom     = LastPageInStack,
+				PageTo       = PropertiesContainer,
+				NavOperation = NavOperation.Pop
+			};
 		}
 	}
 }

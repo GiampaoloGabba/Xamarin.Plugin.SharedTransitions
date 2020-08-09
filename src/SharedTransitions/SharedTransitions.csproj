@@ -63,6 +63,33 @@ A shared element transition determines how elements that are present in two page
 
   <ItemGroup>
     <!--<PackageReference Include="MSBuild.Sdk.Extras" Version="1.6.47" PrivateAssets="All" />-->
+    <Compile Include="Shared\Container\BackgroundAnimation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Container\ISharedTransitionContainer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Container\PageExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Container\SharedTransitionEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Container\SharedTransitionNavigationPage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Container\SharedTransitionShell.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Transition\ITransitionMapper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Transition\TransitionEffect.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Transition\TransitionMapper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <PackageReference Include="Xamarin.Forms" Version="4.3.0.991250" />
     <Compile Include="**\Shared\*.cs" />
 

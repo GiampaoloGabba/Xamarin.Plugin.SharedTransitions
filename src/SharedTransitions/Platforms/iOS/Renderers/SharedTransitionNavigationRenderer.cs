@@ -65,7 +65,8 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         public event EventHandler<EdgeGesturePannedArgs> OnEdgeGesturePanned;
         public string SelectedGroup { get; set; }
 
-        private readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
+        readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
+        bool _isPush;
 
         public SharedTransitionNavigationRenderer()
         {
@@ -76,6 +77,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         //During PopToRoot we skip everything and make the default animation
         protected override async Task<bool> OnPopToRoot(Page page, bool animated)
         {
+            _isPush = false;
             DisableTransition = true;
             var result = await base.OnPopToRoot(page, true);
             DisableTransition = false;
@@ -85,7 +87,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         protected override async Task<bool> OnPushAsync(Page page, bool animated)
         {
-	        LastPageInStack = page;
+            LastPageInStack = page;
 	        UpdatePropertyContainer();
 
 	        return await base.OnPushAsync(page, animated);
@@ -93,6 +95,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         public override UIViewController PopViewController(bool animated)
         {
+            _isPush = false;
 	        LastPageInStack = Element.Navigation.NavigationStack.Last();
 	        UpdatePropertyContainer();
 
@@ -110,6 +113,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
              * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
              * This add no more than 5ms to the navigation i think is largely acceptable
              */
+            _isPush = true;
             if (PropertiesContainer != null)
             {
 	            var mapStack = TransitionMap?.GetMap(PropertiesContainer, null, true);
@@ -194,17 +198,37 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
         public void SharedTransitionStarted()
         {
-            ((ISharedTransitionContainer) Element).SendTransitionStarted();
+            ((ISharedTransitionContainer) Element).SendTransitionStarted(TransitionArgs());
         }
 
         public void SharedTransitionEnded()
         {
-            ((ISharedTransitionContainer) Element).SendTransitionEnded();
+            ((ISharedTransitionContainer) Element).SendTransitionEnded(TransitionArgs());
         }
 
         public void SharedTransitionCancelled()
         {
-            ((ISharedTransitionContainer) Element).SendTransitionCancelled();
+            ((ISharedTransitionContainer) Element).SendTransitionCancelled(TransitionArgs());
+        }
+
+        SharedTransitionEventArgs TransitionArgs()
+        {
+            if (_isPush)
+            {
+                return new SharedTransitionEventArgs
+                {
+                    PageFrom     = PropertiesContainer,
+                    PageTo       = LastPageInStack,
+                    NavOperation = NavOperation.Push
+                };
+            }
+
+            return new SharedTransitionEventArgs
+            {
+                PageFrom     = LastPageInStack,
+                PageTo       = PropertiesContainer,
+                NavOperation = NavOperation.Pop
+            };
         }
     }
 }

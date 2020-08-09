@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms;
-using Debug = System.Diagnostics.Debug;
 
 namespace Plugin.SharedTransitions
 {
