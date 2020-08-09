@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Plugin.SharedTransitions;
 using Xamarin.Forms;
 
 namespace TransitionApp.Views.Main
@@ -17,19 +18,19 @@ namespace TransitionApp.Views.Main
 				Application.Current.MainPage = new HomePage();
 		}
 
-		private void SharedTransitionNavigationPage_OnTransitionStarted(object sender, EventArgs e)
+		private void SharedTransitionNavigationPage_OnTransitionStarted(object sender, SharedTransitionEventArgs e)
 		{
-			Debug.WriteLine("From event: Transition started");
+			Debug.WriteLine($"From event: Transition started - {e.PageFrom}|{e.PageTo}|{e.NavOperation}");
 		}
 
-		private void SharedTransitionNavigationPage_OnTransitionEnded(object sender, EventArgs e)
+		private void SharedTransitionNavigationPage_OnTransitionEnded(object sender, SharedTransitionEventArgs e)
 		{
-			Debug.WriteLine("From event: Transition ended");
+			Debug.WriteLine($"From event: Transition ended - {e.PageFrom}|{e.PageTo}|{e.NavOperation}");
 		}
 
-		private void SharedTransitionNavigationPage_OnTransitionCancelled(object sender, EventArgs e)
+		private void SharedTransitionNavigationPage_OnTransitionCancelled(object sender, SharedTransitionEventArgs e)
 		{
-			Debug.WriteLine("From event: Transition cancelled");
+			Debug.WriteLine($"From event: Transition cancelled - {e.PageFrom}|{e.PageTo}|{e.NavOperation}");
 		}
 	}
 }
