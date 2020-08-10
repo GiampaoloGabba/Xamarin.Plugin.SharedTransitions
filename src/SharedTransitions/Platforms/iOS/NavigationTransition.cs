@@ -213,23 +213,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             AnimateBackground();
         }
 
-        public override async void AnimationEnded(bool transitionCompleted)
+        public override void AnimationEnded(bool transitionCompleted)
         {
-            //This is needed, otherwise the animation is choppy and will ends late!
-            await Task.Run(() =>
+            if (transitionCompleted)
             {
-                if (transitionCompleted)
-                {
-                    Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
-                    _navigationPage.SharedTransitionEnded();
-                }
-                else
-                {
-                    Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
-                    _navigationPage.SharedTransitionCancelled();
-                }
-            }).ConfigureAwait(false);
+                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
+                _navigationPage.SharedTransitionEnded();
             }
+            else
+            {
+                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
+                _navigationPage.SharedTransitionCancelled();
+            }
+        }
 
         /// <summary>
         /// Handle the main EdgePanGesture on the NavigationPage used to swipe back
