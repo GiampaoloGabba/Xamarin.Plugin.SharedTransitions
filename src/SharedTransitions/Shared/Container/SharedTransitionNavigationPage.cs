@@ -120,6 +120,7 @@ namespace Plugin.SharedTransitions
         {
             TransitionStarted?.Invoke(this, eventArgs);
             OnTransitionStarted(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
+            MessagingCenter.Send(this, "SendTransitionStarted", eventArgs);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -127,6 +128,7 @@ namespace Plugin.SharedTransitions
         {
             TransitionEnded?.Invoke(this, eventArgs);
             OnTransitionEnded(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
+            MessagingCenter.Send(this, "SendTransitionEnded", eventArgs);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -134,6 +136,46 @@ namespace Plugin.SharedTransitions
         {
             TransitionCancelled?.Invoke(this, eventArgs);
             OnTransitionCancelled(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
+            MessagingCenter.Send(this, "SendTransitionCancelled", eventArgs);
+        }
+
+        protected override void OnChildAdded(Element child)
+        {
+            if (child is ITransitionAware aware)
+            {
+                var page = (Page) child;
+                MessagingCenter.Subscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs> (child, "SendTransitionStarted", (sender, args) =>
+                {
+                    if (page == args.PageFrom || page == args.PageTo)
+                        aware.OnTransitionStarted(args.PageFrom, args.PageTo, args.NavOperation);
+                });
+
+                MessagingCenter.Subscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs> (child, "SendTransitionEnded", (sender, args) =>
+                {
+                    if (page == args.PageFrom || page == args.PageTo)
+                        aware.OnTransitionEnded(args.PageFrom, args.PageTo, args.NavOperation);
+                });
+
+                MessagingCenter.Subscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs> (child, "SendTransitionCancelled", (sender, args) =>
+                {
+                    if (page == args.PageFrom || page == args.PageTo)
+                        aware.OnTransitionCancelled(args.PageFrom, args.PageTo, args.NavOperation);
+                });
+            }
+
+            base.OnChildAdded(child);
+        }
+
+        protected override void OnChildRemoved(Element child)
+        {
+            TransitionMap.RemoveFromPage((Page)child);
+
+            if (child is ITransitionAware)
+            {
+                MessagingCenter.Unsubscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs>(child, "SendTransitionStarted");
+                MessagingCenter.Unsubscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs>(child, "SendTransitionEnded");
+                MessagingCenter.Unsubscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs>(child, "SendTransitionCancelled");
+            }
         }
     }
 }

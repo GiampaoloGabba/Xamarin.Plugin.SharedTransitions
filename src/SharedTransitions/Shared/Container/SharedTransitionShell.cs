@@ -118,6 +118,7 @@ namespace Plugin.SharedTransitions
         {
             TransitionStarted?.Invoke(this, eventArgs);
             OnTransitionStarted(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
+            MessagingCenter.Send(this, "SendTransitionStarted", eventArgs);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -125,6 +126,7 @@ namespace Plugin.SharedTransitions
         {
             TransitionEnded?.Invoke(this, eventArgs);
             OnTransitionEnded(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
+            MessagingCenter.Send(this, "SendTransitionEnded", eventArgs);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -132,11 +134,72 @@ namespace Plugin.SharedTransitions
         {
             TransitionCancelled?.Invoke(this, eventArgs);
             OnTransitionCancelled(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
+            MessagingCenter.Send(this, "SendTransitionCancelled", eventArgs);
         }
 
-        protected override void OnChildRemoved(Element child)
+        protected override void OnPropertyChanged(string propertyName = null)
         {
-            TransitionMap.RemoveFromPage((Page)child);
+            if (propertyName == nameof(CurrentItem))
+            {
+                //When the first element in a shellsection is a contentTemplate,
+                //the event "ChildAdded" will not be called on that section!
+                //Se we need to wireup the DescendantAdded event wich will be
+                //notified when the first page is attached
+
+                foreach (var shellSection in CurrentItem.Items)
+                {
+                    if (shellSection.CurrentItem.ContentTemplate != null)
+                    {
+                        shellSection.DescendantAdded   += ShellSectionOnChildAdded;
+                        shellSection.DescendantRemoved += ShellSectionOnChildRemoved;
+                    }
+                    else
+                    {
+                        shellSection.ChildAdded   += ShellSectionOnChildAdded;
+                        shellSection.ChildRemoved += ShellSectionOnChildRemoved;
+                    }
+                }
+            }
+
+            base.OnPropertyChanged(propertyName);
+        }
+
+        private void ShellSectionOnChildAdded(object sender, ElementEventArgs e)
+        {
+            if (e.Element is ITransitionAware aware)
+            {
+                var page = (Page) e.Element;
+                MessagingCenter.Subscribe<SharedTransitionShell, SharedTransitionEventArgs> (e.Element, "SendTransitionStarted", (sender, args) =>
+                {
+                    if (page == args.PageFrom || page == args.PageTo)
+                        aware.OnTransitionStarted(args.PageFrom, args.PageTo, args.NavOperation);
+                });
+
+                MessagingCenter.Subscribe<SharedTransitionShell, SharedTransitionEventArgs> (e.Element, "SendTransitionEnded", (sender, args) =>
+                {
+                    if (page == args.PageFrom || page == args.PageTo)
+                        aware.OnTransitionEnded(args.PageFrom, args.PageTo, args.NavOperation);
+                });
+
+                MessagingCenter.Subscribe<SharedTransitionShell, SharedTransitionEventArgs> (e.Element, "SendTransitionCancelled", (sender, args) =>
+                {
+                    if (page == args.PageFrom || page == args.PageTo)
+                        aware.OnTransitionCancelled(args.PageFrom, args.PageTo, args.NavOperation);
+                });
+            }
+        }
+
+        private void ShellSectionOnChildRemoved(object sender, ElementEventArgs e)
+        {
+            if (e.Element is Page page)
+                TransitionMap.RemoveFromPage(page);
+
+            if (e.Element is ITransitionAware)
+            {
+                MessagingCenter.Unsubscribe<SharedTransitionShell, SharedTransitionEventArgs>(e.Element, "SendTransitionStarted");
+                MessagingCenter.Unsubscribe<SharedTransitionShell, SharedTransitionEventArgs>(e.Element, "SendTransitionEnded");
+                MessagingCenter.Unsubscribe<SharedTransitionShell, SharedTransitionEventArgs>(e.Element, "SendTransitionCancelled");
+            }
         }
     }
 }

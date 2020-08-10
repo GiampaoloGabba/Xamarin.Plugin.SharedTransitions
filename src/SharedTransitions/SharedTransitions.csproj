@@ -69,6 +69,7 @@ A shared element transition determines how elements that are present in two page
     <Compile Include="Shared\Container\ISharedTransitionContainer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Shared\Container\ITransitionAware.cs" />
     <Compile Include="Shared\Container\PageExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
