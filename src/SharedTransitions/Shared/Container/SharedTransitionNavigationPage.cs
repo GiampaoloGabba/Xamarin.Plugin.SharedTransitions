@@ -110,33 +110,33 @@ namespace Plugin.SharedTransitions
             page.SetValue(TransitionDurationProperty, value);
         }
 
-        public virtual void OnTransitionStarted(Page pageFrom, Page pageTo, NavOperation navOperation){ }
-        public virtual void OnTransitionEnded(Page pageFrom, Page pageTo, NavOperation navOperation){ }
-        public virtual void OnTransitionCancelled(Page pageFrom, Page pageTo, NavOperation navOperation){ }
+        public virtual void OnTransitionStarted(SharedTransitionEventArgs args){ }
+        public virtual void OnTransitionEnded(SharedTransitionEventArgs args){ }
+        public virtual void OnTransitionCancelled(SharedTransitionEventArgs args){ }
 
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendTransitionStarted(SharedTransitionEventArgs eventArgs)
+        public void SendTransitionStarted(SharedTransitionEventArgs args)
         {
-            TransitionStarted?.Invoke(this, eventArgs);
-            OnTransitionStarted(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
-            MessagingCenter.Send(this, "SendTransitionStarted", eventArgs);
+            TransitionStarted?.Invoke(this, args);
+            OnTransitionStarted(args);
+            MessagingCenter.Send(this, "SendTransitionStarted", args);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendTransitionEnded(SharedTransitionEventArgs eventArgs)
+        public void SendTransitionEnded(SharedTransitionEventArgs args)
         {
-            TransitionEnded?.Invoke(this, eventArgs);
-            OnTransitionEnded(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
-            MessagingCenter.Send(this, "SendTransitionEnded", eventArgs);
+            TransitionEnded?.Invoke(this, args);
+            OnTransitionEnded(args);
+            MessagingCenter.Send(this, "SendTransitionEnded", args);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendTransitionCancelled(SharedTransitionEventArgs eventArgs)
+        public void SendTransitionCancelled(SharedTransitionEventArgs args)
         {
-            TransitionCancelled?.Invoke(this, eventArgs);
-            OnTransitionCancelled(eventArgs.PageFrom, eventArgs.PageTo, eventArgs.NavOperation);
-            MessagingCenter.Send(this, "SendTransitionCancelled", eventArgs);
+            TransitionCancelled?.Invoke(this, args);
+            OnTransitionCancelled(args);
+            MessagingCenter.Send(this, "SendTransitionCancelled", args);
         }
 
         protected override void OnChildAdded(Element child)
@@ -147,19 +147,19 @@ namespace Plugin.SharedTransitions
                 MessagingCenter.Subscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs> (child, "SendTransitionStarted", (sender, args) =>
                 {
                     if (page == args.PageFrom || page == args.PageTo)
-                        aware.OnTransitionStarted(args.PageFrom, args.PageTo, args.NavOperation);
+                        aware.OnTransitionStarted(args);
                 });
 
                 MessagingCenter.Subscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs> (child, "SendTransitionEnded", (sender, args) =>
                 {
                     if (page == args.PageFrom || page == args.PageTo)
-                        aware.OnTransitionEnded(args.PageFrom, args.PageTo, args.NavOperation);
+                        aware.OnTransitionEnded(args);
                 });
 
                 MessagingCenter.Subscribe<SharedTransitionNavigationPage, SharedTransitionEventArgs> (child, "SendTransitionCancelled", (sender, args) =>
                 {
                     if (page == args.PageFrom || page == args.PageTo)
-                        aware.OnTransitionCancelled(args.PageFrom, args.PageTo, args.NavOperation);
+                        aware.OnTransitionCancelled(args);
                 });
             }
 
