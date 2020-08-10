@@ -36,8 +36,8 @@
 
     <!-- Your Pages -->
     <TabBar>
-        <Tab Title="Images">
-            <ShellContent ContentTemplate="{DataTemplate image:ImageFromPage}" />
+        <Tab Title="Images" Route="images">
+            <ShellContent ContentTemplate="{DataTemplate image:ImageFromPage}" Route="imageFrom" />
         </Tab>
         <Tab Title="Layouts">
             <ShellContent ContentTemplate="{DataTemplate layout:LayoutFromPage}" />

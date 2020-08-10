@@ -13,7 +13,7 @@ namespace TransitionShellApp.Views.Image
 
         private async void Button_OnClicked(object sender, EventArgs e)
         {
-	        await Navigation.PushAsync(new ImageToPage());
+            await Shell.Current.GoToAsync("imageTo");
         }
 
         public void OnTransitionStarted(SharedTransitionEventArgs args)

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Plugin.SharedTransitions;
+using TransitionShellApp.Views.Image;
 using Xamarin.Forms;
 
 namespace TransitionShellApp
@@ -9,6 +9,7 @@ namespace TransitionShellApp
 	{
 		public AppShell()
 		{
+			Routing.RegisterRoute("imageTo", typeof(ImageToPage));
 			InitializeComponent();
 		}
 

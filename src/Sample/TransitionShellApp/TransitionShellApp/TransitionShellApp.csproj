@@ -23,5 +23,13 @@
     <Compile Update="Views\CollectionviewToPage2.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
+    <Compile Update="Views\ImageGoTo\ImageGoToFromPage.xaml.cs">
+      <DependentUpon>ImageFromPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ImageGoTo\ImageGoToToPage.xaml.cs">
+      <DependentUpon>ImageToPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>
