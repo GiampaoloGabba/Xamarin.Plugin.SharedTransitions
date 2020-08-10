@@ -6,19 +6,20 @@ namespace TransitionApp.Views.Controls
 {
     public class CustomTransitionNavPage : SharedTransitionNavigationPage
     {
-        public override void OnTransitionStarted(Page pageFrom, Page pageTo, NavOperation navOperation)
+        public override void OnTransitionStarted(SharedTransitionEventArgs args)
         {
-            Debug.WriteLine($"From override: Transition started - {pageFrom}|{pageTo}|{navOperation}");
+            Debug.WriteLine($"From override: Transition started - {args.PageFrom}|{args.PageTo}|{args.NavOperation}");
         }
 
-        public override void OnTransitionEnded(Page pageFrom, Page pageTo, NavOperation navOperation)
+        public override void OnTransitionEnded(SharedTransitionEventArgs args)
         {
-            Debug.WriteLine($"From override: Transition ended - {pageFrom}|{pageTo}|{navOperation}");
+            Debug.WriteLine($"From override: Transition ended - {args.PageFrom}|{args.PageTo}|{args.NavOperation}");
         }
 
-        public override void OnTransitionCancelled(Page pageFrom, Page pageTo, NavOperation navOperation)
+        public override void OnTransitionCancelled(SharedTransitionEventArgs args)
         {
-            Debug.WriteLine($"From override: Transition cancelled - {pageFrom}|{pageTo}|{navOperation}");
+            Debug.WriteLine($"From override: Transition cancelled - {args.PageFrom}|{args.PageTo}|{args.NavOperation}");
         }
+
     }
 }
