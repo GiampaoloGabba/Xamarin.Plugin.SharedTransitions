@@ -25,12 +25,12 @@ Android X *(Xamarin.Forms 4.5+)* |API 29|
 
 ## Documentation (wiki)
 
-* [Navigation configuration](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/Navigation-configuration)
-* [Basic shared transitions with fixed elements](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/Basic-shared-transitions-with-fixed-elements)
-* [Advanced shared transitions between collection of views and their details page](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/Advanced-shared-transitions-between-collection-of-views-and-their-details-page)
-* [Transition and Navigation properties](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/Transition-and-Navigation-properties)
-* [Transition events and ITransitionAware](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/Transition-events-and-ITransitionAware)
-* [Important notes & limitations](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/Important-notes-&-limitations)
+* [Navigation configuration](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/2.-Navigation-configuration)
+* [Basic shared transitions with fixed elements](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/3.-Basic-shared-transitions-with-fixed-elements)
+* [Advanced shared transitions between collection of views and their details page](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/4.-Advanced-shared-transitions-between-collection-of-views-and-their-details-page)
+* [Transition and Navigation properties](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/5.-Transition-and-Navigation-properties)
+* [Transition events and ITransitionAware](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/6.-Transition-events-and-ITransitionAware)
+* [Important notes & limitations](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/7.-Important-notes-&-limitations)
 * [Release notes](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/blob/master/CHANGELOG.md)
 
 ## New Sample apps!
