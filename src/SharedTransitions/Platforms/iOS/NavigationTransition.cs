@@ -61,6 +61,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             _fromViewController = _transitionContext.GetViewControllerForKey(UITransitionContext.FromViewControllerKey);
             _toViewController   = _transitionContext.GetViewControllerForKey(UITransitionContext.ToViewControllerKey);
             _transitionDuration = TransitionDuration(transitionContext);
+            var onEndedCalled = false;
 
             var containerView   = _transitionContext.ContainerView;
 
@@ -187,6 +188,23 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                 {
                     toView.Hidden   = false;
 
+                    //This is the only realiable place where to call SharedTransitionEnded event
+                    //when the backgroundAnimation is set to NONE
+                    if (!onEndedCalled)
+                    {
+                        onEndedCalled = true;
+                        if (_transitionContext.TransitionWasCancelled)
+                        {
+                            Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
+                            _navigationPage.SharedTransitionCancelled();
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
+                            _navigationPage.SharedTransitionEnded();
+                        }
+                    }
+
                     //Fix for boxview inside shell
                     //tldr: it get immediatly disposed after the animation!
                     try
@@ -206,25 +224,10 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             if (_masksToAnimate.Any())
                 _navigationPage.OnEdgeGesturePanned += NavigationPageOnEdgeGesturePanned;
 
-
             Debug.WriteLine($"{DateTime.Now} - SHARED: Transition started");
             _navigationPage.SharedTransitionStarted();
 
             AnimateBackground();
-        }
-
-        public override void AnimationEnded(bool transitionCompleted)
-        {
-            if (transitionCompleted)
-            {
-                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
-                _navigationPage.SharedTransitionEnded();
-            }
-            else
-            {
-                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
-                _navigationPage.SharedTransitionCancelled();
-            }
         }
 
         /// <summary>
@@ -301,16 +304,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
             switch (backgroundAnimation)
             {
+                //This is needed so the AnimationEnded override will be called
                 case BackgroundAnimation.None:
-
-                    //Needed to avoid occasional flickering!
-                    var delay = _operation == UINavigationControllerOperation.Push
-                        ? _transitionDuration
-                        : 0;
-
-                    UIView.Animate(0, delay, UIViewAnimationOptions.TransitionNone, () =>
-                    {
-                    }, FixCompletionForSwipeAndPopToRoot);
+                    FixCompletionForSwipeAndPopToRoot();
                     break;
 
                 case BackgroundAnimation.Fade:
