@@ -9,10 +9,10 @@
     <PackageId>Xamarin.Plugin.SharedTransitions</PackageId>
     
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>2.2</AssemblyVersion>
-    <AssemblyFileVersion>2.2</AssemblyFileVersion>
-    <Version>2.2</Version>
-    <PackageVersion>2.2</PackageVersion>
+    <AssemblyVersion>2.3</AssemblyVersion>
+    <AssemblyFileVersion>2.3</AssemblyFileVersion>
+    <Version>2.3</Version>
+    <PackageVersion>2.3</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -25,7 +25,7 @@
 
     <PackageProjectUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions</RepositoryUrl>
-    <PackageReleaseNotes>AndroidX support, bugfixes and general improvements</PackageReleaseNotes>
+    <PackageReleaseNotes>Transitions events, raster snapshot mode for iOS, bugfixes and general improvements</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/master/images/icon.png</PackageIconUrl>
     <PackageTags>shared element transitions, shared transition, animation, xamarin transition, plugin transitions, xamarin animation, xamarin, ios, android, xamarin.forms, plugin, SharedTransitions</PackageTags>
     
@@ -62,37 +62,8 @@ A shared element transition determines how elements that are present in two page
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="MSBuild.Sdk.Extras" Version="1.6.47" PrivateAssets="All" />-->
-    <Compile Include="Shared\Container\BackgroundAnimation.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Container\ISharedTransitionContainer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Container\ITransitionAware.cs" />
-    <Compile Include="Shared\Container\PageExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Container\SharedTransitionEventArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Container\SharedTransitionNavigationPage.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Container\SharedTransitionShell.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Transition\ITransitionMapper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Transition\TransitionEffect.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Shared\Transition\TransitionMapper.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <PackageReference Include="Xamarin.Forms" Version="4.3.0.991250" />
-    <Compile Include="**\Shared\*.cs" />
+    <Compile Include="**\Shared\**\*.cs" />
 
   </ItemGroup>
 
@@ -114,11 +85,6 @@ A shared element transition determines how elements that are present in two page
     <Compile Include="Platforms\iOS\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Shared\ISharedTransitionContainer.cs" />
-  </ItemGroup>
-
-   <!--<Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />-->
    <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 
 </Project>
