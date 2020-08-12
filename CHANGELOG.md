@@ -1,5 +1,10 @@
+## 2.3
+* Transition events and ITransitionAware  (issue [#39](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/39))
+* LightSnapshot mode for iOS (issue [#40](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/40))
+* Minor fixes and improvements (expecially for iOS)
+
 ## 2.2
-* **AndroidX support**  (issues [#23](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/23)
+* **AndroidX support**  (issue [#23](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/23))
 * Fix IOS "Failed to lookup the required marshalling information" (issue [#31](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/31))
 * Fix Tabbed page inside MasterDetail (issue [#30](https://github.com/Evolutionlab/Xamarin.Plugin.SharedTransitions/issues/30))
 * Fontsize transition for label in iOS
