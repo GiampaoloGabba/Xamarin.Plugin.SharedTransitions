@@ -1,4 +1,6 @@
-﻿using Plugin.SharedTransitions.Platforms.iOS.Renderers;
+﻿using System;
+using System.Diagnostics;
+using Plugin.SharedTransitions.Platforms.iOS.Renderers;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
@@ -9,13 +11,23 @@ namespace Plugin.SharedTransitions.Platforms.iOS.Renderers
 	{
 		protected override void Dispose(bool disposing)
 		{
-			if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
+			try
 			{
-				shellPage.TransitionMap.RemoveFromPage((Page)Element);
+				if (Element != null)
+				{
+					if (Application.Current.MainPage is ISharedTransitionContainer shellPage)
+					{
+						shellPage.TransitionMap.RemoveFromPage((Page)Element);
+					}
+					if (Element.Parent is ISharedTransitionContainer navPage)
+					{
+						navPage.TransitionMap.RemoveFromPage((Page)Element);
+					}
+				}
 			}
-			if (Element.Parent is ISharedTransitionContainer navPage)
+			catch (Exception e)
 			{
-				navPage.TransitionMap.RemoveFromPage((Page)Element);
+				Debug.WriteLine(e);
 			}
 
 			base.Dispose(disposing);
