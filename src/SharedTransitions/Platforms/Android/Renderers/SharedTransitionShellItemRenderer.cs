@@ -1,18 +1,18 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.OS;
-using Android.Transitions;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 #if __ANDROID_29__
 using AndroidX.Fragment.App;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+using SupportTransitions = AndroidX.Transitions;
 #else
 using Android.Support.V4.App;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
+using SupportTransitions = Android.Support.Transitions;
 #endif
 namespace Plugin.SharedTransitions.Platforms.Android
 {
@@ -61,12 +61,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		/// <summary>
 		/// Apply the custom transition in context
 		/// </summary>
-		public global::Android.Transitions.Transition InflateTransitionInContext()
+		public SupportTransitions.Transition InflateTransitionInContext()
 		{
-			return TransitionInflater.From(Context)
-				.InflateTransition(Resource.Transition.navigation_transition)
-				.SetDuration(_transitionDuration)
-				.AddListener(new NavigationTransitionListener(this));
+			return SupportTransitions.TransitionInflater.From(Context)
+			                         .InflateTransition(Resource.Transition.navigation_transition)
+			                         .SetDuration(_transitionDuration)
+			                         .AddListener(new NavigationTransitionListener(this));
 		}
 
 		bool _popToRoot;

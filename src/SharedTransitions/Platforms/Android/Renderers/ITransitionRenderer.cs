@@ -1,9 +1,10 @@
 ﻿#if __ANDROID_29__
 using AndroidX.Fragment.App;
+using SupportTransitions = AndroidX.Transitions;
 #else
 using Android.Support.V4.App;
+using SupportTransitions = Android.Support.Transitions;
 #endif
-using System;
 using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions.Platforms.Android
@@ -17,7 +18,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		Page PropertiesContainer { get; set; }
 		Page LastPageInStack { get; set; }
 		ITransitionMapper TransitionMap { get; set; }
-		global::Android.Transitions.Transition InflateTransitionInContext();
+		SupportTransitions.Transition InflateTransitionInContext();
 		void SharedTransitionStarted();
 		void SharedTransitionEnded();
 		void SharedTransitionCancelled();

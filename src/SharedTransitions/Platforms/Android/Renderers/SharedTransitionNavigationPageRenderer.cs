@@ -1,9 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.OS;
-using Android.Transitions;
 using Plugin.SharedTransitions;
 using Plugin.SharedTransitions.Platforms.Android;
 using Xamarin.Forms;
@@ -18,10 +16,12 @@ using Plugin.SharedTransitions.Platforms.Android.Extensions;
 using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
+using SupportTransitions = AndroidX.Transitions;
 #else
 using Android.Support.V7.Widget;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using SupportTransitions = Android.Support.Transitions;
 #endif
 
 
@@ -82,12 +82,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
         /// <summary>
         /// Apply the custom transition in context
         /// </summary>
-        public global::Android.Transitions.Transition InflateTransitionInContext()
+        public SupportTransitions.Transition InflateTransitionInContext()
         {
-	        return TransitionInflater.From(Context)
-		        .InflateTransition(Resource.Transition.navigation_transition)
-		        .SetDuration(_transitionDuration)
-                .AddListener(new NavigationTransitionListener(this));
+            return SupportTransitions.TransitionInflater.From(Context)
+                                     .InflateTransition(Resource.Transition.navigation_transition)
+                                     .SetDuration(_transitionDuration)
+                                     .AddListener(new NavigationTransitionListener(this));
         }
 
         bool _isPush;
