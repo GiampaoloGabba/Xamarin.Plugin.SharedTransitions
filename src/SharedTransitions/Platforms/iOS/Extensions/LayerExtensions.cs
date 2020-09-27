@@ -1,4 +1,5 @@
-﻿using CoreGraphics;
+﻿using System;
+using CoreGraphics;
 using CoreAnimation;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
@@ -64,6 +65,21 @@ namespace Plugin.SharedTransitions.Platforms.iOS
         internal static bool HasBackground(this CALayer layer)
         {
             return layer.BackgroundColor != null && layer.BackgroundColor.Alpha > 0;
+        }
+
+        // Fix for from starting from 4.8
+        internal static nfloat GetRadiusFromSubLayers(this CALayer layer)
+        {
+            if (layer.CornerRadius == 0 && layer.Sublayers!=null)
+            {
+                foreach (CALayer sublayer in layer.Sublayers)
+                {
+                    if (sublayer.CornerRadius != 0)
+                        return sublayer.CornerRadius;
+                }
+            }
+
+            return layer.CornerRadius;
         }
     }
 }

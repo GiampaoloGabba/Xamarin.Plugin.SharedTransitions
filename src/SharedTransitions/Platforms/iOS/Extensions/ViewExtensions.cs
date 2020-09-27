@@ -179,6 +179,11 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     else if (sublayer.HasBackground())
                     {
                         fromViewSnapshot.Layer.BackgroundColor = sublayer.BackgroundColor;
+                        //fix for frame starting from 4.8
+                        fromViewSnapshot.Layer.CornerRadius    = sublayer.CornerRadius;
+                        fromViewSnapshot.Layer.MasksToBounds   = sublayer.MasksToBounds;
+                        fromViewSnapshot.Layer.BorderWidth     = sublayer.BorderWidth ;
+                        fromViewSnapshot.Layer.BorderColor     = sublayer.BorderColor;
                     }
 
                     if (sublayer.Mask != null && sublayer.Mask is CAShapeLayer shapedMask)

@@ -183,7 +183,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     //set the main properties to animate
                     fromViewSnapshot.Frame = toFrame;
                     fromViewSnapshot.Alpha = 1;
-                    fromViewSnapshot.Layer.CornerRadius = toView.Layer.CornerRadius;
+                    fromViewSnapshot.Layer.CornerRadius = toView.Layer.GetRadiusFromSubLayers();
                 }, () =>
                 {
                     toView.Hidden   = false;
