@@ -1,9 +1,7 @@
 ﻿using System.Linq;
 using Android.App;
-using Android.OS;
-using Android.Views;
 using Plugin.SharedTransitions.Platforms.Android.Extensions;
-
+using View = Android.Views.View;
 #if __ANDROID_29__
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
@@ -97,34 +95,12 @@ namespace Plugin.SharedTransitions.Platforms.Android
 
             //This is needed to retain the transition duration for backwards transitions
             //Miss this and they will ignore our custom duration!
-            
+
             if (fragmentToHide != null)
 				fragmentToHide.SharedElementEnterTransition = _renderer.InflateTransitionInContext();
 
             AnimateBackground(transaction, isPush);
         }
-
-		public void HandlePopToRoot()
-		{
-			if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-			{
-				var fragments   = _renderer.SupportFragmentManager.Fragments;
-				var transaction = _renderer.SupportFragmentManager.BeginTransaction();
-
-				/*
-				 * IMPORTANT!
-				 *
-				 * we need Detach->Attach to recreate the first fragment ui
-				 * Our shared transactions use SetReorderingAllowed that cause mess when popping directly to root 
-				 * The only way to be sure to display correctly the rootpage is to recreate his ui.
-				 *
-				 * NOTE: we don't use "remove" here so we can maintain the state of the root view
-				 */
-				transaction.Detach(fragments.First());
-				transaction.Attach(fragments.First());
-				transaction.CommitAllowingStateLoss();
-			}
-		}
 
         /// <summary>
         /// Animate the background based on user choices

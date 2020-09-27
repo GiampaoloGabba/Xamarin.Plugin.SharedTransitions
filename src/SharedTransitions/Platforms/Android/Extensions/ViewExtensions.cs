@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using View = Android.Views.View;
-using Android.App;
-using Android.Views;
 #if __ANDROID_29__
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using Fragment = AndroidX.Fragment.App.Fragment;
@@ -33,7 +31,7 @@ namespace Plugin.SharedTransitions.Platforms.Android.Extensions
 					var childManager = fragment.ChildFragmentManager.Fragments[0].ChildFragmentManager;
 
 					return childManager?.Fragments?.Count > 0 
-						? view.ParentFragment(childManager) 
+						? view.ParentFragment(childManager)
 						: fragment.ChildFragmentManager.Fragments.Last();
 				}
             }

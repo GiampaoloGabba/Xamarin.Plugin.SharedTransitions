@@ -1,7 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Android.OS;
+using Android.Support.V4.App;
 using Plugin.SharedTransitions;
 using Plugin.SharedTransitions.Platforms.Android;
 using Xamarin.Forms;
@@ -99,8 +102,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
         {
             SupportFragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager;
 
-            //We need the last FragmentManager in Hyerarchi (for tabbed/masterpage)
-
+            //We need the last FragmentManager in Hyerarchy (for tabbed/masterpage)
             _navigationTransition = new NavigationTransition(this);
         }
 
@@ -173,6 +175,17 @@ namespace Plugin.SharedTransitions.Platforms.Android
             //At this point the pop is not started so we need to go back in the stack
             PropertiesContainer = ((INavigationPageController)Element).Peek(1);
 
+            /*
+             * Without animation, we need Detach->Attach to recreate the fragment ui
+             * Because wh are using SetReorderingAllowed  that cause mess when popping without animation or PopToRoot
+             * NOTE: we don't use "remove" here so we can maintain the state of the root view
+             */
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop && !animated &&
+                TransitionMap.TransitionStack.Any(x => x.Page == PropertiesContainer))
+            {
+                RecreateFragment(PropertiesContainer);
+            }
+
             return await base.OnPopViewAsync(page, animated);
         }
 
@@ -182,7 +195,7 @@ namespace Plugin.SharedTransitions.Platforms.Android
             _isPush = false;
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-	            _navigationTransition.HandlePopToRoot();
+                RecreateFragment(((INavigationPageController) Element).Pages.FirstOrDefault());
 
             _popToRoot = true;
             var result = await base.OnPopToRootAsync(page, animated);
@@ -249,6 +262,28 @@ namespace Plugin.SharedTransitions.Platforms.Android
         public void SharedTransitionCancelled()
         {
             ((ISharedTransitionContainer) Element).SendTransitionCancelled(TransitionArgs());
+        }
+
+        void RecreateFragment(Page page)
+        {
+            if (page == null) return;
+            //We need a bit of reflection to find the fragment associated to the page we need to display
+            try
+            {
+                var getPageFragment = typeof(NavigationPageRenderer).GetTypeInfo().GetDeclaredMethod("GetPageFragment");
+                if (getPageFragment != null)
+                {
+                    var fragmentToDisplay = (Fragment)getPageFragment.Invoke(this, new object[] { page });
+                    var transaction       = SupportFragmentManager.BeginTransaction();
+                    transaction.Detach(fragmentToDisplay);
+                    transaction.Attach(fragmentToDisplay);
+                    transaction.CommitAllowingStateLoss();
+                }
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
         }
 
         SharedTransitionEventArgs TransitionArgs()

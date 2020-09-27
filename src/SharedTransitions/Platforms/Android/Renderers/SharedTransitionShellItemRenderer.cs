@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Android.OS;
+using Plugin.SharedTransitions.Platforms.Android.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
+using View = Android.Views.View;
 #if __ANDROID_29__
 using AndroidX.Fragment.App;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
@@ -114,17 +116,17 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		{
 			_isPush = e.RequestType == NavigationRequestType.Push;
 
-			if (SupportFragmentManager == null)
-				SupportFragmentManager = ChildFragmentManager;
+			SupportFragmentManager ??= ChildFragmentManager;
 
 			PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem).Page;
 
 			if (e.RequestType == NavigationRequestType.PopToRoot)
 			{
-				if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-					_navigationTransition.HandlePopToRoot();
-
 				_popToRoot = true;
+			}
+			else if (e.RequestType == NavigationRequestType.Pop && !e.Animated)
+			{
+				FixNotAnimatedPop(PropertiesContainer);
 			}
 			else if (e.RequestType == NavigationRequestType.Push)
 			{
@@ -192,6 +194,29 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		public void SharedTransitionCancelled()
 		{
 			((ISharedTransitionContainer) _shellContext.Shell).SendTransitionCancelled(TransitionArgs());
+		}
+
+		/*
+		 * Without animation, we need Detach->Attach to recreate the fragment ui
+		 * Because wh are using SetReorderingAllowed  that cause mess when popping without animation or PopToRoot
+		 * NOTE: we don't use "remove" here so we can maintain the state of the root view
+		 */
+		public void FixNotAnimatedPop(Page page)
+		{
+			var mapper = TransitionMap.TransitionStack.FirstOrDefault(x => x.Page == page);
+			if (mapper?.Transitions != null)
+			{
+				var fromView          = (View) mapper.Transitions.FirstOrDefault()?.NativeView.Target;
+				var fragmentToDisplay = fromView?.ParentFragment(SupportFragmentManager);
+
+				if (fragmentToDisplay != null)
+				{
+					var transaction = SupportFragmentManager.BeginTransaction();
+					transaction.Detach(fragmentToDisplay);
+					transaction.Attach(fragmentToDisplay);
+					transaction.CommitAllowingStateLoss();
+				}
+			}
 		}
 
 		SharedTransitionEventArgs TransitionArgs()
