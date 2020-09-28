@@ -13,6 +13,8 @@
             <Image Source="christmas_dog.jpg" sharedTransitions:Transition.Name="ChristmasDog" WidthRequest="330" HeightRequest="150" Aspect="Fill" />
             <Image Source="cute_dog.jpg" sharedTransitions:Transition.Name="CuteDog" />
 
+            <Button Clicked="Button_OnClicked" Text="Back without animation"></Button>
+
         </StackLayout>
     </ScrollView>
 

@@ -1,4 +1,5 @@
-﻿using Plugin.SharedTransitions;
+﻿using System;
+using Plugin.SharedTransitions;
 using Xamarin.Forms;
 
 namespace TransitionApp.Views.Image
@@ -25,6 +26,11 @@ namespace TransitionApp.Views.Image
         public void OnTransitionCancelled(SharedTransitionEventArgs args)
         {
 
+        }
+
+        private void Button_OnClicked(object sender, EventArgs e)
+        {
+            Navigation.PopAsync(false);
         }
     }
 }
