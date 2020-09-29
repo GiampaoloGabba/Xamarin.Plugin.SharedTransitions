@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Foundation;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -65,6 +67,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		readonly InteractiveTransitionRecognizer _interactiveTransitionRecognizer;
 		readonly IShellContext _shellContext;
 		bool _isPush;
+		int _consequentPops;
 
 		public SharedTransitionShellSectionRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -83,38 +86,67 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			DisableTransition = false;
 		}
 
-		public override UIViewController PopViewController(bool animated)
+
+		[Export("navigationBar:shouldPopItem:")]
+		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
 		{
+			//The base renderer is returning false when doing a pop with the back button
+			//because is calling PopViewController manually
+			//We need to return true to get the transition working and check for multiple execution in PopViewController
+			_consequentPops = 0;
+			base.ShouldPopItem(navigationBar, item);
+			return true;
+		}
+
+		public override  UIViewController PopViewController(bool animated)
+		{
+			// this means the pop is already done, nothing we can do
+			if (_consequentPops > 0)
+			{
+				return null;
+			}
+			_consequentPops++;
+
 			_isPush = false;
 			//at this point, currentitem is already set to the new page, wich contains our properties
 			if (ShellSection != null)
-				UpdatePropertyContainer();
+				UpdatePropertyContainer(true);
 
 			return base.PopViewController(animated);
 		}
 
-		public override async void PushViewController(UIViewController viewController, bool animated)
-		{
-			_isPush = true;
-			UpdatePropertyContainer();
 
-			/*
-			 * IMPORTANT!
-			 *
-			 * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
-			 * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
-			 * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
-			 * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
-			 * This add no more than 5ms to the navigation i think is largely acceptable
-			 */
-			if (PropertiesContainer != null)
+		protected override async void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
+		{
+			_consequentPops = 0;
+
+			if (e.RequestType == NavigationRequestType.Pop)
 			{
-				var mapStack = TransitionMap?.GetMap(PropertiesContainer, null, true);
-				if (mapStack?.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
-					await Task.Yield();
+				PopViewController(e.Animated);
+			}
+			else if (e.RequestType == NavigationRequestType.Push)
+			{
+				_isPush = true;
+				UpdatePropertyContainer(false);
+
+				/*
+				 * IMPORTANT!
+				 *
+				 * Fix for TransitionGroup selected with binding (ONLY if we have a transition with groups registered)
+				 * The binding system is a bit too slow and the Group Property get valorized after the navigation occours
+				 * I dont know how to solve this in an elegant way. If we set the value directly in the page it may works
+				 * After a lot of test it seems that with Task.Yield we have basicaly the same performance as without
+				 * This add no more than 5ms to the navigation i think is largely acceptable
+				 */
+				if (PropertiesContainer != null)
+				{
+					var mapStack = TransitionMap?.GetMap(PropertiesContainer, null, true);
+					if (mapStack?.Count > 0 && mapStack.Any(x=>!string.IsNullOrEmpty(x.TransitionGroup)))
+						await Task.Yield();
+				}
 			}
 
-			base.PushViewController(viewController, animated);
+			base.OnNavigationRequested(sender, e);
 		}
 
 		/// <summary>
@@ -136,10 +168,19 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		/// <summary>
 		/// Set the page we are using to read transition properties
 		/// </summary>
-		void UpdatePropertyContainer()
+		void UpdatePropertyContainer(bool isPop)
 		{
 			PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem)?.Page;
 			LastPageInStack     = ShellSection.Stack?.Last();
+
+			//Fix bug with new shellrenderer where we have the first page null in stack
+			if (LastPageInStack == null && isPop)
+			{
+				var pageDisplayedInfo = typeof(ShellSection).GetTypeInfo().GetDeclaredProperty("DisplayedPage");
+				if (pageDisplayedInfo != null)
+					LastPageInStack = (Page) pageDisplayedInfo.GetValue(ShellSection);
+			}
+
 		}
 
 		void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)
