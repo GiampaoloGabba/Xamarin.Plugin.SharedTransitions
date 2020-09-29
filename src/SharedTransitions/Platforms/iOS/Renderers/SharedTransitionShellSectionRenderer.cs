@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -77,16 +77,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			_interactiveTransitionRecognizer = new InteractiveTransitionRecognizer(this);
 		}
 
-		//During PopToRoot we skip everything and make the default animation
-		protected override void OnPopToRootRequested(NavigationRequestedEventArgs e)
-		{
-			_isPush = false;
-			DisableTransition = true;
-			base.OnPopToRootRequested(e);
-			DisableTransition = false;
-		}
-
-
 		[Export("navigationBar:shouldPopItem:")]
 		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
 		{
@@ -97,24 +87,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			base.ShouldPopItem(navigationBar, item);
 			return true;
 		}
-
-		public override  UIViewController PopViewController(bool animated)
-		{
-			// this means the pop is already done, nothing we can do
-			if (_consequentPops > 0)
-			{
-				return null;
-			}
-			_consequentPops++;
-
-			_isPush = false;
-			//at this point, currentitem is already set to the new page, wich contains our properties
-			if (ShellSection != null)
-				UpdatePropertyContainer(true);
-
-			return base.PopViewController(animated);
-		}
-
 
 		protected override async void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
@@ -149,6 +121,57 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			base.OnNavigationRequested(sender, e);
 		}
 
+		public override  UIViewController PopViewController(bool animated)
+		{
+			// this means the pop is already done, nothing we can do
+			if (_consequentPops > 0)
+			{
+				return null;
+			}
+			_consequentPops++;
+
+			_isPush = false;
+			//at this point, currentitem is already set to the new page, wich contains our properties
+			if (ShellSection != null)
+				UpdatePropertyContainer(true);
+
+			return base.PopViewController(animated);
+		}
+
+		public override UIViewController[] PopToRootViewController(bool animated)
+		{
+			//Fix for tap on same tab to go back to the first view
+			//Without this, events on the first view are invoked even when they shouldnt
+			_isPush = false;
+			return base.PopToRootViewController(animated);
+		}
+
+		protected override void OnPopToRootRequested(NavigationRequestedEventArgs e)
+		{
+			_isPush = false;
+
+			//Check if is a "true" PopToRoot or only a GotoAsync("../") to the first page
+			//I HOPE that the back navigation is always ..
+			//<rant>
+			//FFS everything is f#####g internal in forms! Even the real Location requested by user!
+			//getting exhausted by this....
+			//</rant>
+			var shell = (SharedTransitionShell)_shellContext.Shell;
+			if (shell.LastNavigating.Location.ToString() == "..")
+			{
+				e.RequestType = NavigationRequestType.Pop;
+				e.Animated    = true;
+				OnPopRequested(e);
+			}
+			else
+			{
+				//During PopToRoot we skip everything and make the default animation
+				DisableTransition = true;
+				base.OnPopToRootRequested(e);
+				DisableTransition = false;
+			}
+		}
+
 		/// <summary>
 		/// Add our custom EdgePanGesture
 		/// </summary>
@@ -180,7 +203,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 				if (pageDisplayedInfo != null)
 					LastPageInStack = (Page) pageDisplayedInfo.GetValue(ShellSection);
 			}
-
 		}
 
 		void HandleChildPropertyChanged(object sender, PropertyChangedEventArgs e)

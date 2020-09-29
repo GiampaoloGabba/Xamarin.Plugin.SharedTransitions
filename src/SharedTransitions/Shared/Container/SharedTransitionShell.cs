@@ -60,6 +60,13 @@ namespace Plugin.SharedTransitions
 
         public SharedTransitionShell() => TransitionMap = new TransitionMapper();
 
+        public ShellNavigationState LastNavigating { get; set; }
+        protected override void OnNavigating(ShellNavigatingEventArgs args)
+        {
+            base.OnNavigating(args);
+            LastNavigating = args.Target;
+        }
+
         /// <summary>
         /// Gets the transition selected group
         /// </summary>
