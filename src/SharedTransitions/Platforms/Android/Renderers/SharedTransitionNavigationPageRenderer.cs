@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Android.OS;
-using Android.Support.V4.App;
 using Plugin.SharedTransitions;
 using Plugin.SharedTransitions.Platforms.Android;
 using Xamarin.Forms;
@@ -16,12 +15,14 @@ using View = Android.Views.View;
 using Plugin.SharedTransitions.Platforms.Android.Extensions;
 
 #if __ANDROID_29__
+using Fragment = AndroidX.Fragment.App.Fragment;
 using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using SupportTransitions = AndroidX.Transitions;
 #else
 using Android.Support.V7.Widget;
+using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 using SupportTransitions = Android.Support.Transitions;
