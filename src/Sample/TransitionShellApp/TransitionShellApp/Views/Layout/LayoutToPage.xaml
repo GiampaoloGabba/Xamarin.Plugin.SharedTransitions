@@ -23,6 +23,8 @@
 
             </pancakeView:PancakeView>
 
+            <Button Clicked="Button_OnClicked" Text="Back with ShellGotoAsync(../)"></Button>
+
         </StackLayout>
 
 </ContentPage>

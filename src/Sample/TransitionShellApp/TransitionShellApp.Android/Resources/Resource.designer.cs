@@ -198,6 +198,7 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.Attribute.collapsedTitleGravity = global::TransitionShellApp.Droid.Resource.Attribute.collapsedTitleGravity;
 			global::Plugin.SharedTransitions.Resource.Attribute.collapsedTitleTextAppearance = global::TransitionShellApp.Droid.Resource.Attribute.collapsedTitleTextAppearance;
 			global::Plugin.SharedTransitions.Resource.Attribute.collapseIcon = global::TransitionShellApp.Droid.Resource.Attribute.collapseIcon;
+			global::Plugin.SharedTransitions.Resource.Attribute.collectionViewStyle = global::TransitionShellApp.Droid.Resource.Attribute.collectionViewStyle;
 			global::Plugin.SharedTransitions.Resource.Attribute.color = global::TransitionShellApp.Droid.Resource.Attribute.color;
 			global::Plugin.SharedTransitions.Resource.Attribute.colorAccent = global::TransitionShellApp.Droid.Resource.Attribute.colorAccent;
 			global::Plugin.SharedTransitions.Resource.Attribute.colorBackgroundFloating = global::TransitionShellApp.Droid.Resource.Attribute.colorBackgroundFloating;
@@ -404,6 +405,7 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.Attribute.scrimAnimationDuration = global::TransitionShellApp.Droid.Resource.Attribute.scrimAnimationDuration;
 			global::Plugin.SharedTransitions.Resource.Attribute.scrimBackground = global::TransitionShellApp.Droid.Resource.Attribute.scrimBackground;
 			global::Plugin.SharedTransitions.Resource.Attribute.scrimVisibleHeightTrigger = global::TransitionShellApp.Droid.Resource.Attribute.scrimVisibleHeightTrigger;
+			global::Plugin.SharedTransitions.Resource.Attribute.scrollViewStyle = global::TransitionShellApp.Droid.Resource.Attribute.scrollViewStyle;
 			global::Plugin.SharedTransitions.Resource.Attribute.searchHintIcon = global::TransitionShellApp.Droid.Resource.Attribute.searchHintIcon;
 			global::Plugin.SharedTransitions.Resource.Attribute.searchIcon = global::TransitionShellApp.Droid.Resource.Attribute.searchIcon;
 			global::Plugin.SharedTransitions.Resource.Attribute.searchViewStyle = global::TransitionShellApp.Droid.Resource.Attribute.searchViewStyle;
@@ -1353,6 +1355,7 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.String.fab_transformation_sheet_behavior = global::TransitionShellApp.Droid.Resource.String.fab_transformation_sheet_behavior;
 			global::Plugin.SharedTransitions.Resource.String.hide_bottom_view_on_scroll_behavior = global::TransitionShellApp.Droid.Resource.String.hide_bottom_view_on_scroll_behavior;
 			global::Plugin.SharedTransitions.Resource.String.mtrl_chip_close_icon_content_description = global::TransitionShellApp.Droid.Resource.String.mtrl_chip_close_icon_content_description;
+			global::Plugin.SharedTransitions.Resource.String.overflow_tab_title = global::TransitionShellApp.Droid.Resource.String.overflow_tab_title;
 			global::Plugin.SharedTransitions.Resource.String.password_toggle_content_description = global::TransitionShellApp.Droid.Resource.String.password_toggle_content_description;
 			global::Plugin.SharedTransitions.Resource.String.path_password_eye = global::TransitionShellApp.Droid.Resource.String.path_password_eye;
 			global::Plugin.SharedTransitions.Resource.String.path_password_eye_mask_strike_through = global::TransitionShellApp.Droid.Resource.String.path_password_eye_mask_strike_through;
@@ -1366,6 +1369,7 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.Style.Animation_AppCompat_DropDownUp = global::TransitionShellApp.Droid.Resource.Style.Animation_AppCompat_DropDownUp;
 			global::Plugin.SharedTransitions.Resource.Style.Animation_AppCompat_Tooltip = global::TransitionShellApp.Droid.Resource.Style.Animation_AppCompat_Tooltip;
 			global::Plugin.SharedTransitions.Resource.Style.Animation_Design_BottomSheetDialog = global::TransitionShellApp.Droid.Resource.Style.Animation_Design_BottomSheetDialog;
+			global::Plugin.SharedTransitions.Resource.Style.AppCompatDialogStyle = global::TransitionShellApp.Droid.Resource.Style.AppCompatDialogStyle;
 			global::Plugin.SharedTransitions.Resource.Style.Base_AlertDialog_AppCompat = global::TransitionShellApp.Droid.Resource.Style.Base_AlertDialog_AppCompat;
 			global::Plugin.SharedTransitions.Resource.Style.Base_AlertDialog_AppCompat_Light = global::TransitionShellApp.Droid.Resource.Style.Base_AlertDialog_AppCompat_Light;
 			global::Plugin.SharedTransitions.Resource.Style.Base_Animation_AppCompat_Dialog = global::TransitionShellApp.Droid.Resource.Style.Base_Animation_AppCompat_Dialog;
@@ -1557,6 +1561,9 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.Style.CardView = global::TransitionShellApp.Droid.Resource.Style.CardView;
 			global::Plugin.SharedTransitions.Resource.Style.CardView_Dark = global::TransitionShellApp.Droid.Resource.Style.CardView_Dark;
 			global::Plugin.SharedTransitions.Resource.Style.CardView_Light = global::TransitionShellApp.Droid.Resource.Style.CardView_Light;
+			global::Plugin.SharedTransitions.Resource.Style.collectionViewTheme = global::TransitionShellApp.Droid.Resource.Style.collectionViewTheme;
+			global::Plugin.SharedTransitions.Resource.Style.MainTheme = global::TransitionShellApp.Droid.Resource.Style.MainTheme;
+			global::Plugin.SharedTransitions.Resource.Style.MainTheme_Base = global::TransitionShellApp.Droid.Resource.Style.MainTheme_Base;
 			global::Plugin.SharedTransitions.Resource.Style.Platform_AppCompat = global::TransitionShellApp.Droid.Resource.Style.Platform_AppCompat;
 			global::Plugin.SharedTransitions.Resource.Style.Platform_AppCompat_Light = global::TransitionShellApp.Droid.Resource.Style.Platform_AppCompat_Light;
 			global::Plugin.SharedTransitions.Resource.Style.Platform_MaterialComponents = global::TransitionShellApp.Droid.Resource.Style.Platform_MaterialComponents;
@@ -1588,6 +1595,8 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.Style.RtlOverlay_Widget_AppCompat_Search_DropDown_Text = global::TransitionShellApp.Droid.Resource.Style.RtlOverlay_Widget_AppCompat_Search_DropDown_Text;
 			global::Plugin.SharedTransitions.Resource.Style.RtlUnderlay_Widget_AppCompat_ActionButton = global::TransitionShellApp.Droid.Resource.Style.RtlUnderlay_Widget_AppCompat_ActionButton;
 			global::Plugin.SharedTransitions.Resource.Style.RtlUnderlay_Widget_AppCompat_ActionButton_Overflow = global::TransitionShellApp.Droid.Resource.Style.RtlUnderlay_Widget_AppCompat_ActionButton_Overflow;
+			global::Plugin.SharedTransitions.Resource.Style.scrollViewScrollBars = global::TransitionShellApp.Droid.Resource.Style.scrollViewScrollBars;
+			global::Plugin.SharedTransitions.Resource.Style.scrollViewTheme = global::TransitionShellApp.Droid.Resource.Style.scrollViewTheme;
 			global::Plugin.SharedTransitions.Resource.Style.TextAppearance_AppCompat = global::TransitionShellApp.Droid.Resource.Style.TextAppearance_AppCompat;
 			global::Plugin.SharedTransitions.Resource.Style.TextAppearance_AppCompat_Body1 = global::TransitionShellApp.Droid.Resource.Style.TextAppearance_AppCompat_Body1;
 			global::Plugin.SharedTransitions.Resource.Style.TextAppearance_AppCompat_Body2 = global::TransitionShellApp.Droid.Resource.Style.TextAppearance_AppCompat_Body2;
@@ -2285,6 +2294,8 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.Styleable.GradientColor_android_startY = global::TransitionShellApp.Droid.Resource.Styleable.GradientColor_android_startY;
 			global::Plugin.SharedTransitions.Resource.Styleable.GradientColor_android_tileMode = global::TransitionShellApp.Droid.Resource.Styleable.GradientColor_android_tileMode;
 			global::Plugin.SharedTransitions.Resource.Styleable.GradientColor_android_type = global::TransitionShellApp.Droid.Resource.Styleable.GradientColor_android_type;
+			global::Plugin.SharedTransitions.Resource.Styleable.ItemsViewRendererTheme = global::TransitionShellApp.Droid.Resource.Styleable.ItemsViewRendererTheme;
+			global::Plugin.SharedTransitions.Resource.Styleable.ItemsViewRendererTheme_collectionViewStyle = global::TransitionShellApp.Droid.Resource.Styleable.ItemsViewRendererTheme_collectionViewStyle;
 			global::Plugin.SharedTransitions.Resource.Styleable.LinearLayoutCompat = global::TransitionShellApp.Droid.Resource.Styleable.LinearLayoutCompat;
 			global::Plugin.SharedTransitions.Resource.Styleable.LinearLayoutCompat_android_baselineAligned = global::TransitionShellApp.Droid.Resource.Styleable.LinearLayoutCompat_android_baselineAligned;
 			global::Plugin.SharedTransitions.Resource.Styleable.LinearLayoutCompat_android_baselineAlignedChildIndex = global::TransitionShellApp.Droid.Resource.Styleable.LinearLayoutCompat_android_baselineAlignedChildIndex;
@@ -2435,6 +2446,8 @@ namespace TransitionShellApp.Droid
 			global::Plugin.SharedTransitions.Resource.Styleable.ScrimInsetsFrameLayout_insetForeground = global::TransitionShellApp.Droid.Resource.Styleable.ScrimInsetsFrameLayout_insetForeground;
 			global::Plugin.SharedTransitions.Resource.Styleable.ScrollingViewBehavior_Layout = global::TransitionShellApp.Droid.Resource.Styleable.ScrollingViewBehavior_Layout;
 			global::Plugin.SharedTransitions.Resource.Styleable.ScrollingViewBehavior_Layout_behavior_overlapTop = global::TransitionShellApp.Droid.Resource.Styleable.ScrollingViewBehavior_Layout_behavior_overlapTop;
+			global::Plugin.SharedTransitions.Resource.Styleable.ScrollViewRendererTheme = global::TransitionShellApp.Droid.Resource.Styleable.ScrollViewRendererTheme;
+			global::Plugin.SharedTransitions.Resource.Styleable.ScrollViewRendererTheme_scrollViewStyle = global::TransitionShellApp.Droid.Resource.Styleable.ScrollViewRendererTheme_scrollViewStyle;
 			global::Plugin.SharedTransitions.Resource.Styleable.SearchView = global::TransitionShellApp.Droid.Resource.Styleable.SearchView;
 			global::Plugin.SharedTransitions.Resource.Styleable.SearchView_android_focusable = global::TransitionShellApp.Droid.Resource.Styleable.SearchView_android_focusable;
 			global::Plugin.SharedTransitions.Resource.Styleable.SearchView_android_imeOptions = global::TransitionShellApp.Droid.Resource.Styleable.SearchView_android_imeOptions;
