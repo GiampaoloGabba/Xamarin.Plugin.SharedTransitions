@@ -61,15 +61,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
             _fromViewController = _transitionContext.GetViewControllerForKey(UITransitionContext.FromViewControllerKey);
             _toViewController   = _transitionContext.GetViewControllerForKey(UITransitionContext.ToViewControllerKey);
             _transitionDuration = TransitionDuration(transitionContext);
-            var onEndedCalled = false;
+            var closeAnimationCalled = false;
 
             var containerView   = _transitionContext.ContainerView;
 
-            // This needs to be added to the view hierarchy for the destination frame to be correct,
-            // but we don't want it visible yet.
             if (_toViewController?.View == null)
                 return;
 
+            // This needs to be added to the view hierarchy for the destination frame to be correct,
+            // but we don't want it visible yet.
             containerView.InsertSubview(_toViewController.View, 0);
 
             /*
@@ -80,8 +80,6 @@ namespace Plugin.SharedTransitions.Platforms.iOS
              */
             if (_operation == UINavigationControllerOperation.Push)
                 await Task.Yield();
-
-            containerView.InsertSubview(_toViewController.View, 0);
 
             // Fox for pop + flip animation
             if (_navigationPage.BackgroundAnimation != BackgroundAnimation.Flip)
@@ -100,7 +98,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     Debug.WriteLine("At this point we must have the 2 views to animate! One or both is missing");
                     break;
                 }
-                
+
                 UIView fromViewSnapshot;
                 CGRect fromViewFrame;
 
@@ -189,27 +187,15 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     toView.Hidden   = false;
 
                     //This is the only realiable place where to call SharedTransitionEnded event
-                    //when the backgroundAnimation is set to NONE
-                    if (!onEndedCalled)
+                    if (!closeAnimationCalled)
                     {
-                        onEndedCalled = true;
-                        if (_transitionContext.TransitionWasCancelled)
-                        {
-                            Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
-                            _navigationPage.SharedTransitionCancelled();
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
-                            _navigationPage.SharedTransitionEnded();
-                        }
+                        closeAnimationCalled = true;
+                        CloseAnimation();
                     }
 
-                    //Fix for boxview inside shell
-                    //tldr: it get immediatly disposed after the animation!
                     try
                     {
-                        if (viewToAnimate.FromView.IsAlive)
+                        if (_operation == UINavigationControllerOperation.Push)
                             fromView.Hidden = false;
                     }
                     catch (Exception e)
@@ -304,17 +290,12 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
             switch (backgroundAnimation)
             {
-                //This is needed so the AnimationEnded override will be called
-                case BackgroundAnimation.None:
-                    FixCompletionForSwipeAndPopToRoot();
-                    break;
-
                 case BackgroundAnimation.Fade:
                     _toViewController.View.Alpha = 0;
                     UIView.Animate(_transitionDuration, 0, UIViewAnimationOptions.CurveLinear, () =>
                     {
                         _toViewController.View.Alpha = 1;
-                    }, FixCompletionForSwipeAndPopToRoot);
+                    }, null);
                     break;
 
                 case BackgroundAnimation.Flip:
@@ -322,7 +303,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     _fromViewController.View.Alpha = 0;
 
                     UIView.Transition(_fromViewController.View, _transitionDuration, UIViewAnimationOptions.TransitionFlipFromRight, null, null);
-                    UIView.Transition(_toViewController.View, _transitionDuration, UIViewAnimationOptions.TransitionFlipFromRight, null, FixCompletionForSwipeAndPopToRoot);
+                    UIView.Transition(_toViewController.View, _transitionDuration, UIViewAnimationOptions.TransitionFlipFromRight, null, null);
                     break;
 
                 case BackgroundAnimation.SlideFromBottom:
@@ -331,7 +312,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X, _fromViewController.View.Center.Y - screenWidth);
                         _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X, _toViewController.View.Center.Y - screenWidth);
-                    }, FixCompletionForSwipeAndPopToRoot);
+                    }, null);
                     break;
 
                 case BackgroundAnimation.SlideFromLeft:
@@ -340,7 +321,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X + screenWidth, _fromViewController.View.Center.Y);
                         _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X + screenWidth, _toViewController.View.Center.Y);
-                    }, FixCompletionForSwipeAndPopToRoot);
+                    }, null);
                     break;
 
                 case BackgroundAnimation.SlideFromRight:
@@ -349,7 +330,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X - screenWidth, _fromViewController.View.Center.Y);
                         _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X - screenWidth, _toViewController.View.Center.Y);
-                    }, FixCompletionForSwipeAndPopToRoot);
+                    }, null);
                     break;
 
                 case BackgroundAnimation.SlideFromTop:
@@ -358,23 +339,33 @@ namespace Plugin.SharedTransitions.Platforms.iOS
                     {
                         _fromViewController.View.Center = new CGPoint(_fromViewController.View.Center.X, _fromViewController.View.Center.Y + screenWidth);
                         _toViewController.View.Center = new CGPoint(_toViewController.View.Center.X, _toViewController.View.Center.Y + screenWidth);
-                    }, FixCompletionForSwipeAndPopToRoot);
+                    }, null);
                     break;
             }
         }
 
         /// <summary>
-        /// Fix the animation completion for swipe back and pop to root
+        /// Close our animation informing subscribers and fixing things...
         /// </summary>
-        void FixCompletionForSwipeAndPopToRoot()
+        void CloseAnimation()
         {
-            // Fix 1 for swipe + pop to root
-            _fromViewController.View.Alpha = 1;
-            _transitionContext.CompleteTransition(!_transitionContext.TransitionWasCancelled);
-
-            // Fix 2 for swipe + pop to root
             if (_transitionContext.TransitionWasCancelled)
+            {
+                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition cancelled");
+                _navigationPage.SharedTransitionCancelled();
+                // Fix 1 for swipe + pop to root
                 _fromViewController.View.Alpha = 1;
+            }
+            else
+            {
+                Debug.WriteLine($"{DateTime.Now} - SHARED: Transition ended");
+                _navigationPage.SharedTransitionEnded();
+            }
+
+            // Fix swipe + pop to root
+            _fromViewController.View.Alpha = 1;
+            _transitionContext.FinishInteractiveTransition();
+            _transitionContext.CompleteTransition(!_transitionContext.TransitionWasCancelled);
         }
 
         /// <summary>

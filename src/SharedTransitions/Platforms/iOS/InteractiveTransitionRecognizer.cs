@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UIKit;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.iOS;
 
 namespace Plugin.SharedTransitions.Platforms.iOS
 {
@@ -31,7 +30,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			var navigationController = (UINavigationController) _renderer;
 
 			navigationController.InteractivePopGestureRecognizer.Enabled = false;
-			if (!navigationController.View.GestureRecognizers.Contains(_renderer.EdgeGestureRecognizer))
+			if (navigationController?.View?.GestureRecognizers?.Contains(_renderer.EdgeGestureRecognizer) == false)
 			{
 				//Add PanGesture on left edge to POP page
 				_renderer.EdgeGestureRecognizer = new UIScreenEdgePanGestureRecognizer {Edges = UIRectEdge.Left};
@@ -48,7 +47,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 		{
 			var navigationController = (UINavigationController) _renderer;
 
-			if (_renderer.EdgeGestureRecognizer != null && 
+			if (navigationController.View?.GestureRecognizers != null && _renderer.EdgeGestureRecognizer != null &&
 			    navigationController.View.GestureRecognizers.Contains(_renderer.EdgeGestureRecognizer))
 			{
 				_renderer.EdgeGestureRecognizer.Enabled = false;
