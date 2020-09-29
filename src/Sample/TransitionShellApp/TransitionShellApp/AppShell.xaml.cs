@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Plugin.SharedTransitions;
 using TransitionShellApp.Views.Image;
 using Xamarin.Forms;
@@ -11,6 +12,11 @@ namespace TransitionShellApp
 		{
 			Routing.RegisterRoute("imageTo", typeof(ImageToPage));
 			InitializeComponent();
+
+			CurrentTransition.Changed += data =>
+			{
+				Debug.WriteLine($"CurrentTransition Changed: {data?.NavOperation} {data?.PageFrom} {data?.PageTo}");
+			};
 		}
 
 		public override void OnTransitionStarted(SharedTransitionEventArgs args)

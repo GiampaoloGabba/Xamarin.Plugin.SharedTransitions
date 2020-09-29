@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Plugin.SharedTransitions.Shared.Utils;
 using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions
@@ -35,6 +36,9 @@ namespace Plugin.SharedTransitions
         /// </summary>
         public static readonly BindableProperty TransitionDurationProperty =
             BindableProperty.CreateAttached("TransitionDuration", typeof(long), typeof(SharedTransitionShell), (long)300);
+
+        public ObservableProperty<SharedTransitionEventArgs> CurrentTransition { get; } =
+            new ObservableProperty<SharedTransitionEventArgs>(null);
 
         public event EventHandler<SharedTransitionEventArgs> TransitionStarted;
         public event EventHandler<SharedTransitionEventArgs> TransitionEnded;
@@ -123,6 +127,7 @@ namespace Plugin.SharedTransitions
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SendTransitionStarted(SharedTransitionEventArgs args)
         {
+            CurrentTransition.Set(args);
             TransitionStarted?.Invoke(this, args);
             OnTransitionStarted(args);
             MessagingCenter.Send(this, "SendTransitionStarted", args);
@@ -131,6 +136,7 @@ namespace Plugin.SharedTransitions
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SendTransitionEnded(SharedTransitionEventArgs args)
         {
+            CurrentTransition.Set(null);
             TransitionEnded?.Invoke(this, args);
             OnTransitionEnded(args);
             MessagingCenter.Send(this, "SendTransitionEnded", args);
@@ -139,6 +145,7 @@ namespace Plugin.SharedTransitions
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SendTransitionCancelled(SharedTransitionEventArgs args)
         {
+            CurrentTransition.Set(null);
             TransitionCancelled?.Invoke(this, args);
             OnTransitionCancelled(args);
             MessagingCenter.Send(this, "SendTransitionCancelled", args);

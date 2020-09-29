@@ -1,4 +1,5 @@
 ﻿using System;
+using Plugin.SharedTransitions.Shared.Utils;
 using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions
@@ -15,6 +16,11 @@ namespace Plugin.SharedTransitions
 		/// The transition map
 		/// </value>
 		ITransitionMapper TransitionMap { get; set; }
+
+		/// <summary>
+		/// The current transition behing execute
+		/// </summary>
+		ObservableProperty<SharedTransitionEventArgs> CurrentTransition { get; }
 
 		/// <summary>
 		/// Fired when the Shared Transition starts

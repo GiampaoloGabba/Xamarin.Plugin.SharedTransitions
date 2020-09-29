@@ -10,6 +10,11 @@ namespace AndroidXApp
 		public AppShell()
 		{
 			InitializeComponent();
+
+			CurrentTransition.Changed += data =>
+			{
+				Debug.WriteLine($"CurrentTransition Changed: {data?.NavOperation} {data?.PageFrom} {data?.PageTo}");
+			};
 		}
 
 		public override void OnTransitionStarted(SharedTransitionEventArgs args)

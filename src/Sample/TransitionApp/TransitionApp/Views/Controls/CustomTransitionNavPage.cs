@@ -6,6 +6,14 @@ namespace TransitionApp.Views.Controls
 {
     public class CustomTransitionNavPage : SharedTransitionNavigationPage
     {
+        public CustomTransitionNavPage()
+        {
+            CurrentTransition.Changed += data =>
+            {
+                Debug.WriteLine($"CurrentTransition Changed: {data?.NavOperation} {data?.PageFrom} {data?.PageTo}");
+            };
+        }
+
         public override void OnTransitionStarted(SharedTransitionEventArgs args)
         {
             Debug.WriteLine($"From override: Transition started - {args.PageFrom}|{args.PageTo}|{args.NavOperation}");
