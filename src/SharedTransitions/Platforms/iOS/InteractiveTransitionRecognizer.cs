@@ -81,30 +81,28 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 
                 case UIGestureRecognizerState.Cancelled:
                 case UIGestureRecognizerState.Failed:
-	                _renderer.PercentDrivenInteractiveTransition.CancelInteractiveTransition();
+	                //Unfortunately i have to always complete the transition or the pagestack will get corrupted/polluted
+	                _renderer.PercentDrivenInteractiveTransition.FinishInteractiveTransition();
+	                //_renderer.PercentDrivenInteractiveTransition.CancelInteractiveTransition();
                     _renderer.PercentDrivenInteractiveTransition = null;
                     break;
 
                 case UIGestureRecognizerState.Ended:
-                    if (finishTransitionOnEnd)
-                    {
-	                    _renderer.PercentDrivenInteractiveTransition.FinishInteractiveTransition();
-                        /*
-                         * IMPORTANT!
-                         *
-                         * at the end of this transition, we need to check if we want a normal pop gesture or the custom one for the new page
-                         * as we said before, the custom pop gesture doesnt play well with "normal" pages.
-                         * So, at the end of the transition, we check if a page exists before the one we are opening and then check the mapstack
-                         * If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
-                         */
-                        var pageCount = pageStack.Count;
-                        if (pageCount > 2 && _renderer.TransitionMap.GetMap(pageStack[pageCount - 3],null).Count==0)
-                            RemoveInteractiveTransitionRecognizer();
-                    }
-                    else
-                    {
-	                    _renderer.PercentDrivenInteractiveTransition.CancelInteractiveTransition();
-                    }
+
+	                //Unfortunately i have to always complete the transition or the pagestack will get corrupted/polluted
+	                _renderer.PercentDrivenInteractiveTransition.FinishInteractiveTransition();
+
+	                /*
+	                 * IMPORTANT!
+	                 *
+	                 * at the end of this transition, we need to check if we want a normal pop gesture or the custom one for the new page
+	                 * as we said before, the custom pop gesture doesnt play well with "normal" pages.
+	                 * So, at the end of the transition, we check if a page exists before the one we are opening and then check the mapstack
+	                 * If the previous page of the pop destination doesnt have shared transitions, we remove our custom gesture
+	                 */
+	                var pageCount = pageStack.Count;
+	                if (pageCount > 2 && _renderer.TransitionMap.GetMap(pageStack[pageCount - 3],null).Count==0)
+		                RemoveInteractiveTransitionRecognizer();
                     _renderer.PercentDrivenInteractiveTransition = null;
                     break;
             }
