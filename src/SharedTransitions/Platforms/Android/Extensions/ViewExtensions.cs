@@ -3,11 +3,9 @@ using View = Android.Views.View;
 #if __ANDROID_29__
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using Fragment = AndroidX.Fragment.App.Fragment;
-using FragmentContainer = AndroidX.Fragment.App.FragmentContainer;
 #else
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Fragment = Android.Support.V4.App.Fragment;
-using FragmentContainer = Android.Support.V4.App.FragmentContainer;
 #endif
 
 namespace Plugin.SharedTransitions.Platforms.Android.Extensions

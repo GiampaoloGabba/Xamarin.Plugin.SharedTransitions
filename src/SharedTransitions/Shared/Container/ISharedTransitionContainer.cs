@@ -1,6 +1,5 @@
 ﻿using System;
 using Plugin.SharedTransitions.Shared.Utils;
-using Xamarin.Forms;
 
 namespace Plugin.SharedTransitions
 {

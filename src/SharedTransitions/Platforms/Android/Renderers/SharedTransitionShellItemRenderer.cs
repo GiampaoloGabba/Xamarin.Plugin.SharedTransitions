@@ -16,6 +16,7 @@ using Android.Support.V4.App;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using SupportTransitions = Android.Support.Transitions;
 #endif
+
 namespace Plugin.SharedTransitions.Platforms.Android
 {
 	public class SharedTransitionShellItemRenderer: ShellItemRenderer, ITransitionRenderer

@@ -4,7 +4,6 @@ using Plugin.SharedTransitions.Platforms.Android;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-
 [assembly: ExportRenderer(typeof(Page), typeof(SharedTransitionPageRenderer))]
 namespace Plugin.SharedTransitions.Platforms.Android
 {

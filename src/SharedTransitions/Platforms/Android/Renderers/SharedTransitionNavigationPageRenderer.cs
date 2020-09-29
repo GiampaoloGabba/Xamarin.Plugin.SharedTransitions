@@ -28,7 +28,6 @@ using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 using SupportTransitions = Android.Support.Transitions;
 #endif
 
-
 [assembly: ExportRenderer(typeof(SharedTransitionNavigationPage), typeof(SharedTransitionNavigationPageRenderer))]
 namespace Plugin.SharedTransitions.Platforms.Android
 {

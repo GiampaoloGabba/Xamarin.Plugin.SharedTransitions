@@ -1,6 +1,4 @@
-﻿using Xamarin.Forms;
-
-namespace Plugin.SharedTransitions
+﻿namespace Plugin.SharedTransitions
 {
     public interface ITransitionAware
     {
