@@ -116,14 +116,23 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		protected override async void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
 			_isPush = e.RequestType == NavigationRequestType.Push;
-
 			SupportFragmentManager ??= ChildFragmentManager;
-
-			PropertiesContainer = ((IShellContentController) ShellSection.CurrentItem).Page;
+			PropertiesContainer    =   ((IShellContentController) ShellSection.CurrentItem).Page;
 
 			if (e.RequestType == NavigationRequestType.PopToRoot)
 			{
-				_popToRoot = true;
+				//Check if is a "true" PopToRoot or only a GotoAsync("../") to the first page
+				var shell = (SharedTransitionShell)_shellContext.Shell;
+				if (shell.LastNavigating.Location.ToString() == "..")
+				{
+					//This is not a PopToRoot!!! execute animation
+					e.Animated    = true;
+				}
+				else
+				{
+					FixNotAnimatedPop(PropertiesContainer);
+					_popToRoot = true;
+				}
 			}
 			else if (e.RequestType == NavigationRequestType.Pop && !e.Animated)
 			{
