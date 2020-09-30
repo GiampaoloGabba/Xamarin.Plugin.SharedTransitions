@@ -88,6 +88,9 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			return true;
 		}
 
+		//NOT CALLED BY:
+		//Navigationbar button
+		//Called when tapping the same tabicon when there is a tabbedpage
 		protected override async void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
 			_consequentPops = 0;
@@ -121,6 +124,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			base.OnNavigationRequested(sender, e);
 		}
 
+		//Called by navigation bar button
 		public override  UIViewController PopViewController(bool animated)
 		{
 			// this means the pop is already done, nothing we can do
@@ -138,6 +142,7 @@ namespace Plugin.SharedTransitions.Platforms.iOS
 			return base.PopViewController(animated);
 		}
 
+		//Called when tapping the same tabicon when there is a tabbedpage
 		public override UIViewController[] PopToRootViewController(bool animated)
 		{
 			//Fix for tap on same tab to go back to the first view
