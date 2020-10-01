@@ -1,4 +1,21 @@
 ## 2.3
+* [NEW] CurrentTransition property
+* [Core] Update XF to 4.5.0.725
+
+* FIX TransitionListenerAdapter and NavigationTransitionListener classes not found exception with v2.3 (#43)
+* FIX Navigation.PopAsync(false) results in empty page (#45)
+* FIX Frame doesn't respect CornerRadius in transition (#46)
+* FIX NullReferenceException on iOS (#48)
+* FIX Crash on ShellGoToAsync(../) in Android with Xamarin latest version (#49)
+* FIX [iOS] - Shell back animation doesn't work (#50)
+* FIX Shell PopToRootAsync crashes - No view found for id (#51)
+* FIX [iOS] - Shell EdgeGestureRecognizer is broken (#52)
+* FIX [iOS] Shell navigation with ../ is seen as PopToRoot when there are only 2 page in stack (#53)
+* FIX [iOS] Shell - Tapping on the same tabbar item invoke events for push (#54)
+* FIX [iOS] Navstack get corrupted if interactive gesture is canceled (#55)
+* FIX [Android] Shell - Navigation with ../ hide elements  (#57)
+
+## 2.3
 * Transition events and ITransitionAware  (issue [#39](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/39))
 * LightSnapshot mode for iOS (issue [#40](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/issues/40))
 * Minor fixes and improvements (expecially for iOS)
