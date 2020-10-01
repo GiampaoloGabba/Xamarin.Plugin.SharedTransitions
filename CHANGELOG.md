@@ -1,5 +1,5 @@
 ## 2.3
-* [NEW] CurrentTransition property
+* [NEW] [CurrentTransition observable property](https://github.com/GiampaoloGabba/Xamarin.Plugin.SharedTransitions/wiki/6.-Transition-events-and-ITransitionAware#currenttransition-observable-property)
 * [Core] Update XF to 4.5.0.725
 
 * FIX TransitionListenerAdapter and NavigationTransitionListener classes not found exception with v2.3 (#43)
