@@ -13,6 +13,11 @@ namespace Plugin.SharedTransitions.Platforms.Android
 		{
 			
 		}
+		
+		public SharedTransitionPageRenderer(IntPtr a, JniHandleOwnership b) : base (a, b))
+	        {
+		
+	        }
 
 		protected override void Dispose(bool disposing)
 		{
